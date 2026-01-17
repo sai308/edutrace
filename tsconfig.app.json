@@ -17,6 +17,24 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@Analytics/*": [
+        "./src/modules/Analytics/*"
+      ],
+      "@Groups/*": [
+        "./src/modules/Groups/*"
+      ],
+      "@Marks/*": [
+        "./src/modules/Marks/*"
+      ],
+      "@Reports/*": [
+        "./src/modules/Reports/*"
+      ],
+      "@Students/*": [
+        "./src/modules/Students/*"
+      ],
+      "@Summary/*": [
+        "./src/modules/Summary/*"
       ]
     }
   },

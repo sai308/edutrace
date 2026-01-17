@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useRoute } from 'vue-router'
+
 import {
     Sidebar,
     SidebarContent,
@@ -28,6 +30,7 @@ import {
 } from 'lucide-vue-next'
 
 import AppModeToggle from "@/components/layout/AppModeToggle.vue"
+import WorkspaceSwitcher from "@/components/layout/WorkspaceSwitcher.vue"
 
 // Menu definition
 const navGroups = [
@@ -61,21 +64,21 @@ const navGroups = [
     },
 
 ]
+
+const route = useRoute()
+
+const isActive = (url: string) => {
+    if (url === '/') {
+        return route.path === '/'
+    }
+    return route.path.startsWith(url)
+}
 </script>
 
 <template>
     <Sidebar collapsible="icon">
         <SidebarHeader>
-            <div class="flex items-center gap-2 px-2 py-2">
-                <div
-                    class="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                    <LayoutDashboard class="size-4" />
-                </div>
-                <div class="flex flex-col gap-0.5 leading-none">
-                    <span class="font-semibold">EduTrace</span>
-                    <span class="text-xs text-muted-foreground">v2.0</span>
-                </div>
-            </div>
+            <WorkspaceSwitcher />
             <Separator />
         </SidebarHeader>
 
@@ -85,7 +88,7 @@ const navGroups = [
                 <SidebarGroupContent>
                     <SidebarMenu>
                         <SidebarMenuItem v-for="item in group.items" :key="item.title">
-                            <SidebarMenuButton as-child>
+                            <SidebarMenuButton as-child :is-active="isActive(item.url)">
                                 <a v-if="item.url.startsWith('http')" :href="item.url" target="_blank"
                                     rel="noopener noreferrer">
                                     <component :is="item.icon" />
@@ -121,13 +124,15 @@ const navGroups = [
                     <AppModeToggle />
                 </SidebarMenuButton>
 
-                <SidebarMenuButton as-child size="sm" class="w-fit h-fit p-2" tooltip="Про нас">
+                <SidebarMenuButton as-child size="sm" class="w-fit h-fit p-2" tooltip="Про нас"
+                    :is-active="isActive('/about')">
                     <router-link to="/about">
                         <Info class="size-4" />
                     </router-link>
                 </SidebarMenuButton>
 
-                <SidebarMenuButton as-child size="sm" class="w-fit h-fit p-2" tooltip="Посібник">
+                <SidebarMenuButton as-child size="sm" class="w-fit h-fit p-2" tooltip="Посібник"
+                    :is-active="isActive('/guide')">
                     <router-link to="/guide">
                         <BookOpen class="size-4" />
                     </router-link>
