@@ -1,34 +1,32 @@
-import { ref } from 'vue';
-import { analyticsService } from '../services/analytics.service';
-import { groupsRepository } from '@Groups/services/groups.repository';
-import type { Group } from '@Groups/types/groups';
-import type { GlobalStat } from '../types/analytics';
+import type { EnrichedStat } from '@Analytics/types/analytics'
+import { analyticsService } from '@Analytics/services/analytics.service'
+import { groupsRepository } from '@Groups/services/groups.repository'
+import { ref } from 'vue'
+import { logger } from '@/shared/lib/logger'
+import { toast } from '@/shared/services/toast'
 
 export function useAnalytics() {
-    const stats = ref<GlobalStat[]>([]);
-    const loading = ref(true);
-    const groupsMap = ref<Record<string, Group>>({});
+    const stats = ref<EnrichedStat[]>([])
+    const loading = ref(true)
+    const error = ref<Error | null>(null)
 
-    async function loadStats() {
-        loading.value = true;
+    async function loadStats(): Promise<void> {
+        loading.value = true
+        error.value = null
         try {
-            const [data, groups] = await Promise.all([
+            const [rawStats, groupsMap] = await Promise.all([
                 analyticsService.getGlobalStats(),
-                groupsRepository.getGroupMap()
-            ]);
-            stats.value = data;
-            groupsMap.value = groups;
-        } catch (error) {
-            console.error('Error loading analytics:', error);
+                groupsRepository.getGroupMap(),
+            ])
+            stats.value = analyticsService.enrichStats(rawStats, groupsMap)
+        } catch (err) {
+            error.value = err instanceof Error ? err : new Error(String(err))
+            logger.error('Error loading analytics:', err)
+            toast.error('Failed to load analytics data')
         } finally {
-            loading.value = false;
+            loading.value = false
         }
     }
 
-    return {
-        stats,
-        groupsMap,
-        loading,
-        loadStats
-    };
+    return { stats, loading, error, loadStats }
 }

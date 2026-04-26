@@ -1,7 +1,8 @@
-<script setup>
-import { onMounted } from 'vue';
-import StudentsView from '../views/StudentsView.vue';
-import { useStudents } from '../composables/useStudents';
+<script setup lang="ts">
+import type { StudentFormData } from '@Students/types/students'
+import { onMounted } from 'vue'
+import { useStudents } from '../composables/useStudents'
+import StudentsView from '../views/StudentsView.vue'
 
 const {
     students,
@@ -13,29 +14,37 @@ const {
     saveStudent,
     deleteStudent,
     bulkDeleteStudents,
-    isLoading
-} = useStudents();
+    isLoading,
+} = useStudents()
 
-onMounted(loadData);
+onMounted(loadData)
 
-function handleSaveStudent(payload) {
-    // payload is { formData, originalStudent }
-    saveStudent(payload.formData, payload.originalStudent);
+function handleSaveStudent(payload: { formData: StudentFormData; originalStudent: any }) {
+    saveStudent(payload.formData, payload.originalStudent ?? null)
 }
 
-function handleDeleteStudent(id) {
-    deleteStudent(id);
+function handleDeleteStudent(id: string) {
+    deleteStudent(id)
 }
 
-function handleBulkDeleteStudents(ids) {
-    bulkDeleteStudents(ids);
+function handleBulkDeleteStudents(ids: string[]) {
+    bulkDeleteStudents(ids)
 }
 </script>
 
 <template>
     <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <StudentsView :students="students" :groups-map="groupsMap" :teachers="teachers" :meets="meets" :tasks="tasks"
-            :is-loading="isLoading" @save-student="handleSaveStudent" @delete-student="handleDeleteStudent"
-            @bulk-delete-students="handleBulkDeleteStudents" @refresh="loadData" />
+        <StudentsView
+            :students="students"
+            :groups-map="groupsMap"
+            :teachers="teachers"
+            :meets="meets"
+            :tasks="tasks"
+            :is-loading="isLoading"
+            @save-student="handleSaveStudent"
+            @delete-student="handleDeleteStudent"
+            @bulk-delete-students="handleBulkDeleteStudents"
+            @refresh="loadData"
+        />
     </div>
 </template>

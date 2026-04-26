@@ -1,5 +1,5 @@
 import * as Comlink from 'comlink';
-import { formatMarkToFiveScale } from '@/shared/utils/grades';
+import { formatMarkToFiveScale } from '../shared/utils/grades';
 
 function calculateMemberCounts(members, meets, teacherSet, meetToGroup) {
     // Calculate unique members per group
@@ -181,4 +181,5 @@ function processGroupsData(groups, meets, members, teacherList, allTasks, allMar
     };
 }
 
+export const workerForTesting = { processGroupsData };
 Comlink.expose({ processGroupsData });

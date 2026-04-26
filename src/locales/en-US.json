@@ -15,7 +15,8 @@
         "delete_modal_title": "Delete Workspace",
         "delete_warning": "This action cannot be undone. This will permanently delete the {name} workspace and all associated data.",
         "delete_confirm_label": "Type {name} to confirm:",
-        "delete_button": "Delete Workspace"
+        "delete_button": "Delete Workspace",
+        "color_label": "Theme Color"
     },
     "loader": {
         "switchingWorkspace": "Switching workspace...",
@@ -28,7 +29,7 @@
         "goHome": "Go to Home"
     },
     "app": {
-        "title": "Edutrace",
+        "title": "EduTrace",
         "settings": "Settings"
     },
     "common": {
@@ -37,8 +38,50 @@
         "save": "Save",
         "delete": "Delete",
         "edit": "Edit",
+        "details": "Details",
         "close": "Close",
-        "back": "Back"
+        "back": "Back",
+        "openMenu": "Open menu",
+        "actions": "Actions",
+        "copyId": "Copy ID",
+        "deletePermanently": "Delete Permanently",
+        "active": "Active",
+        "deleted": "Deleted",
+        "restore": "Restore",
+        "clear": "Clear",
+        "deleteAll": "Delete All",
+        "noData": "No data available",
+        "selectAll": "Select all",
+        "selectRow": "Select row",
+        "learnMore": "Learn More",
+        "importReports": "Import Reports",
+        "importMarks": "Import Marks Reports",
+        "undo": "Undo",
+        "bulk": "Bulk",
+        "pagination": {
+            "previous": "Previous",
+            "next": "Next",
+            "pageOf": "Page {current} of {total}",
+            "showing": "{from}–{to} of {total}"
+        }
+    },
+    "pwa": {
+        "updateAvailable": "A new version of EduTrace is available.",
+        "reload": "Reload",
+        "dismiss": "Later",
+        "offlineReady": "EduTrace is ready to work offline.",
+        "install": "Install App"
+    },
+    "status": {
+        "idle": "EduTrace is healthy",
+        "working": "Processing data…",
+        "error": "Last operation failed",
+        "offline": "Offline mode"
+    },
+    "workerErrors": {
+        "timeout": "Operation timed out — try a smaller file.",
+        "serialization": "File could not be sent to worker — data may be too large.",
+        "unknown": "An unexpected error occurred while processing."
     },
     "workspaceSelection": {
         "title": {
@@ -59,23 +102,216 @@
         "marks": "Marks",
         "modules": "Modules",
         "documents": "Documents",
-        "summary": "Summary",
+        "individual": "Individual Plans",
+        "summaries": "Summaries",
+        "session": "Statements",
         "guide": "Guide",
+        "processes": "Processes",
+        "other": "Other",
+        "settings": "Settings",
         "navGroups": {
             "attendance": "Attendance",
             "organization": "Organization",
             "control": "Control",
-            "documentation": "Documentation"
+            "documentation": "Documentation",
+            "documents": "Documents"
+        }
+    },
+    "control": {
+        "settings": {
+            "title": "Control Settings",
+            "description": "Manage data for Marks, Tasks, and Modules.",
+            "storageTitle": "Storage Management",
+            "marksTitle": "Marks Data",
+            "marksDescription": "Manage marks.",
+            "exportMarks": "Export",
+            "importMarks": "Import",
+            "exportMarksSuccess": "Settings exported",
+            "exportMarksFail": "Failed",
+            "importMarksSuccess": "Success",
+            "importMarksFail": "Failed",
+            "deleteMarksSuccess": "Cleared",
+            "deleteMarksFail": "Failed",
+            "deleteMarksConfirmTitle": "Clear Marks Data",
+            "deleteMarksConfirmMessage": "This will permanently delete all marks data. This action cannot be undone.",
+            "tasksTitle": "Tasks Data",
+            "tasksDescription": "Manage assignments.",
+            "exportTasks": "Export",
+            "importTasks": "Import",
+            "exportTasksSuccess": "Tasks exported",
+            "exportTasksFail": "Failed",
+            "importTasksSuccess": "Success",
+            "importTasksFail": "Failed",
+            "deleteTasksSuccess": "Cleared",
+            "deleteTasksFail": "Failed",
+            "deleteTasksConfirmTitle": "Clear Tasks Data",
+            "deleteTasksConfirmMessage": "Are you sure you want to delete tasks?",
+            "modulesTitle": "Modules Data",
+            "modulesDescription": "Manage modules.",
+            "exportModules": "Export",
+            "importModules": "Import",
+            "exportModulesSuccess": "Exported",
+            "exportModulesFail": "Failed",
+            "importModulesSuccess": "Success",
+            "importModulesFail": "Failed",
+            "deleteModulesSuccess": "Cleared",
+            "deleteModulesFail": "Failed",
+            "deleteModulesConfirmTitle": "Clear Modules Data",
+            "deleteModulesConfirmMessage": "This will permanently delete modules data. This action cannot be undone.",
+            "summaryExport": {
+                "title": "Summary Export",
+                "description": "Export the final grade summary for a group as a CSV spreadsheet or DOCX document. Status and date columns are excluded.",
+                "selectGroup": "Select group",
+                "exportCsv": "Export CSV",
+                "exportDocx": "Export DOCX",
+                "noGroup": "Please select a group first",
+                "noData": "No student data found for this group",
+                "exportSuccess": "Summary exported successfully",
+                "exportFail": "Export failed",
+                "colName": "Name",
+                "colTotal": "Total",
+                "colExam": "Exam",
+                "csvTitle": "Summary",
+                "docTitle": "Summary Table"
+            }
         }
     },
     "modules": {
         "title": "Modules",
-        "description": "Configure module definitions for use across groups"
+        "description": "Manage task groups and coefficients to produce intermediate grades.",
+        "list": {
+            "filterPlaceholder": "Filter modules...",
+            "deleteSelected": "Delete ({count})",
+            "saveOrder": "Save Order",
+            "reorder": "Reorder",
+            "createUnit": "Create Module",
+            "noResults": "No results.",
+            "noMatch": "No modules match your search.",
+            "noUnitsDescription": "Add your first module to start building your curriculum structure.",
+            "selectedRows": "{count} of {total} row(s) selected."
+        },
+        "columns": {
+            "name": "Name",
+            "tasksCount": "Tasks Count",
+            "hasTest": "Has Test",
+            "yes": "Yes",
+            "no": "No",
+            "taskCoef": "Task Coef.",
+            "testCoef": "Test Coef.",
+            "actions": "Actions",
+            "edit": "Edit",
+            "delete": "Delete"
+        },
+        "dialog": {
+            "editTitle": "Edit Module",
+            "createTitle": "Create Module",
+            "description": "Configure the module grouping standard tasks and optionally a test task for intermediate grades.",
+            "steps": {
+                "details": {
+                    "title": "Details",
+                    "desc": "Name and description"
+                },
+                "tasks": {
+                    "title": "Tasks",
+                    "desc": "Assign standard tasks"
+                },
+                "testTask": {
+                    "title": "Test Task",
+                    "desc": "Assign a test task"
+                },
+                "grading": {
+                    "title": "Grading",
+                    "desc": "Set task coefficients"
+                }
+            },
+            "nameLabel": "Module Name *",
+            "namePlaceholder": "e.g., Module 1 Basics",
+            "descLabel": "Description",
+            "descPlaceholder": "Optional description",
+            "assignTasks": "Assign Tasks",
+            "searchTasks": "Search tasks...",
+            "noTasks": "No tasks found.",
+            "hasDate": "({date})",
+            "selectTestTask": "Select Test Task (Optional)",
+            "selectTestPlaceholder": "Select a task to act as the test",
+            "none": "None",
+            "testTaskHint": "Only standard tasks mapped in the previous step are available for selection.",
+            "taskCoefLabel": "Task Coefficient",
+            "taskCoefHelp": "Provides the default weight for standard task marks inside this module. This impacts the general module grade.",
+            "testCoefLabel": "Test Coefficient",
+            "testCoefHelp": "Defines the weight for the designated test task, usually having a higher impact on the final module grade than standard tasks.",
+            "summaryLabel": "Selected Tasks Summary",
+            "testTaskBadge": "Test Task",
+            "noTasksSelected": "No tasks selected.",
+            "cancel": "Cancel",
+            "previous": "Previous",
+            "next": "Next",
+            "save": "Save Module"
+        },
+        "alerts": {
+            "deleteTitle": "Are you sure?",
+            "deleteDesc": "This action cannot be undone. This will permanently delete the module \"{name}\".",
+            "cancel": "Cancel",
+            "delete": "Delete"
+        },
+        "toasts": {
+            "loadError": "Failed to load data",
+            "deletedSuccess": "Module \"{name}\" deleted successfully",
+            "deleteError": "Failed to delete module",
+            "alreadyExists": "A module with name \"{name}\" already exists.",
+            "updatedSuccess": "Module updated successfully",
+            "createdSuccess": "Module created successfully",
+            "saveError": "Failed to save module",
+            "bulkDeletedSuccess": "Successfully deleted {count} modules",
+            "bulkDeleteError": "Failed to delete selected modules",
+            "orderSaved": "Module order saved successfully",
+            "orderError": "Failed to save the new order"
+        }
     },
     "summary": {
+        "title": "Summaries",
         "description": "Configure exam parameters and view student eligibility/grades.",
         "targetGroup": "Target Group",
         "selectGroup": "Select a group",
+        "student": "Student",
+        "total": "Total",
+        "completion": "Completion (%)",
+        "attendance": "Attendance (%)",
+        "status": "Status",
+        "creditGrade": "Credit Grade",
+        "date": "Date",
+        "missingItems": "Missing items:",
+        "notAllowed": "Not Allowed",
+        "automatic": "Automatic",
+        "allowed": "Allowed",
+        "manual": "Manual",
+        "saveGrade": "Save Grade",
+        "applyAutoGrade": "Apply Auto Grade",
+        "setManual": "Set Manual",
+        "removeGrade": "Remove Grade",
+        "records": "{count} records",
+        "saveAll": "Save all marks ({count})",
+        "unsavedWarning": "You have {count} unsaved grade(s) — save before navigating away.",
+        "leaveDialog": {
+            "title": "Unsaved Grades",
+            "message": "You have {count} unsaved grade(s). If you leave now, they will be lost.",
+            "confirm": "Leave anyway",
+            "cancel": "Stay and save"
+        },
+        "groupLabel": "Group:",
+        "scaleLabel": "Scale:",
+        "scales": {
+            "five": "5 Point",
+            "hundred": "100 Point",
+            "ects": "ECTS"
+        },
+        "loading": "Loading summary...",
+        "selectGroupPrompt": "Select a group to view summaries",
+        "noGroupsPrompt": "No groups found. Create a group first to view summaries.",
+        "noGroupsDescription": "Summaries are calculated per group. Add a group with students to get started.",
+        "searchPlaceholder": "Search students...",
+        "noRecords": "No records for this group.",
+        "noMatch": "No students match your search.",
         "assessmentType": "Assessment Type",
         "types": {
             "examination": "Examination",
@@ -153,13 +389,165 @@
         "modal": {
             "title": "Set Exam Grade",
             "grade": "Grade",
-            "placeholder": "Enter grade..."
+            "placeholder": "Enter grade...",
+            "setManualTitle": "Set Manual Grade",
+            "setManualDescription": "Enter a final credit grade for",
+            "autoGradeHint": "Use computed partial grade: {grade}",
+            "autoButton": "Auto",
+            "manualHint": "You can type any value (numeric or letter grade). Press {key} to confirm.",
+            "applyButton": "Apply Grade"
+        },
+        "delete": {
+            "title": "Remove Final Grade",
+            "description": "Are you sure you want to remove the final grade for {name}?",
+            "warning": "This action cannot be undone and will permanently delete the saved grade record.",
+            "confirmButton": "Remove Grade"
+        },
+        "actions": {
+            "enterGrade": "Enter manual grade for {name}:",
+            "confirmRemove": "Are you sure you want to remove the final grade for {name}?"
+        },
+        "data": {
+            "reasons": {
+                "attendance": "attendance ({percentage}% < {threshold}%)",
+                "completion": "task completion ({percentage}% < {threshold}%)",
+                "modulesIncomplete": "incomplete modules"
+            },
+            "cause": {
+                "criteriaNotMet": "Criteria not met",
+                "requirementsNotMet": "Failed requirements: {reasons}",
+                "excellentPerformance": "All tasks and tests completed ({completion}%)",
+                "admitted": "Admitted (att: {attendanceThreshold}%, comp: {completionThreshold}%)"
+            },
+            "status": {
+                "allowedMissing": "Missing grades for: {modules}"
+            },
+            "moduleTooltip": {
+                "tasksAvg": "Tasks avg: {avg} ({completed}/{total})",
+                "missingTest": "Missing: test",
+                "missingTasks": "Missing {count} task: {names} | Missing {count} tasks: {names}",
+                "noGrades": "No grades submitted"
+            },
+            "details": {
+                "modules": {
+                    "incompleteMissingTest": "Incomplete (missing test task)",
+                    "incompleteMissingTasks": "Incomplete (missing 1 task) | Incomplete (missing {count} tasks)",
+                    "details": "Avg: {avg} (×{tasksCoeff}), Test: {test} (×{testCoeff})"
+                },
+                "completion": "Completed {completed} out of {total} tasks",
+                "attendance": "Attended {attended} out of {total} sessions"
+            }
+        },
+        "settings": {
+            "label": "Settings",
+            "title": "Summary Settings",
+            "description": "Configure thresholds used to compute student status and totals.",
+            "completionHint": "Minimum task completion to be considered eligible.",
+            "attendanceHint": "Minimum attendance rate required.",
+            "requiredTasksHint": "Minimum number of tasks a student must complete.",
+            "reset": "Reset",
+            "apply": "Apply"
         }
+    },
+    "plans": {
+        "title": "Individual Education Plans",
+        "description": "Manage individual student education plans and synchronization status.",
+        "table": {
+            "iep": "IEP (Paper ID)",
+            "grade": "Final Grade",
+            "dateApplied": "Date (Session)",
+            "isSynced": "Synced",
+            "syncedAt": "Sync Date",
+            "noStudents": "No students with IEP found",
+            "noGrade": "Absent"
+        },
+        "sessionTypes": {
+            "MAIN": "Main Session",
+            "FIRST_RETAKE": "First Retake",
+            "SECOND_RETAKE": "Second Retake (Commission)"
+        },
+        "messages": {
+            "syncEnabled": "Plan has been marked as synced.",
+            "syncDisabled": "Plan sync has been disabled.",
+            "syncError": "An unexpected error occurred while saving."
+        },
+        "emptyState": {
+            "title": "No individual plans yet",
+            "description": "Individual plans track students with an IEP (Individual Education Plan). They appear here automatically once grades are recorded for eligible students."
+        },
+        "noGroups": "No groups found",
+        "noGroupsDescription": "Individual plans are linked to groups and students. Create a group and import marks reports to get started."
     },
     "documents": {
         "description": "Track and manage final assessment documentation status.",
         "title": "Final Assessments Documents",
         "searchPlaceholder": "Search students...",
+        "settings": {
+            "title": "Documents Settings",
+            "description": "Manage data and defaults for Sessions and Plans.",
+            "storageTitle": "Data Management",
+            "sessions": {
+                "title": "Sessions Data",
+                "description": "Import or export sessions records.",
+                "export": "Export Sessions",
+                "import": "Import Sessions",
+                "delete": "Delete Sessions",
+                "exportSuccess": "Sessions exported successfully",
+                "exportFail": "Failed to export sessions",
+                "importSuccess": "Sessions imported successfully",
+                "importFail": "Failed to import sessions",
+                "deleteSuccess": "Sessions deleted successfully",
+                "deleteFail": "Failed to delete sessions",
+                "deleteConfirmTitle": "Delete All Sessions",
+                "deleteConfirmMessage": "This will permanently delete all session records. This action cannot be undone.",
+                "deleteConfirmBtn": "Delete"
+            },
+            "plans": {
+                "title": "Plans Data",
+                "description": "Import or export plans records.",
+                "export": "Export Plans",
+                "import": "Import Plans",
+                "delete": "Delete Plans",
+                "exportSuccess": "Plans exported successfully",
+                "exportFail": "Failed to export plans",
+                "importSuccess": "Plans imported successfully",
+                "importFail": "Failed to import plans",
+                "deleteSuccess": "Plans deleted successfully",
+                "deleteFail": "Failed to delete plans",
+                "deleteConfirmTitle": "Delete All Plans",
+                "deleteConfirmMessage": "This will permanently delete all plan records. This action cannot be undone.",
+                "deleteConfirmBtn": "Delete"
+            },
+            "print": {
+                "title": "Print Defaults",
+                "description": "Set default values for the Session result print form.",
+                "subject": "Subject",
+                "formOfControl": "Form of Control",
+                "semester": "Semester",
+                "semesterSuffix": "sem.",
+                "courseUnit": "course",
+                "totalHours": "Total Hours",
+                "examiner": "Examiner",
+                "practicalTeacher": "Practical Teacher",
+                "template": "Document Template",
+                "templateDescription": "Upload a custom .docx template for your reports.",
+                "templateUploaded": "Custom template uploaded",
+                "templateDefault": "Using default system template",
+                "uploadTemplate": "Upload Template",
+                "removeTemplate": "Remove Template",
+                "templateUploadSuccess": "Template uploaded successfully",
+                "templateUploadFail": "Failed to upload template",
+                "templateRemoveSuccess": "Template removed successfully",
+                "templateRemoveFail": "Failed to remove template",
+                "save": "Save Defaults",
+                "saveSuccess": "Print defaults saved",
+                "saveError": "Failed to save print defaults",
+                "downloadTemplate": "Download Starter Template",
+                "downloadTemplateHint": "Get a pre-built .docx with all placeholders ready to customize in Word or LibreOffice.",
+                "downloadTemplateSuccess": "Starter template downloaded",
+                "previewTemplate": "Preview"
+            }
+        },
         "table": {
             "student": "Student Name",
             "grade": "Final Grade",
@@ -202,6 +590,49 @@
             }
         }
     },
+    "organization": {
+        "settings": {
+            "title": "Organization Settings",
+            "description": "Manage data for Students and Groups.",
+            "storageTitle": "Storage Management",
+            "dbBadgeTooltip": "DB: {name}  ·  v{version}",
+            "storageUsedLabel": "Used",
+            "recordsLabel": "Records",
+            "recordsUnit": "records",
+            "students": {
+                "title": "Students Data",
+                "description": "Import or export students data.",
+                "export": "Export Students",
+                "import": "Import Students",
+                "delete": "Delete Students",
+                "exportSuccess": "Students exported successfully",
+                "exportFail": "Failed to export students",
+                "importSuccess": "Students imported successfully",
+                "importFail": "Failed to import students",
+                "deleteSuccess": "Students deleted successfully",
+                "deleteFail": "Failed to delete students",
+                "deleteConfirmTitle": "Delete All Students",
+                "deleteConfirmMessage": "This will permanently delete all student records. This action cannot be undone.",
+                "deleteConfirmBtn": "Delete"
+            },
+            "groups": {
+                "title": "Groups Data",
+                "description": "Import or export groups data.",
+                "export": "Export Groups",
+                "import": "Import Groups",
+                "delete": "Delete Groups",
+                "exportSuccess": "Groups exported successfully",
+                "exportFail": "Failed to export groups",
+                "importSuccess": "Groups imported successfully",
+                "importFail": "Failed to import groups",
+                "deleteSuccess": "Groups deleted successfully",
+                "deleteFail": "Failed to delete groups",
+                "deleteConfirmTitle": "Delete All Groups",
+                "deleteConfirmMessage": "This will permanently delete all group records. This action cannot be undone.",
+                "deleteConfirmBtn": "Delete"
+            }
+        }
+    },
     "settings": {
         "title": "Settings",
         "close": "Close",
@@ -236,6 +667,7 @@
                 "description": "Exclude teachers from student lists and stats",
                 "modal": {
                     "title": "Manage Teachers",
+                    "description": "Select members to mark as teachers. Teachers are excluded from student lists and statistics.",
                     "manualPlaceholder": "Enter name manually...",
                     "add": "Add",
                     "searchPlaceholder": "Search students...",
@@ -372,6 +804,7 @@
         "workspacesImported": "Workspaces imported successfully",
         "workspacesImportFailed": "Failed to import workspaces",
         "allDataErased": "All data erased successfully",
+        "dataEraseFailed": "Failed to erase data",
         "workspacesErased": "Selected workspaces erased successfully",
         "workspacesEraseFailed": "Failed to erase selected workspaces",
         "reportsErased": "Reports erased successfully",
@@ -390,6 +823,7 @@
     },
     "students": {
         "title": "Students",
+        "description": "View and manage student records across groups.",
         "subtitle": "{count} of {total} students",
         "groupFilter": "Group filter:",
         "delete": "Delete ({count})",
@@ -414,6 +848,7 @@
             }
         },
         "noStudents": "No students found",
+        "noStudentsDescription": "Students are added automatically when you import an attendance report, or you can add them manually.",
         "actions": {
             "email": "Send Email",
             "copyEmail": "Copy Email",
@@ -431,17 +866,21 @@
         },
         "profile": {
             "noEmail": "No email provided",
+            "description": "Student profile — attendance history and marks",
             "views": {
                 "attendance": "Attendance",
-                "marks": "Marks"
+                "marks": "Marks",
+                "participants": "Participants",
+                "edit": "Edit"
             },
             "attendance": {
                 "duration": "Duration",
-                "hours": "Hours",
+                "minutes": "Minutes",
                 "attended": "Sessions Attended",
                 "avgPercent": "Average Attendance",
                 "totalTime": "Total Time",
                 "history": "Attendance History",
+                "noRecords": "No attendance records found.",
                 "table": {
                     "date": "Date",
                     "group": "Group",
@@ -460,6 +899,9 @@
                 "tasksCompleted": "Tasks Completed",
                 "completion": "Completion Rate",
                 "history": "Marks History",
+                "noRecords": "No marks found.",
+                "grades": "Grades",
+                "tasks": "Tasks",
                 "table": {
                     "date": "Date",
                     "task": "Task",
@@ -476,11 +918,17 @@
             "cancel": "Cancel",
             "email": "Email",
             "emailPlaceholder": "Email Address",
-            "groupHint": "Start typing to see existing groups."
+            "groupHint": "Start typing to see existing groups.",
+            "iepNotUnique": "A student with this IEP already exists"
+        },
+        "emptyState": {
+            "title": "No students yet",
+            "description": "Students are added automatically when you import an attendance or marks report. Manual input via a form is not supported."
         }
     },
     "groups": {
         "title": "Groups",
+        "description": "Manage groups and track attendance statistics.",
         "subtitle": "{count} of {total} groups",
         "searchPlaceholder": "Search groups...",
         "add": "Add Group",
@@ -498,32 +946,57 @@
             "avgMark": "Avg. Mark",
             "modeMark": "Mode Mark",
             "medianMark": "Median Mark",
-            "actions": "Actions"
+            "actions": "Actions",
+            "showQrCode": "Show QR Code"
         },
         "noGroups": "No groups found. Click \"Add Group\" to create one.",
+        "noGroupsDescription": "Create your first group to start organizing students and tracking attendance.",
         "noMatch": "No groups match your search.",
+        "toasts": {
+            "created": "Group created",
+            "updated": "Group updated",
+            "deleted": "Group deleted"
+        },
+        "errors": {
+            "loadFailed": "Failed to load data",
+            "saveFailed": "Error saving group",
+            "deleteFailed": "Error deleting group"
+        },
         "deleteModal": {
             "title": "Delete Group",
             "message": "Are you sure you want to delete this group? This action cannot be undone.",
-            "confirm": "Delete"
+            "confirm": "Delete",
+            "cancel": "Cancel"
         },
         "modal": {
             "addTitle": "Add New Group",
             "editTitle": "Edit Group",
+            "addDescription": "Add a new group.",
+            "editDescription": "Update group details.",
             "name": "Group Name",
             "namePlaceholder": "e.g. CS-101",
             "course": "Course (1-4)",
             "coursePlaceholder": "e.g. 1",
             "meetId": "Meet ID (Code)",
             "meetIdPlaceholder": "e.g. abc-defg-hij",
+            "meetIdInvalid": "Must match the format abc-defg-hij",
             "teacher": "Teacher Name",
             "teacherPlaceholder": "Optional teacher name",
             "save": "Save Group",
-            "cancel": "Cancel"
+            "cancel": "Cancel",
+            "skip": "Skip",
+            "errorDuplicate": "A group with this name or Meet ID already exists. Please change the name or Meet ID and try again.",
+            "errorGeneric": "Failed to create group. Please try again.",
+            "meetIdSuggested": "Suggested"
+        },
+        "emptyState": {
+            "title": "No groups yet",
+            "description": "Groups organize your students and attendance data. Create one manually or import a CSV report — groups will be created automatically."
         }
     },
     "marks": {
         "title": "Marks",
+        "description": "Manage student marks and grade records.",
         "subtitle": "{count} of {total} marks",
         "gradeScale": "Grade Scale",
         "scales": {
@@ -541,6 +1014,7 @@
             "group": "Group",
             "task": "Task",
             "mark": "Mark",
+            "syncedAt": "Synced At",
             "actions": "Actions",
             "tooltips": {
                 "added": "Date and time when the mark was added",
@@ -577,10 +1051,66 @@
             "cancel": "Cancel",
             "apply": "Apply Filters",
             "hideFailed": "Hide failed grades (less than FX)"
+        },
+        "markedAsSynced": "Marked as synced",
+        "markedAsUnsynced": "Marked as unsynced",
+        "addMark": "Add Mark",
+        "import": "Import CSV",
+        "manual": {
+            "title": "Add Mark Manually",
+            "description": "Assign a grade to a student for an existing task.",
+            "group": "Group",
+            "student": "Student",
+            "task": "Task",
+            "score": "Score",
+            "outOf": "/ {max}",
+            "selectGroup": "Select a group...",
+            "selectGroupFirst": "Select a group first",
+            "searchStudent": "Search student...",
+            "searchTask": "Search task...",
+            "noStudents": "No students found in this group",
+            "noTasks": "No tasks available — import a report first"
+        },
+        "importModal": {
+            "title": "Import Marks",
+            "description": "Drag and drop CSV files containing marks data.",
+            "modeLabel": "Import mode",
+            "modeKnownOnly": "Known groups only",
+            "modeKnownOnlyDesc": "Files with unrecognized group prefix will be skipped",
+            "modeCreateOnFly": "All reports (create on the fly)",
+            "modeCreateOnFlyDesc": "You will be prompted to create a group when the prefix is unrecognized",
+            "fileStatus": {
+                "pending": "Pending",
+                "processing": "Processing...",
+                "done": "Imported",
+                "error": "Failed",
+                "skipped": "Skipped"
+            },
+            "close": "Close",
+            "pendingLabel": "Pending",
+            "processingHint": "Processing files…",
+            "doneHint": "All files processed.",
+            "allSkippedByMode": "No files imported — {count} file(s) skipped because no matching group was found. Switch to \"All reports\" mode to create groups on the fly.",
+            "confirmCreateTitle": "Unknown Group: {name}",
+            "confirmCreateDescription": "This group doesn't exist yet. Would you like to create it and import its marks?",
+            "confirmCreate": "Create Group",
+            "confirmMapToGroup": "Map to existing group…",
+            "confirmSkip": "Skip Group",
+            "pickGroupTitle": "Map \"{name}\" to existing group",
+            "pickGroupDescription": "Select which group this file prefix should be imported into.",
+            "pickGroupPlaceholder": "Select a group",
+            "pickGroupSave": "Remember: always map \"{prefix}\" to this group",
+            "pickGroupConfirm": "Import"
+        },
+        "emptyState": {
+            "title": "No marks yet",
+            "description": "Import a CSV file with marks data. Groups will be created automatically during import, or you can create one manually first.",
+            "createGroup": "Create Group"
         }
     },
     "reports": {
         "title": "Reports",
+        "description": "Import and manage attendance reports.",
         "subtitle": "{count} of {total} reports",
         "searchPlaceholder": "Search by meet ID (link)",
         "selected": "{count} selected",
@@ -609,10 +1139,27 @@
         },
         "noReports": "No reports uploaded yet.",
         "noMatch": "No reports match your filter.",
+        "emptyState": {
+            "title": "No Reports Yet",
+            "description": "You haven't imported any reports yet. Get started by importing your first report."
+        },
         "deleteModal": {
             "title": "Delete Selected Reports",
             "message": "Are you sure you want to delete {count} selected reports? This action cannot be undone.",
-            "confirm": "Delete Selected"
+            "message_single": "Are you sure you want to delete this report? This action cannot be undone.",
+            "confirm": "Delete"
+        },
+        "uploadDialog": {
+            "title": "Upload Reports",
+            "description": "Drag and drop Google Meet CSV attendance reports here."
+        },
+        "importDialog": {
+            "title": "Import Options",
+            "description": "Choose how to process the uploaded files.",
+            "relatedOnly": "Process Related Only",
+            "relatedOnlyDesc": "Only imports files matching existing groups.",
+            "allFiles": "Process All Files",
+            "allFilesDesc": "Import all uploaded files regardless of groups."
         },
         "tooltips": {
             "view": "View Report Details",
@@ -646,7 +1193,35 @@
                 "close": "Close"
             }
         },
+        "processing": {
+            "saved": "Successfully processed {count} files.",
+            "skipped": "Skipped {count} duplicate files.",
+            "error": "Error processing files."
+        },
         "session": {
+            "reportTitle": "Report Details",
+            "notFound": "Report not found",
+            "notFoundDesc": "The requested report could not be found.",
+            "backToReports": "Back to Reports",
+            "participantsTitle": "Participants List",
+            "participantsDesc": "Detailed attendance records for this session.",
+            "columns": {
+                "name": "Name",
+                "email": "Email",
+                "duration": "Duration",
+                "attendance": "Attendance %",
+                "joinTime": "Join Time"
+            },
+            "stats": {
+                "date": "Date",
+                "dateDesc": "Recorded session date",
+                "participants": "Participants",
+                "participantsDesc": "Total attendees",
+                "totalDuration": "Total Duration",
+                "totalDurationDesc": "Combined participant time",
+                "avgDuration": "Avg Duration",
+                "avgDurationDesc": "Per participant"
+            },
             "title": "Session Details",
             "metadata": {
                 "date": "Session Date",
@@ -661,6 +1236,40 @@
             },
             "badge": "Session",
             "participants": "{count} participants"
+        },
+        "settings": {
+            "title": "Report Settings",
+            "description": "Manage parsing rules, teachers, and data for attendance reports.",
+            "parsingTitle": "Parsing Configuration",
+            "parsingDescription": "Configure how attendance sessions are processed and calculated.",
+            "durationLimitLabel": "Max Session Duration (minutes)",
+            "saveBtn": "Save",
+            "durationLimitHelp": "Sessions longer than this will be capped to this duration.",
+            "squashLabel": "Squash Short Sessions",
+            "squashHelp": "Merge short sessions (reconnections) into the main session.",
+            "squashThresholdLabel": "Squash Threshold (minutes)",
+            "squashThresholdHelp": "Short sessions (less than this) occurring simultaneously with a longer session will be squashed.",
+            "dataTitle": "Data Management",
+            "dataDescription": "Import or export reports data.",
+            "exportReports": "Export Reports",
+            "recordsAndSize": "{count} records ({size} KB)",
+            "importReports": "Import Reports",
+            "durationSaved": "Duration limit saved",
+            "squashSaved": "Squash threshold saved",
+            "exportSuccess": "Reports exported successfully",
+            "exportFail": "Failed to export reports",
+            "importSuccess": "Reports imported successfully",
+            "importFail": "Failed to import reports",
+            "storageTitle": "Storage Management",
+            "dbBadgeTooltip": "DB: {name}  ·  v{version}",
+            "storageUsedLabel": "Used",
+            "recordsLabel": "Records",
+            "deleteReports": "Delete Reports",
+            "deleteSuccess": "Reports deleted successfully",
+            "deleteFail": "Failed to delete reports",
+            "deleteConfirmTitle": "Delete All Reports",
+            "deleteConfirmMessage": "This will permanently delete all reports data. This action cannot be undone.",
+            "deleteConfirmBtn": "Delete"
         }
     },
     "dropZone": {
@@ -683,12 +1292,16 @@
     "views": {
         "overview": "Overview",
         "table": "Table",
-        "calendar": "Calendar"
+        "calendar": "Calendar",
+        "participants": "Participants"
     },
     "analytics": {
         "title": "Analytics Dashboard",
+        "description": "View attendance patterns across all groups.",
         "searchPlaceholder": "Search meets...",
-        "noData": "No analytics data available. Upload some files to get started.",
+        "noData": "No analytics data",
+        "noDataDescription": "Import attendance reports to start tracking analytics.",
+        "noMatch": "No meets match your search.",
         "sections": {
             "course4": "4th Course",
             "course3": "3rd Course",
@@ -705,6 +1318,7 @@
                 "teacher": "Teacher",
                 "meetId": "Meet ID",
                 "copyMeetId": "Copy Meet ID",
+                "copyMeetLink": "Copy Meet Link",
                 "showQr": "Show QR Code",
                 "attendance": "Attendance Percentage (Based on Total Possible Appearances)",
                 "totalSessions": "Total number of sessions held",
@@ -727,15 +1341,26 @@
             },
             "table": {
                 "student": "Student",
-                "total": "Total %"
+                "total": "Total %",
+                "searchPlaceholder": "Search students...",
+                "noMatch": "No students match your search."
             },
             "calendar": {
                 "session": "Session",
-                "participants": "{count} participants"
+                "participants": "{count} participants",
+                "semester": {
+                    "sessions": "Sessions",
+                    "avgParticipants": "Avg Participants",
+                    "avgDuration": "Avg Duration",
+                    "first": "Sep–Dec {year}",
+                    "second": "Jan–Jun {year}",
+                    "vsLabel": "vs prev. sem."
+                }
             }
         },
         "toast": {
             "copySuccess": "Meet ID copied to clipboard",
+            "copyLinkSuccess": "Meet link copied to clipboard",
             "copyError": "Failed to copy Meet ID"
         }
     },
@@ -756,6 +1381,7 @@
     },
     "qrCode": {
         "title": "QR Code",
+        "description": "Scan this QR code to join the Google Meet session.",
         "generating": "Generating...",
         "copy": "Copy Link",
         "save": "Save Image",
@@ -763,468 +1389,10 @@
             "success": "Link copied to clipboard"
         }
     },
-    "guide": {
-        "intro": {
-            "title": "Introduction",
-            "content": "Welcome to the Edutrace application. This guide will help you understand how to use the various features of the app to manage your students, groups, and marks efficiently.",
-            "whatMakesDifferent": "What makes Edutrace different",
-            "importantToKnow": "Important things to know",
-            "details": {
-                "dataStaysLocal": {
-                    "title": "Your Data Stays on Your Device",
-                    "description": "Edutrace is a \"local-first\" application, which means all your data (attendance reports, marks, groups, student information) is stored directly in your web browser on your device, not on external servers."
-                },
-                "privacyByDesign": {
-                    "title": "Privacy by Design",
-                    "description": "Because your data never leaves your device, you have complete control and privacy. No one else can access your information unless you explicitly share it."
-                },
-                "worksOffline": {
-                    "title": "Works Offline",
-                    "description": "Once loaded, Edutrace works without an internet connection. You can view reports, add marks, and manage groups even when offline."
-                },
-                "noAccountRequired": {
-                    "title": "No Account Required",
-                    "description": "There's no need to create an account, remember passwords, or worry about subscription fees. Just open the app and start using it."
-                },
-                "fastResponsive": {
-                    "title": "Fast and Responsive",
-                    "description": "Since everything runs locally on your device, the app is extremely fast with instant updates and no loading delays."
-                },
-                "browserSpecific": {
-                    "title": "Browser-Specific Data",
-                    "description": "Your data is stored in your browser's local storage. This means if you use Edutrace in Chrome, your data won't automatically appear in Firefox or Safari. Each browser keeps its own separate data."
-                },
-                "deviceSpecific": {
-                    "title": "Device-Specific Data",
-                    "description": "Similarly, data on your laptop won't automatically sync to your phone or tablet. Each device maintains its own independent copy."
-                },
-                "backupRegularly": {
-                    "title": "Backup Regularly",
-                    "description": "Since data is stored locally, it's important to regularly export your data (via Settings → Advanced → Export All) to create backups. If you clear your browser data or uninstall the browser, your Edutrace data will be lost."
-                },
-                "sharingBetweenDevices": {
-                    "title": "Sharing Between Devices",
-                    "description": "To use Edutrace on multiple devices, export your data from one device and import it on another using the Settings menu."
-                },
-                "browserStorageLimits": {
-                    "title": "Browser Storage Limits",
-                    "description": "Browsers have storage limits (typically several hundred MB). While this is more than enough for most use cases, be aware that extremely large datasets might approach these limits."
-                }
-            }
-        },
-        "reports": {
-            "title": "Reports",
-            "content": "The Reports page is your landing page. Here you can see a list of all your uploaded Google Meet reports. You can filter them by date, group, or meet ID. Click on a report to view detailed attendance information.",
-            "howToUse": "How to use",
-            "whatYouGet": "What you get",
-            "details": {
-                "uploadReports": {
-                    "title": "Upload Reports",
-                    "description": "Drag and drop your Google Meet attendance CSV files into the designated drop zone at the top of the page."
-                },
-                "searchFilter": {
-                    "title": "Search & Filter",
-                    "description": "Use the search bar to find specific meets. Click on \"Group\" or \"Meet ID\" chips within the table to activate quick filters."
-                },
-                "sortData": {
-                    "title": "Sort Data",
-                    "description": "Click on any column header (Group, Meet ID, Date, etc.) to sort the table accordingly."
-                },
-                "manageReports": {
-                    "title": "Manage Reports",
-                    "description": "Use the checkboxes to select multiple reports for bulk deletion, or use the trash icon on each row to delete individually."
-                },
-                "viewDetails": {
-                    "title": "View Details",
-                    "description": "Click the eye icon on any row to open the detailed view, where you can analyze participant duration and timelines."
-                },
-                "centralizedHistory": {
-                    "title": "Centralized History",
-                    "description": "A complete history of all your uploaded attendance reports in one place."
-                },
-                "quickInsights": {
-                    "title": "Quick Insights",
-                    "description": "Immediate visibility into participant counts and session dates."
-                },
-                "organization": {
-                    "title": "Organization",
-                    "description": "Automatic mapping of Meet IDs to Groups (once groups are configured), helping you keep your records organized."
-                }
-            }
-        },
-        "analytics": {
-            "title": "Analytics",
-            "content": "The Analytics page provides a visual overview of attendance trends. You can see charts and graphs representing attendance over time, by group, or by course. This helps in identifying patterns and issues early.",
-            "howToUse": "How to use",
-            "whatYouGet": "What you get",
-            "details": {
-                "dashboardOverview": {
-                    "title": "Dashboard Overview",
-                    "description": "The dashboard groups your meets by course (1st, 2nd, 3rd, 4th) and \"Other Meets\". Click on a course section to expand or collapse it."
-                },
-                "search": {
-                    "title": "Search",
-                    "description": "Use the search bar to quickly find specific meets by name, teacher, or ID."
-                },
-                "quickStats": {
-                    "title": "Quick Stats",
-                    "description": "Each card displays key metrics: Total Sessions, Average Duration, and Participant Count (Active/Total)."
-                },
-                "attendanceHealth": {
-                    "title": "Attendance Health",
-                    "description": "Color-coded badges (Green > 75%, Yellow > 50%, Red < 50%) give you an instant visual indicator of attendance performance."
-                },
-                "qrCode": {
-                    "title": "QR Code",
-                    "description": "Click the QR code icon on any card to generate a shareable link for that specific meet."
-                },
-                "detailedView": {
-                    "title": "Detailed View",
-                    "description": "Click on any card to dive deeper into the analytics for that specific meet, including attendance graphs and student-specific data."
-                },
-                "trendAnalysis": {
-                    "title": "Trend Analysis",
-                    "description": "Spot attendance trends across different courses and groups."
-                },
-                "performanceMetrics": {
-                    "title": "Performance Metrics",
-                    "description": "Easily identify high-performing groups and those that may need attention."
-                },
-                "efficientNavigation": {
-                    "title": "Efficient Navigation",
-                    "description": "Quickly jump to detailed reports for specific meets directly from the dashboard."
-                }
-            }
-        },
-        "groups": {
-            "title": "Groups",
-            "content": "The Groups page allows you to manage your student groups. You can see which students belong to which group, and manage their details. This is essential for accurate attendance tracking.",
-            "howToUse": "How to use",
-            "whatYouGet": "What you get",
-            "details": {
-                "createGroups": {
-                    "title": "Create Groups",
-                    "description": "Click the \"Add Group\" button to create a new group. Enter the group name, course number (1-4), Meet ID (the unique code from Google Meet), and optionally assign a teacher."
-                },
-                "searchFilter": {
-                    "title": "Search & Filter",
-                    "description": "Use the search bar to quickly find groups by name or Meet ID."
-                },
-                "sortData": {
-                    "title": "Sort Data",
-                    "description": "Click on any column header (Name, Course, Meet ID, Members, Teacher) to sort the table. Click again to reverse the sort order."
-                },
-                "editGroups": {
-                    "title": "Edit Groups",
-                    "description": "Click the edit icon (pencil) on any row to modify group details such as name, course, Meet ID, or teacher assignment."
-                },
-                "generateQR": {
-                    "title": "Generate QR Codes",
-                    "description": "Click the QR code icon to generate a shareable QR code for the group's Meet ID, making it easy for students to join sessions."
-                },
-                "deleteGroups": {
-                    "title": "Delete Groups",
-                    "description": "Use the trash icon to remove groups that are no longer needed. You'll be asked to confirm before deletion."
-                },
-                "organizedStructure": {
-                    "title": "Organized Structure",
-                    "description": "Map Google Meet IDs to meaningful group names and course numbers for better organization."
-                },
-                "memberTracking": {
-                    "title": "Member Tracking",
-                    "description": "See at a glance how many students are assigned to each group."
-                },
-                "teacherAssignment": {
-                    "title": "Teacher Assignment",
-                    "description": "Associate teachers with groups for better record-keeping and filtering."
-                },
-                "automaticIntegration": {
-                    "title": "Automatic Integration",
-                    "description": "Once groups are configured, uploaded attendance reports are automatically linked to the correct groups, making analytics more meaningful."
-                },
-                "easySharing": {
-                    "title": "Easy Sharing",
-                    "description": "Generate QR codes for quick access to meeting links, perfect for sharing with students."
-                }
-            }
-        },
-        "students": {
-            "title": "Students",
-            "content": "The Students page lists all the students in your system. You can search for specific students, view their attendance history, and manage their information.",
-            "howToUse": "How to use",
-            "whatYouGet": "What you get",
-            "details": {
-                "searchStudents": {
-                    "title": "Search Students",
-                    "description": "Use the search bar to find students by name, group, or Meet ID. The search is instant and filters results as you type."
-                },
-                "filterByGroup": {
-                    "title": "Filter by Group",
-                    "description": "Click on any group chip in the \"Groups\" column to filter the table to show only students from that group. Click the X button to clear the filter."
-                },
-                "sortData": {
-                    "title": "Sort Data",
-                    "description": "Click on any column header to sort the table. Available sort options include name, groups, sessions, attendance percentages, average marks, and task completion."
-                },
-                "viewAnalytics": {
-                    "title": "View Analytics",
-                    "description": "Click on any Meet ID chip to navigate directly to the detailed analytics view for that specific meet."
-                },
-                "bulkSelection": {
-                    "title": "Bulk Selection",
-                    "description": "Use the checkboxes to select multiple students. Select all by clicking the header checkbox. Bulk delete selected students using the \"Delete\" button that appears."
-                },
-                "editStudents": {
-                    "title": "Edit Students",
-                    "description": "Click the edit icon (pencil) to modify student information such as name, email, or group assignments."
-                },
-                "trackAttendance": {
-                    "title": "Track Attendance",
-                    "description": "View attendance statistics including sessions attended (e.g., 7/8), average attendance percentage per session, and total attendance percentage."
-                },
-                "monitorPerformance": {
-                    "title": "Monitor Performance",
-                    "description": "See average marks (5-point scale) and task completion percentages at a glance, with color-coded indicators (green > 75%, yellow > 50%, red < 50%)."
-                },
-                "comprehensiveOverview": {
-                    "title": "Comprehensive Overview",
-                    "description": "All student data in one place, including attendance, marks, and task completion statistics."
-                },
-                "multiDimensionalTracking": {
-                    "title": "Multi-Dimensional Tracking",
-                    "description": "Track students across multiple groups and Meet IDs simultaneously."
-                },
-                "performanceInsights": {
-                    "title": "Performance Insights",
-                    "description": "Color-coded visual indicators help you quickly identify students who may need additional support."
-                },
-                "attendanceAnalytics": {
-                    "title": "Attendance Analytics",
-                    "description": "Detailed attendance metrics showing both average per-session attendance and total attendance across all sessions."
-                },
-                "academicProgress": {
-                    "title": "Academic Progress",
-                    "description": "View average marks and task completion rates to monitor academic performance alongside attendance."
-                },
-                "flexibleManagement": {
-                    "title": "Flexible Management",
-                    "description": "Edit student details, manage group assignments, and perform bulk operations efficiently."
-                },
-                "teacherExclusion": {
-                    "title": "Teacher Exclusion",
-                    "description": "Teachers are automatically filtered out from the student list based on your settings, keeping the view focused on students only."
-                }
-            }
-        },
-        "marks": {
-            "title": "Marks",
-            "content": "The Marks page is where you can record and view student grades. You can assign marks for different activities and view a summary of performance.",
-            "howToUse": "How to use",
-            "whatYouGet": "What you get",
-            "details": {
-                "uploadMarks": {
-                    "title": "Upload Marks",
-                    "description": "Drag and drop CSV files containing marks data. Files should be named with the group prefix (e.g., \"CS-101_marks.csv\"). If the group doesn't exist, you'll be prompted to create it."
-                },
-                "gradeScaleSelector": {
-                    "title": "Grade Scale Selector",
-                    "description": "Choose how to display marks using the dropdown: Default (raw scores), 5-Point scale, 100-Point scale, or ECTS grades. The conversion is automatic."
-                },
-                "searchFilter": {
-                    "title": "Search & Filter",
-                    "description": "Use the search bar to find marks by student name, group, or task name. Click the \"Filters\" button for advanced filtering by sync status, date range, or specific group."
-                },
-                "sortData": {
-                    "title": "Sort Data",
-                    "description": "Click on column headers (Added, Student, Group, Task) to sort the table. Marks are sorted by creation date (newest first) by default."
-                },
-                "syncStatus": {
-                    "title": "Sync Status",
-                    "description": "Mark entries as \"synced\" (checkmark icon) once you've recorded them in your official gradebook. Unsynced marks show an orange pulsing dot and are filtered by default."
-                },
-                "bulkOperations": {
-                    "title": "Bulk Operations",
-                    "description": "Select multiple marks using checkboxes and delete them in bulk. Use the select-all checkbox in the header for quick selection."
-                },
-                "groupFiltering": {
-                    "title": "Group Filtering",
-                    "description": "Click on any group chip to instantly filter marks to show only that group. The active filter is highlighted with a ring."
-                },
-                "viewDetails": {
-                    "title": "View Details",
-                    "description": "Hover over any mark to see a tooltip with the full breakdown: raw score, percentage, 5-point scale, 100-point scale, and ECTS grade."
-                },
-                "flexibleGrading": {
-                    "title": "Flexible Grading",
-                    "description": "Support for multiple grading systems (5-point, 100-point, ECTS) with automatic conversion from raw scores."
-                },
-                "taskManagement": {
-                    "title": "Task Management",
-                    "description": "Track marks for different tasks and assignments, with task names and dates clearly displayed."
-                },
-                "syncTracking": {
-                    "title": "Sync Tracking",
-                    "description": "Keep track of which marks have been officially recorded with the sync status feature, preventing duplicate entries."
-                },
-                "comprehensiveSearch": {
-                    "title": "Comprehensive Search",
-                    "description": "Find specific marks quickly by searching across students, groups, and task names simultaneously."
-                },
-                "advancedFiltering": {
-                    "title": "Advanced Filtering",
-                    "description": "Filter by sync status (unsynced/all), date range, or specific groups to focus on what matters."
-                },
-                "automaticIntegration": {
-                    "title": "Automatic Integration",
-                    "description": "Marks are automatically linked to students and groups, appearing in student profiles and analytics."
-                },
-                "visualClarity": {
-                    "title": "Visual Clarity",
-                    "description": "Color-coded marks and clear visual indicators (sync dots, tooltips) make it easy to understand the data at a glance."
-                },
-                "bulkManagement": {
-                    "title": "Bulk Management",
-                    "description": "Efficiently manage large numbers of marks with bulk selection and deletion capabilities."
-                }
-            }
-        },
-        "settings": {
-            "title": "Settings",
-            "content": "The Settings modal allows you to configure the application to your needs. You can manage data, set preferences, and customize the application behavior.",
-            "howToUse": "How to use",
-            "whatYouGet": "What you get",
-            "details": {
-                "generalLanguage": {
-                    "title": "General Tab - Language",
-                    "description": "Select your preferred language (English or Ukrainian). The entire interface will update immediately to reflect your choice."
-                },
-                "generalTeacher": {
-                    "title": "General Tab - Default Teacher",
-                    "description": "Set a default teacher name that will be pre-filled when creating new groups, saving you time on repetitive data entry."
-                },
-                "generalDuration": {
-                    "title": "General Tab - Duration Limit",
-                    "description": "Set the maximum session duration (in minutes) for attendance tracking. Default is 75 minutes. Use \"Apply to All\" to update all existing meets with this limit."
-                },
-                "generalTeachers": {
-                    "title": "General Tab - Teachers",
-                    "description": "Click \"Manage Teachers\" to open a modal where you can select which participants should be excluded from student lists and statistics. Add teachers manually or select from existing participants."
-                },
-                "dataManagement": {
-                    "title": "Data Management Tab",
-                    "description": "Manage your data by entity type (Reports, Groups, Marks, Members). Each card shows the record count and memory usage, with options to Export (download as JSON), Import (restore from JSON), or Erase (permanently delete)."
-                },
-                "advancedGlobal": {
-                    "title": "Advanced Tab - Global Operations",
-                    "description": "Perform operations on all data at once. Export All creates a complete backup, Import All restores from backup, and Erase All permanently deletes everything (use with caution!)."
-                },
-                "dataBackup": {
-                    "title": "Data Backup Strategy",
-                    "description": "Regularly export your data to create backups. Use entity-specific exports for targeted backups or \"Export All\" for complete system backups."
-                },
-                "importData": {
-                    "title": "Import Data",
-                    "description": "When importing, you'll be asked to confirm as it will replace existing data. Make sure you have a backup before importing."
-                },
-                "multiLanguage": {
-                    "title": "Multi-Language Support",
-                    "description": "Switch between English and Ukrainian with instant UI updates, making the app accessible to diverse users."
-                },
-                "customizableDefaults": {
-                    "title": "Customizable Defaults",
-                    "description": "Set default values for teacher names and session durations to streamline your workflow."
-                },
-                "teacherFiltering": {
-                    "title": "Teacher Filtering",
-                    "description": "Automatically exclude teachers from student lists and statistics, keeping your data focused on actual students."
-                },
-                "dataPortability": {
-                    "title": "Data Portability",
-                    "description": "Export and import data in JSON format, enabling easy backups, data migration, and sharing between devices."
-                },
-                "granularControl": {
-                    "title": "Granular Control",
-                    "description": "Manage each data type (Reports, Groups, Marks, Members) independently or perform global operations on everything at once."
-                },
-                "storageInsights": {
-                    "title": "Storage Insights",
-                    "description": "See exactly how many records you have and how much storage each entity type is using."
-                },
-                "safeDataManagement": {
-                    "title": "Safe Data Management",
-                    "description": "All destructive operations (erase, import) require confirmation to prevent accidental data loss."
-                },
-                "flexibleDuration": {
-                    "title": "Flexible Duration Control",
-                    "description": "Adjust attendance duration limits globally or per-session to match your specific needs (e.g., different class lengths)."
-                }
-            }
-        },
-        "workspaces": {
-            "title": "Workspaces",
-            "content": "Workspaces allow you to organize your data into separate, isolated environments. Each workspace has its own set of reports, groups, students, marks, and settings, making it perfect for managing different semesters, courses, or academic years.",
-            "howToUse": "How to use",
-            "whatYouGet": "What you get",
-            "details": {
-                "createWorkspace": {
-                    "title": "Create Workspace",
-                    "description": "Click the workspace switcher in the top-right corner (database icon), then click \"Create New Workspace\". Enter a name (e.g., \"Fall 2024\"), select an icon, and choose whether to copy your current settings."
-                },
-                "switchWorkspace": {
-                    "title": "Switch Workspaces",
-                    "description": "Click the workspace switcher to see all your workspaces. Click on any workspace to switch to it. The currently active workspace is highlighted with a checkmark."
-                },
-                "iconSelection": {
-                    "title": "Icon Selection",
-                    "description": "When creating a workspace, choose from 24 different icons to visually distinguish your workspaces. Icons appear in the switcher and help you quickly identify which workspace you're in."
-                },
-                "copySettings": {
-                    "title": "Copy Settings",
-                    "description": "When creating a new workspace, you can optionally copy your current workspace's settings (duration limit, default teacher, ignored users). This saves time when setting up similar environments."
-                },
-                "deleteWorkspace": {
-                    "title": "Delete Workspace",
-                    "description": "Hover over a workspace in the switcher and click the trash icon. You'll need to type the workspace name to confirm deletion. Note: The default workspace cannot be deleted."
-                },
-                "dataIsolation": {
-                    "title": "Complete Data Isolation",
-                    "description": "Each workspace maintains completely separate data. Reports, groups, students, and marks in one workspace don't affect or appear in another workspace."
-                },
-                "settingsIsolation": {
-                    "title": "Settings Isolation",
-                    "description": "Each workspace has its own settings for duration limits, default teacher, and ignored users. Changes in one workspace don't affect others."
-                },
-                "multiSemester": {
-                    "title": "Multi-Semester Management",
-                    "description": "Create separate workspaces for different semesters or academic years (e.g., \"Fall 2024\", \"Spring 2025\") to keep historical data organized."
-                },
-                "courseSegregation": {
-                    "title": "Course Segregation",
-                    "description": "Use workspaces to separate different types of courses or programs you teach, preventing data mixing."
-                },
-                "cleanStart": {
-                    "title": "Clean Start",
-                    "description": "Start each new semester with a fresh workspace while preserving all historical data in previous workspaces."
-                },
-                "visualIdentification": {
-                    "title": "Visual Identification",
-                    "description": "Custom icons make it easy to identify which workspace you're currently working in at a glance."
-                },
-                "flexibleOrganization": {
-                    "title": "Flexible Organization",
-                    "description": "Organize your teaching data however makes sense for you - by semester, year, course type, or any other criteria."
-                },
-                "easyAccess": {
-                    "title": "Easy Access",
-                    "description": "The workspace switcher is always accessible from the top navigation bar, making it quick to switch contexts."
-                }
-            }
-        }
-    },
     "about": {
         "hero": {
-            "title": "About Edutrace",
-            "subtitle": "A local-first application for managing student attendance and marks, designed to streamline the process of parsing Google Meet reports and tracking student progress."
+            "title": "About EduTrace",
+            "subtitle": "An offline-first application for managing student attendance, grades, and academic sessions. Parses Google Meet reports, tracks per-student progress, generates official grade documents, and works entirely in the browser — no server, no account required."
         },
         "goals": {
             "title": "Project Goals",
@@ -1249,52 +1417,76 @@
             "title": "Technologies Used",
             "vue": {
                 "name": "Vue 3",
-                "description": "Progressive JavaScript framework for building user interfaces"
+                "description": "Progressive JavaScript framework — Composition API, reactivity, and SFC throughout"
+            },
+            "typescript": {
+                "name": "TypeScript",
+                "description": "Strict mode with noUnusedLocals — every module, service, and component is fully typed"
             },
             "vite": {
                 "name": "Vite",
-                "description": "Next-generation frontend build tool for fast development"
+                "description": "Sub-second HMR during development; optimised production builds with code splitting"
             },
             "tailwind": {
-                "name": "Tailwind CSS",
-                "description": "Utility-first CSS framework for rapid UI development"
+                "name": "Tailwind CSS v4",
+                "description": "Utility-first styling with the Vite plugin — no PostCSS config, CSS-native variables"
+            },
+            "reka": {
+                "name": "Reka UI",
+                "description": "Unstyled, accessible headless component primitives — the foundation of every UI element"
+            },
+            "tanstack": {
+                "name": "TanStack Vue Table",
+                "description": "Headless table engine powering all data grids — sorting, filtering, column visibility"
+            },
+            "unovis": {
+                "name": "Unovis",
+                "description": "Composable data-visualisation library used for attendance and grade charts"
             },
             "router": {
                 "name": "Vue Router",
-                "description": "Official routing library for Vue.js applications"
+                "description": "Official SPA router — lazy-loaded routes with breadcrumb metadata"
             },
             "i18n": {
                 "name": "Vue I18n",
-                "description": "Internationalization plugin for Vue.js (English & Ukrainian)"
-            },
-            "idb": {
-                "name": "IDB (IndexedDB)",
-                "description": "Promise-based wrapper for browser IndexedDB storage"
-            },
-            "papaparse": {
-                "name": "PapaParse",
-                "description": "Powerful CSV parser for parsing Google Meet reports"
-            },
-            "lucide": {
-                "name": "Lucide Vue",
-                "description": "Beautiful & consistent icon library for Vue applications"
+                "description": "Full UI in English and Ukrainian — every label, error, and tooltip is translated"
             },
             "vueuse": {
                 "name": "VueUse",
-                "description": "Collection of essential Vue composition utilities"
+                "description": "Composition utility collection — virtual lists, storage, event hooks, and more"
+            },
+            "idb": {
+                "name": "IDB",
+                "description": "Promise-based IndexedDB wrapper — all data stored locally, versioned schema migrations"
+            },
+            "papaparse": {
+                "name": "PapaParse",
+                "description": "CSV parser running in a Web Worker — processes Google Meet attendance reports"
+            },
+            "comlink": {
+                "name": "Comlink",
+                "description": "Transparent Web Worker RPC — offloads CSV parsing and grade aggregation off the main thread"
+            },
+            "docxtemplater": {
+                "name": "docxtemplater",
+                "description": "Mustache-based .docx template engine — generates official grade record documents"
+            },
+            "pwa": {
+                "name": "vite-plugin-pwa",
+                "description": "Workbox-powered PWA — fully installable, precached assets, offline-ready out of the box"
             }
         },
         "guide": {
             "title": "Need Help?",
-            "description": "Check out our comprehensive guide to learn how to use all features of Edutrace effectively.",
+            "description": "Check out our comprehensive guide to learn how to use all features of EduTrace effectively.",
             "button": "View Guide"
         },
         "openSource": {
             "title": "Open Source",
-            "description": "Edutrace is open source and available on GitHub. Contributions, bug reports, and feature requests are welcome!",
+            "description": "EduTrace is open source and available on GitHub. Contributions, bug reports, and feature requests are welcome!",
             "button": "View on GitHub"
         },
-        "footer": "Built with ❤️ for educators"
+        "footer": "Built with love for educators"
     },
     "columnPicker": {
         "button": "Columns",
@@ -1305,5 +1497,306 @@
         "about": "About",
         "guide": "Guide",
         "repo": "GitHub"
+    },
+    "members": {
+        "title": "Members",
+        "description": "Manage member profiles and group assignments.",
+        "add": "Add Member",
+        "search": "Search members...",
+        "total": "{count} total",
+        "dialog": {
+            "edit": "Edit Member",
+            "add": "Add Member",
+            "editDescription": "Update member details.",
+            "addDescription": "Add a new member to the system.",
+            "nameLabel": "Name",
+            "emailLabel": "Email",
+            "roleLabel": "Role",
+            "groupLabel": "Group",
+            "roleStudent": "Student",
+            "roleTeacher": "Teacher",
+            "roleAssistant": "Assistant",
+            "selectRole": "Select a role",
+            "namePlaceholder": "John Doe",
+            "emailPlaceholder": "john@example.com",
+            "groupPlaceholder": "Enter group name",
+            "errors": {
+                "nameRequired": "Name is required",
+                "groupRequired": "Group is required"
+            },
+            "delete": "Delete Member",
+            "deleteConfirm": "Are you sure you want to delete this member? They will be moved to the trash and can be restored later.",
+            "hardDelete": "Delete Permanently",
+            "hardDeleteConfirm": "This action cannot be undone. This will permanently delete the member from the database."
+        },
+        "columns": {
+            "name": "Name",
+            "email": "Email",
+            "role": "Role",
+            "status": "Status",
+            "group": "Group",
+            "iep": "IEP"
+        },
+        "fields": {
+            "fullName": "Full Name"
+        },
+        "iep": "IEP",
+        "iepPlaceholder": "Individual Education Plan details...",
+        "noMembers": "No members found.",
+        "noMembersDescription": "Add workspace members to manage roles, groups, and access across your organization.",
+        "noMatch": "No members match your search.",
+        "toasts": {
+            "loadError": "Failed to load members",
+            "saveSuccess": "Member updated successfully",
+            "addSuccess": "Member added successfully",
+            "saveError": "Failed to save member",
+            "trashSuccess": "Member moved to trash",
+            "deleteError": "Failed to delete member",
+            "restoreSuccess": "Member restored successfully",
+            "restoreError": "Failed to restore member",
+            "hardDeleteSuccess": "Member permanently deleted"
+        },
+        "emptyState": {
+            "title": "No members yet",
+            "description": "Members are students and participants linked to groups. They are added automatically when you import attendance or marks reports, or you can add them manually."
+        }
+    },
+    "tasks": {
+        "title": "Tasks Management",
+        "description": "Manage and view all tasks from your parsed marks.",
+        "noTasks": "No tasks found.",
+        "noMatch": "No tasks match your search.",
+        "add": "Add Task",
+        "search": "Search tasks...",
+        "delete": "Delete Task",
+        "deleteConfirm": "Are you sure you want to delete the task \"{name}\"? This action cannot be undone.",
+        "bulkDelete": "Bulk Delete Tasks",
+        "bulkDeleteConfirm": "Are you sure you want to delete {count} tasks? This action cannot be undone.",
+        "deleteSuccess": "Task \"{name}\" deleted",
+        "bulkDeleteSuccess": "{count} tasks deleted",
+        "saveSuccess": "Task updated successfully",
+        "addSuccess": "Task added successfully",
+        "saveError": "Failed to save task",
+        "duplicateError": "A task with the name \"{name}\" already exists",
+        "dialog": {
+            "editTitle": "Edit Task",
+            "addTitle": "Add Task",
+            "editDescription": "Make changes to the task here. Click save when you're done.",
+            "addDescription": "Add a new task to your workspace. Click save when you're done.",
+            "nameLabel": "Name *",
+            "namePlaceholder": "Task Name",
+            "dateLabel": "Date",
+            "maxPointsLabel": "Max Points",
+            "descriptionLabel": "Description",
+            "descriptionPlaceholder": "Optional description"
+        },
+        "columns": {
+            "name": "Name",
+            "date": "Date",
+            "maxPoints": "Max Points"
+        },
+        "emptyState": {
+            "title": "No tasks found.",
+            "description": "Tasks are generated from marks reports and can also be created manually. Import marks to get started or add a task directly."
+        }
+    },
+    "sessions": {
+        "title": "Sessions",
+        "description": "Managing grade/exam session records for groups",
+        "selectGroup": "Select group",
+        "noGroupSelected": "Select a group to view sessions",
+        "status": {
+            "label": "Status:",
+            "open": "Open",
+            "closed": "Closed",
+            "openedAt": "Opened:",
+            "closedAt": "Closed:"
+        },
+        "types": {
+            "MAIN": "Main Session",
+            "FIRST_RETAKE": "Retake 1",
+            "SECOND_RETAKE": "Retake 2 (Commission)",
+            "FIRST_RETAKE_TITLE": "First Retake",
+            "SECOND_RETAKE_TITLE": "Second Retake (Commission)"
+        },
+        "notCreated": {
+            "main": "Session record not yet created. Create it to load automatic grades from current results.",
+            "firstRetake": "Session record not yet created. Only students who failed the main session (or were absent) will be included automatically.",
+            "secondRetake": "Session record not yet created."
+        },
+        "notAvailable": {
+            "firstRetake": "Available only after closing the Main Session.",
+            "secondRetake": "Available only after closing the First Retake."
+        },
+        "actions": {
+            "generateMain": "Generate Main Session",
+            "generateFirstRetake": "Generate Retake session",
+            "generateSecondRetake": "Generate Commission session",
+            "sync": "Sync",
+            "syncing": "Syncing...",
+            "close": "Close Session",
+            "closing": "Closing...",
+            "print": "Print",
+            "cancel": "Cancel",
+            "closeAndFix": "Close and Commit",
+            "download": "Download Document"
+        },
+        "table": {
+            "student": "Student",
+            "gradeType": "Grade Type",
+            "nationalScale": "National Scale",
+            "score": "Score (100-pt)",
+            "ectsScale": "ECTS Scale",
+            "lastUpdate": "Last Update",
+            "noStudents": "No students found.",
+            "searchPlaceholder": "Search students..."
+        },
+        "grades": {
+            "absent": "Absent",
+            "absentTooltip": "Absent",
+            "excellent": "Excellent",
+            "good": "Good",
+            "satisfactory": "Satisfactory",
+            "unsatisfactory": "Unsatisfactory",
+            "passed": "Passed",
+            "notPassed": "Failed",
+            "auto": "Automatic",
+            "manual": "Manual",
+            "noGrade": "No grade"
+        },
+        "closeDialog": {
+            "title": "Close Session",
+            "description": "Check results before final closing. After confirmation, the session becomes read-only, and students without grades will automatically move to the retake session.",
+            "absentWarning": "Students without grades (will be moved)",
+            "allGraded": "All students have received grades."
+        },
+        "printDialog": {
+            "title": "Print Session",
+            "description": "Fill fields to generate document — {type} · {group}",
+            "recordNumber": "Record Number",
+            "recordNumberPlaceholder": "e.g. 365",
+            "date": "Date",
+            "datePlaceholder": "March 20, 2026",
+            "subject": "Subject",
+            "subjectPlaceholder": "e.g. Visual Programming Tools",
+            "formOfControl": "Form of Control",
+            "semester": "Semester / Year",
+            "semesterPlaceholder": "e.g. 8 sem. 2025/2026",
+            "totalHours": "Total Hours",
+            "totalHoursPlaceholder": "e.g. 90",
+            "examiners": "Examiner(s)",
+            "addExaminer": "Add",
+            "examinerPlaceholderMajor": "Full name of main examiner",
+            "examinerPlaceholderMinor": "Full name",
+            "practicalTeacher": "Practical Teacher",
+            "practicalTeacherPlaceholder": "Defaults to first examiner",
+            "forms": {
+                "exam": "Exam",
+                "credit": "Credit",
+                "diffCredit": "Differentiated Credit",
+                "diffCreditShort": "Diff. Credit"
+            }
+        },
+        "printTemplate": {
+            "college": "Natural Sciences and Humanities Vocational College",
+            "university": "State Higher Educational Institution 'Uzhhorod National University'",
+            "studyForm": "Mode of Study",
+            "studyFormValue": "Full-time",
+            "specialty": "Specialty",
+            "course": "Course",
+            "group": "Group",
+            "recordTitle": "Success Tracking Record No.",
+            "subjectLabel": "In the discipline",
+            "academicYear": "academic year.",
+            "formOfControl": "Form of Semester Control",
+            "totalHours": "Total number of hours",
+            "examinerPib": "Examiner(Full Name)",
+            "practicalTeacherHint": "Teacher who conducted practical (seminar, lab) classes and carried out continuous control",
+            "table": {
+                "number": "No.",
+                "fullName": "Student's last name, first name, middle name",
+                "pnp": "PNP Number",
+                "grade": "Grade",
+                "national": "Nat. scale",
+                "points": "100-point scale",
+                "ects": "ECTS scale",
+                "signature": "Teacher's signature"
+            },
+            "headOfDepartment": "Head of Department",
+            "ectsLegend": {
+                "totalGrades": "Total grades",
+                "totalPoints": "Sum of points",
+                "ectsGrade": "ECTS grade",
+                "nationalScale": "Grade by national scale",
+                "exam": "Exam",
+                "credit": "Credit"
+            },
+            "examinerSignature": "Examiner (teacher)",
+            "groupLabel": "Semester"
+        },
+        "noGroups": "No groups found",
+        "noGroupsDescription": "Sessions require groups with students. Create a group by importing reports or using the Groups page.",
+        "document": {
+            "dialogTitle": "Generate Document",
+            "generateButton": "Generate",
+            "generating": "Generating...",
+            "downloadSuccess": "Document downloaded",
+            "downloadError": "Failed to generate document. Check that your template is valid."
+        }
+    },
+    "globalSettings": {
+        "title": "Settings",
+        "description": "Application-wide preferences and workspace management.",
+        "appearance": {
+            "title": "Appearance",
+            "description": "Language and visual preferences stored across all workspaces.",
+            "language": {
+                "label": "Language",
+                "description": "Controls the interface language for all workspaces.",
+                "en-US": "English (US)",
+                "uk-UA": "Українська"
+            },
+            "theme": {
+                "label": "Theme",
+                "description": "Light, dark, or follow the system preference.",
+                "light": "Light",
+                "dark": "Dark",
+                "system": "System"
+            }
+        },
+        "workspaces": {
+            "title": "Workspaces",
+            "description": "Export, import, or remove workspace backups.",
+            "active": "Active",
+            "export": "Export",
+            "exportAll": "Export All",
+            "exportSuccess": "Workspace exported",
+            "exportAllSuccess": "All workspaces exported",
+            "exportFailed": "Export failed",
+            "import": "Import",
+            "importSuccess": "Imported {count} workspace(s) successfully",
+            "importFailed": "Import failed — check that the file is a valid EduTrace workspace backup",
+            "importInvalidFormat": "Invalid file format — expected a multi-workspace backup",
+            "deleteSuccess": "Workspace deleted",
+            "deleteFailed": "Delete failed",
+            "deleteConfirmTitle": "Delete Workspace",
+            "deleteConfirmMessage": "This will permanently delete \"{name}\" and all its data. This action cannot be undone."
+        },
+        "sync": {
+            "title": "Cloud Sync",
+            "comingSoon": "Coming Soon",
+            "description": "Synchronize your data across devices. This feature is currently in development.",
+            "configure": "Configure Sync"
+        },
+        "dev": {
+            "title": "Developer & Diagnostics",
+            "description": "Version information and a diagnostic report for bug reports.",
+            "appVersion": "App Version",
+            "dbVersion": "Schema Version",
+            "dbName": "Database Name",
+            "diagnosticsDescription": "Copy a diagnostics report including recent log entries, app version, and environment info to include in a bug report.",
+            "copyDiagnostics": "Copy Diagnostics",
+            "copied": "Copied!"
+        }
     }
 }

@@ -1,53 +1,60 @@
-import { ref } from 'vue';
-import { groupsService } from '../services/groups.service';
-import type { GroupFormData } from '../types/groups';
-import { toast } from '@/services/toast';
+import type { EnrichedGroup, GroupFormData } from '../types/groups'
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { logger } from '@/shared/lib/logger'
+import { toast } from '@/shared/services/toast'
+import { groupsService } from '../services/groups.service'
+
+// Module-level singleton state — shared across all components that call useGroups()
+// so writes from dialogs are reflected in tables without refetching on remount.
+const groups = ref<EnrichedGroup[]>([])
+const memberCounts = ref<Record<string, number>>({})
+const allMeetIds = ref<string[]>([])
+const allTeachers = ref<string[]>([])
+const isLoading = ref(false)
 
 export function useGroups() {
-    const groups = ref<any[]>([]); // Results from worker might be processed groups
-    const memberCounts = ref<Record<string, number>>({});
-    const allMeetIds = ref<string[]>([]);
-    const allTeachers = ref<string[]>([]);
-    const isLoading = ref(false);
+    const { t } = useI18n()
 
-    async function loadData() {
-        isLoading.value = true;
+    async function loadData(): Promise<void> {
+        isLoading.value = true
         try {
-            const data = await groupsService.loadGroupsData();
-            groups.value = data.groups;
-            memberCounts.value = data.memberCounts;
-            allMeetIds.value = data.allMeetIds;
-            allTeachers.value = data.allTeachers;
+            const data = await groupsService.loadGroupsData()
+            groups.value = data.groups
+            memberCounts.value = data.memberCounts
+            allMeetIds.value = data.allMeetIds
+            allTeachers.value = data.allTeachers
         } catch (error) {
-            console.error('Failed to load groups data:', error);
-            toast.error('Failed to load data');
+            logger.error('Failed to load groups data:', error)
+            toast.error(t('groups.errors.loadFailed'))
         } finally {
-            isLoading.value = false;
+            isLoading.value = false
         }
     }
 
-    async function saveGroup(formData: GroupFormData) {
+    async function saveGroup(formData: GroupFormData): Promise<void> {
         try {
-            const isUpdate = !!formData.id;
-            await groupsService.saveGroup(formData);
-            await loadData();
-            toast.success(isUpdate ? 'Group updated' : 'Group created');
-        } catch (e: any) {
-            console.error(e);
-            toast.error(e.message || 'Error saving group');
-            throw e;
+            const isUpdate = !!formData.id
+            await groupsService.saveGroup(formData)
+            await loadData()
+            toast.success(isUpdate ? t('groups.toasts.updated') : t('groups.toasts.created'))
+        } catch (e: unknown) {
+            logger.error('Save group failed', e)
+            const message = e instanceof Error ? e.message : t('groups.errors.saveFailed')
+            toast.error(message)
+            throw e
         }
     }
 
-    async function deleteGroup(id: string | number) {
+    async function deleteGroup(id: string | number): Promise<void> {
         try {
-            await groupsService.deleteGroup(id);
-            await loadData();
-            toast.success('Group deleted');
-        } catch (e) {
-            console.error(e);
-            toast.error('Error deleting group');
-            throw e;
+            await groupsService.deleteGroup(id)
+            await loadData()
+            toast.success(t('groups.toasts.deleted'))
+        } catch (e: unknown) {
+            logger.error('Delete group failed', e)
+            toast.error(t('groups.errors.deleteFailed'))
+            throw e
         }
     }
 
@@ -59,6 +66,6 @@ export function useGroups() {
         isLoading,
         loadData,
         saveGroup,
-        deleteGroup
-    };
+        deleteGroup,
+    }
 }

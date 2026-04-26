@@ -7,6 +7,29 @@ import { MEET_REPORT_KEYWORDS, MARKS_CSV_REQUIRED_HEADERS, MARKS_CSV_KEYWORDS } 
  * --- Shared Constants & Helpers ---
  */
 
+// Normalizes task date strings from Google Classroom Ukrainian locale exports
+// ("22 січ. 2026 р.") to ISO "YYYY-MM-DD". Falls back to a generic Date parse,
+// then to the original string if neither succeeds.
+const UA_MONTHS = {
+    'січ': 1, 'лют': 2, 'бер': 3, 'квіт': 4,
+    'трав': 5, 'черв': 6, 'лип': 7, 'серп': 8,
+    'вер': 9, 'жовт': 10, 'лист': 11, 'груд': 12,
+};
+
+function normalizeTaskDate(str) {
+    if (!str) return str;
+    const trimmed = str.trim();
+    if (/^\d{4}-\d{2}-\d{2}/.test(trimmed)) return trimmed;
+    const m = trimmed.match(/^(\d{1,2})\s+([\u0400-\u04FF]+)\.?\s+(\d{4})/);
+    if (m) {
+        const month = UA_MONTHS[m[2]];
+        if (month) return `${m[3]}-${String(month).padStart(2, '0')}-${String(m[1]).padStart(2, '0')}`;
+    }
+    const d = new Date(trimmed);
+    if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
+    return trimmed;
+}
+
 function findKeyByKeywords(obj, keywords) {
     const keys = Object.keys(obj);
     if (keys.length === 0) return undefined;
@@ -28,8 +51,7 @@ function findHeaderByKeywords(headers, keywords) {
 function parseSingleCSVLine(line) {
     const parsed = Papa.parse(line, {
         header: false,
-        skipEmptyLines: true,
-        delimiter: ','
+        skipEmptyLines: true
     });
     return parsed.data[0] || [];
 }
@@ -188,7 +210,7 @@ const parser = {
             } else {
                 const existing = uniqueParticipants.get(p.name);
                 existing.duration += p.duration;
-                if (p.joinTime && (!existing.joinTime || p.joinTime < existing.joinTime)) {
+                if (p.joinTime && (!existing.joinTime || new Date(p.joinTime).getTime() < new Date(existing.joinTime).getTime())) {
                     existing.joinTime = p.joinTime;
                 }
             }
@@ -208,23 +230,30 @@ const parser = {
         };
     },
 
-    parseMarksCSV(fileContent, filename) {
+    parseMarksCSV(fileContent, filename, providedGroupName) {
         const text = fileContent;
-        const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
 
-        if (lines.length < 4) throw new Error('Invalid CSV format: Insufficient lines.');
-        if (lines[0].startsWith('*')) throw new Error('Invalid Marks CSV: This looks like a Google Meet report.');
+        const parsedResult = Papa.parse(text, {
+            header: false,
+            skipEmptyLines: true
+        });
 
-        const headerLine = lines[0];
-        const headers = parseSingleCSVLine(headerLine);
+        const allRows = parsedResult.data;
+
+        if (allRows.length < 4) throw new Error('Invalid CSV format: Insufficient lines.');
+        if (allRows[0] && typeof allRows[0][0] === 'string' && allRows[0][0].startsWith('*')) {
+            throw new Error('Invalid Marks CSV: This looks like a Google Meet report.');
+        }
+
+        const headers = allRows[0];
         const hasNameColumn = findHeaderByKeywords(headers, MARKS_CSV_REQUIRED_HEADERS);
         if (!hasNameColumn) throw new Error('Invalid Marks CSV: Missing "Surname" column.');
 
-        const dates = parseSingleCSVLine(lines[1]);
-        const rawMaxPoints = parseSingleCSVLine(lines[2]);
+        const dates = allRows[1];
+        const rawMaxPoints = allRows[2];
 
         const groupNameMatch = filename.match(/^([^_]+)_/);
-        const groupName = groupNameMatch ? groupNameMatch[1] : 'Unknown Group';
+        const groupName = providedGroupName || (groupNameMatch ? groupNameMatch[1] : 'Unknown Group');
 
         const taskNames = headers.slice(3);
         const taskDates = dates.slice(3);
@@ -236,15 +265,13 @@ const parser = {
 
         const tasks = taskNames.map((name, index) => ({
             name: name.trim(),
-            date: taskDates[index].trim(),
-            maxPoints: taskMaxPoints[index],
-            groupName: groupName
+            date: normalizeTaskDate(taskDates[index]),
+            maxPoints: taskMaxPoints[index]
         }));
 
         const studentsData = [];
-        for (let i = 3; i < lines.length; i++) {
-            const line = lines[i];
-            const cols = parseSingleCSVLine(line);
+        for (let i = 3; i < allRows.length; i++) {
+            const cols = allRows[i];
             if (cols.length < 3) continue;
 
             const lastName = (cols[0] || '').trim();
@@ -276,4 +303,5 @@ const parser = {
     }
 };
 
+export const workerForTesting = parser;
 Comlink.expose(parser);

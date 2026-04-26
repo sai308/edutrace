@@ -1,46 +1,63 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "compilerOptions": {
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
-    "types": [
-      "vite/client"
-    ],
-    /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true,
-    /* shadcn-vue changes */
-    "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ],
-      "@Analytics/*": [
-        "./src/modules/Analytics/*"
-      ],
-      "@Groups/*": [
-        "./src/modules/Groups/*"
-      ],
-      "@Marks/*": [
-        "./src/modules/Marks/*"
-      ],
-      "@Reports/*": [
-        "./src/modules/Reports/*"
-      ],
-      "@Students/*": [
-        "./src/modules/Students/*"
-      ],
-      "@Summary/*": [
-        "./src/modules/Summary/*"
-      ]
-    }
-  },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue"
-  ]
+    "extends": "@vue/tsconfig/tsconfig.dom.json",
+    "compilerOptions": {
+        "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+        "lib": ["ES2022", "DOM", "DOM.Iterable"],
+        /* shadcn-vue changes */
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ],
+            "@Analytics/*": [
+                "./src/modules/Analytics/*"
+            ],
+            "@Groups/*": [
+                "./src/modules/Groups/*"
+            ],
+            "@Marks/*": [
+                "./src/modules/Marks/*"
+            ],
+            "@Reports/*": [
+                "./src/modules/Reports/*"
+            ],
+            "@Members/*": [
+                "./src/modules/Members/*"
+            ],
+            "@Students/*": [
+                "./src/modules/Students/*"
+            ],
+            "@Summary/*": [
+                "./src/modules/Summary/*"
+            ],
+            "@Tasks/*": [
+                "./src/modules/Tasks/*"
+            ],
+            "@Units/*": [
+                "./src/modules/Units/*"
+            ],
+            "@Sessions/*": [
+                "./src/modules/Sessions/*"
+            ],
+            "@Plans/*": [
+                "./src/modules/Plans/*"
+            ]
+        },
+        "types": [
+            "vite/client",
+            "vite-plugin-pwa/client"
+        ],
+        /* Linting */
+        "strict": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "erasableSyntaxOnly": true,
+        "noUncheckedSideEffectImports": true
+    },
+    "include": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/**/*.vue"
+    ]
 }

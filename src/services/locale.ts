@@ -1,32 +1,33 @@
-const LOCALE_KEY = 'edutrace_locale';
-const DEFAULT_LOCALE = 'en-US';
-
+import { logger } from '@/shared/lib/logger'
 // Import locale data
-import enUS from '../locales/en-US.json';
-import ukUA from '../locales/uk-UA.json';
+import enUS from '../locales/en-US.json'
+import ukUA from '../locales/uk-UA.json'
+
+const LOCALE_KEY = 'edutrace_locale'
+const DEFAULT_LOCALE = 'en-US'
 
 const locales = {
     'en-US': enUS,
-    'uk-UA': ukUA
-};
+    'uk-UA': ukUA,
+}
 
-type Locale = keyof typeof locales;
+type Locale = keyof typeof locales
 
 export const localeService = {
     getLocale(): Locale {
         try {
-            return localStorage.getItem(LOCALE_KEY) as Locale || DEFAULT_LOCALE;
+            return (localStorage.getItem(LOCALE_KEY) as Locale) || DEFAULT_LOCALE
         } catch (e) {
-            console.warn('Failed to get locale from localStorage:', e);
-            return DEFAULT_LOCALE;
+            logger.warn('Failed to get locale from localStorage:', e)
+            return DEFAULT_LOCALE
         }
     },
 
     setLocale(locale: string) {
         try {
-            localStorage.setItem(LOCALE_KEY, locale);
+            localStorage.setItem(LOCALE_KEY, locale)
         } catch (e) {
-            console.error('Failed to save locale to localStorage:', e);
+            logger.error('Failed to save locale to localStorage:', e)
         }
     },
 
@@ -36,25 +37,22 @@ export const localeService = {
      * @returns {string} Translated text or key path if not found
      */
     getTranslation(keyPath: string) {
-        const locale = this.getLocale();
+        const locale = this.getLocale()
 
-        const messages = locales[locale] || locales[DEFAULT_LOCALE];
+        const messages = locales[locale] || locales[DEFAULT_LOCALE]
 
         // Navigate through the object using the key path
-        const keys = keyPath.split('.');
-        let value = messages;
+        const keys = keyPath.split('.')
+        let value: unknown = messages
 
         for (const key of keys) {
             if (value && typeof value === 'object' && key in value) {
-                // TODO: fix this later
-                // @ts-ignore
-                value = value[key];
+                value = (value as Record<string, unknown>)[key]
             } else {
-                return keyPath; // Return key path if not found
+                return keyPath // Return key path if not found
             }
         }
 
-        return typeof value === 'string' ? value : keyPath;
-    }
-};
-
+        return typeof value === 'string' ? value : keyPath
+    },
+}

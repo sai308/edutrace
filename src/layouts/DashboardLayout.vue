@@ -1,32 +1,48 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { Separator } from "@/components/ui/separator"
-import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
-import AppSidebar from "@/components/layout/AppSidebar.vue"
+import { watchEffect } from 'vue'
+import DashboardHeader from '@/components/layout/DashboardHeader.vue'
+import DashboardSidebar from '@/components/layout/DashboardSidebar.vue'
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 
-const route = useRoute()
+import { useWorkspace } from '@/shared/composables/useWorkspace'
 
-// Simply read the title key from the route's metadata
-const pageTitle = computed(() => (route.meta.title as string) || 'app.title')
+function contrastForeground(hex: string): string {
+    const r = Number.parseInt(hex.slice(1, 3), 16) / 255
+    const g = Number.parseInt(hex.slice(3, 5), 16) / 255
+    const b = Number.parseInt(hex.slice(5, 7), 16) / 255
+    const toLinear = (c: number) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
+    const luminance = 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b)
+    return luminance > 0.179 ? 'oklch(0.145 0 0)' : 'oklch(1 0 0)'
+}
 
+const { activeWorkspace } = useWorkspace()
+
+watchEffect(() => {
+    if (activeWorkspace.value?.color) {
+        const color = activeWorkspace.value.color
+        document.documentElement.style.setProperty('--workspace-color', color)
+        document.documentElement.style.setProperty('--primary', color)
+        document.documentElement.style.setProperty(
+            '--primary-foreground',
+            contrastForeground(color),
+        )
+    } else {
+        document.documentElement.style.removeProperty('--workspace-color')
+        document.documentElement.style.removeProperty('--primary')
+        document.documentElement.style.removeProperty('--primary-foreground')
+    }
+})
 </script>
 
 <template>
-    <SidebarProvider storage-key="sidebar">
-        <AppSidebar />
-
-        <SidebarInset>
-            <header
-                class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-                <div class="flex items-center gap-2 px-4">
-                    <SidebarTrigger class="-ml-1" />
-                    <Separator orientation="vertical" class="mr-2 data-[orientation=vertical]:h-4" />
-                    <h1 class="text-lg font-semibold pointer-events-none select-none">{{ $t(pageTitle) }}</h1>
+    <SidebarProvider storage-key="sidebar" class="h-svh overflow-hidden">
+        <DashboardSidebar class="transition-all duration-500" />
+        <SidebarInset class="flex flex-col min-w-0 flex-1 overflow-hidden">
+            <DashboardHeader class="shrink-0" />
+            <div class="flex-1 overflow-y-auto custom-scrollbar min-h-0 min-w-0">
+                <div class="flex flex-col min-h-full">
+                    <router-view />
                 </div>
-            </header>
-            <div class="flex flex-1 flex-col gap-4 p-8">
-                <RouterView />
             </div>
         </SidebarInset>
     </SidebarProvider>

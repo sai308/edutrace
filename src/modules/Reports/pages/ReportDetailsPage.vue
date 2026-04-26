@@ -1,153 +1,201 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { useReportMeet } from '@Reports/composables/useReportMeet'
+import {
+    AlertCircle,
+    ArrowLeft,
+    Calendar,
+    Clock,
+    GanttChart,
+    Loader2,
+    Users,
+} from 'lucide-vue-next'
+import { onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, Calendar, Clock, Users, GanttChart } from 'lucide-vue-next'
-import { meetsRepository } from '@/modules/Analytics/services/meets.repository'
-import type { Meet } from '@/modules/Analytics/types/analytics'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import ReportParticipantsView from '../views/ReportParticipantsView.vue'
-import ReportOverviewView from '../views/ReportOverviewView.vue'
+import EmptyState from '@/shared/components/EmptyState.vue'
+import { useFormatters } from '@/shared/composables/useFormatters'
+import { useQuerySync } from '@/shared/composables/useQuerySync'
 import ReportCalendarView from '../views/ReportCalendarView.vue'
-import { calculateMeetDuration } from '../utils/duration'
-
+import ReportOverviewView from '../views/ReportOverviewView.vue'
+import ReportParticipantsView from '../views/ReportParticipantsView.vue'
 
 const route = useRoute()
 const router = useRouter()
-
 const meetId = route.params.id as string
-const meet = ref<Meet | undefined>(undefined)
-const isLoading = ref(true)
 
-onMounted(async () => {
-    if (meetId) {
-        meet.value = await meetsRepository.getMeetById(meetId)
-        if (meet.value?.participants) {
-            meet.value.participants.sort((a, b) => a.name.localeCompare(b.name))
-        }
-    }
-    isLoading.value = false
-})
+const { meet, isLoading, totalDuration, avgDuration, loadMeet } = useReportMeet(meetId)
+const { formatDuration } = useFormatters()
 
-const formatDuration = (seconds: number) => {
-    const h = Math.floor(seconds / 3600)
-    const m = Math.floor((seconds % 3600) / 60)
-    const s = Math.floor(seconds % 60)
+const viewMode = ref<'overview' | 'participants' | 'calendar'>('overview')
+useQuerySync({ view: viewMode })
 
-    if (h > 0) return `${h}h ${m}m ${s}s`
-    return `${m}m ${s}s`
-}
-
-const totalDuration = computed(() => {
-    return calculateMeetDuration(meet.value)
-})
-
-const avgDuration = computed(() => {
-    if (!meet.value?.participants?.length) return 0
-    const totalParticipantDuration = meet.value.participants.reduce((acc, p) => acc + p.duration, 0)
-    return totalParticipantDuration / meet.value.participants.length
-})
+onMounted(loadMeet)
 </script>
 
 <template>
-    <div class="container py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <div v-if="isLoading" class="flex justify-center p-12">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+    <div
+        class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500"
+    >
+        <!-- Loading -->
+        <div v-if="isLoading" class="flex flex-col items-center justify-center min-h-[400px] gap-3">
+            <Loader2 class="w-8 h-8 animate-spin text-muted-foreground" />
+            <p class="text-sm text-muted-foreground">
+                {{ $t('common.loading') }}
+            </p>
         </div>
 
-        <div v-else-if="meet" class="space-y-8">
-            <Tabs default-value="participants" class="w-full space-y-8">
-                <!-- Header -->
-                <div class="flex items-center justify-between gap-4">
-                    <div class="flex items-center gap-4">
-                        <Button variant="ghost" size="icon" @click="router.back()">
-                            <ArrowLeft class="w-4 h-4" />
+        <!-- Main content -->
+        <div v-else-if="meet" class="space-y-6">
+            <Tabs v-model="viewMode" class="space-y-6">
+                <!-- Zone 1: Header -->
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <!-- Left: back + title -->
+                    <div class="flex items-start md:items-center gap-3">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            class="shrink-0 mt-0.5 md:mt-0"
+                            :title="$t('common.back')"
+                            @click="router.back()"
+                        >
+                            <ArrowLeft class="w-5 h-5" />
                         </Button>
                         <div>
-                            <div class="flex items-center gap-3">
-                                <h1 class="text-3xl font-bold tracking-tight">Report Details</h1>
-                                <Badge v-if="meet?.groupName" variant="outline" class="text-sm font-normal">
-                                    Group: {{ meet.groupName }}
-                                </Badge>
-                            </div>
-                            <p class="text-muted-foreground">
+                            <h1 class="text-2xl font-bold tracking-tight">
+                                {{ $t('reports.session.reportTitle') }}
+                            </h1>
+                            <p
+                                class="text-sm text-muted-foreground mt-0.5 truncate max-w-[200px] sm:max-w-sm md:max-w-none"
+                                :title="meet.filename"
+                            >
                                 {{ meet.filename }}
                             </p>
                         </div>
                     </div>
 
-                    <TabsList>
-                        <TabsTrigger value="overall">
-                            <GanttChart class="w-4 h-4 mr-2" />
-                            Overview
+                    <!-- Right: view switcher -->
+                    <TabsList
+                        class="w-full md:w-auto h-auto p-1 flex-wrap justify-start md:justify-center"
+                    >
+                        <TabsTrigger value="overview" class="flex-1 md:flex-none gap-2">
+                            <GanttChart class="w-4 h-4" />
+                            <span class="hidden md:inline">{{ $t('views.overview') }}</span>
                         </TabsTrigger>
-                        <TabsTrigger value="participants">
-                            <Users class="w-4 h-4 mr-2" />
-                            Participants
+                        <TabsTrigger value="participants" class="flex-1 md:flex-none gap-2">
+                            <Users class="w-4 h-4" />
+                            <span class="hidden md:inline">{{ $t('views.participants') }}</span>
                         </TabsTrigger>
-                        <TabsTrigger value="calendar">
-                            <Calendar class="w-4 h-4 mr-2" />
-                            Calendar
+                        <TabsTrigger value="calendar" class="flex-1 md:flex-none gap-2">
+                            <Calendar class="w-4 h-4" />
+                            <span class="hidden md:inline">{{ $t('views.calendar') }}</span>
                         </TabsTrigger>
                     </TabsList>
                 </div>
 
-                <!-- Stats Cards -->
-                <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    <Card>
-                        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle class="text-sm font-medium">Date</CardTitle>
-                            <Calendar class="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div class="text-2xl font-bold">{{ new Date(meet.date).toLocaleDateString() }}</div>
-                            <p class="text-xs text-muted-foreground">Recorded session date</p>
+                <!-- Zone 2: Stats strip -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                    <Card class="min-w-0">
+                        <CardContent class="p-3 sm:p-4 flex items-center gap-3">
+                            <Calendar
+                                class="h-10 w-10 text-muted-foreground opacity-60 shrink-0 hidden sm:block"
+                            />
+                            <div class="min-w-0">
+                                <p
+                                    class="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground"
+                                >
+                                    {{ $t('reports.session.stats.date') }}
+                                </p>
+                                <div class="text-base sm:text-2xl font-bold truncate">
+                                    {{ new Date(meet.date).toLocaleDateString() }}
+                                </div>
+                                <p
+                                    class="text-[9px] sm:text-xs text-muted-foreground truncate hidden sm:block"
+                                >
+                                    {{ $t('reports.session.stats.dateDesc') }}
+                                </p>
+                            </div>
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle class="text-sm font-medium">Participants</CardTitle>
-                            <Users class="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div class="text-2xl font-bold">{{ meet.participants.length }}</div>
-                            <p class="text-xs text-muted-foreground">Total attendees</p>
+                    <Card class="min-w-0">
+                        <CardContent class="p-3 sm:p-4 flex items-center gap-3">
+                            <Users
+                                class="h-10 w-10 text-muted-foreground opacity-60 shrink-0 hidden sm:block"
+                            />
+                            <div class="min-w-0">
+                                <p
+                                    class="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground"
+                                >
+                                    {{ $t('reports.session.stats.participants') }}
+                                </p>
+                                <div class="text-base sm:text-2xl font-bold truncate">
+                                    {{ meet.participants.length }}
+                                </div>
+                                <p
+                                    class="text-[9px] sm:text-xs text-muted-foreground truncate hidden sm:block"
+                                >
+                                    {{ $t('reports.session.stats.participantsDesc') }}
+                                </p>
+                            </div>
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle class="text-sm font-medium">Total Duration</CardTitle>
-                            <Clock class="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div class="text-2xl font-bold">{{ formatDuration(totalDuration) }}</div>
-                            <p class="text-xs text-muted-foreground">Combined participant time</p>
+                    <Card class="min-w-0">
+                        <CardContent class="p-3 sm:p-4 flex items-center gap-3">
+                            <Clock
+                                class="h-10 w-10 text-muted-foreground opacity-60 shrink-0 hidden sm:block"
+                            />
+                            <div class="min-w-0">
+                                <p
+                                    class="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground"
+                                >
+                                    {{ $t('reports.session.stats.totalDuration') }}
+                                </p>
+                                <div class="text-base sm:text-2xl font-bold truncate">
+                                    {{ formatDuration(totalDuration) }}
+                                </div>
+                                <p
+                                    class="text-[9px] sm:text-xs text-muted-foreground truncate hidden sm:block"
+                                >
+                                    {{ $t('reports.session.stats.totalDurationDesc') }}
+                                </p>
+                            </div>
                         </CardContent>
                     </Card>
 
-                    <Card>
-                        <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle class="text-sm font-medium">Avg Duration</CardTitle>
-                            <Clock class="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div class="text-2xl font-bold">{{ formatDuration(avgDuration) }}</div>
-                            <p class="text-xs text-muted-foreground">Per participant</p>
+                    <Card class="min-w-0">
+                        <CardContent class="p-3 sm:p-4 flex items-center gap-3">
+                            <Clock
+                                class="h-10 w-10 text-muted-foreground opacity-60 shrink-0 hidden sm:block"
+                            />
+                            <div class="min-w-0">
+                                <p
+                                    class="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground"
+                                >
+                                    {{ $t('reports.session.stats.avgDuration') }}
+                                </p>
+                                <div class="text-base sm:text-2xl font-bold truncate">
+                                    {{ formatDuration(avgDuration) }}
+                                </div>
+                                <p
+                                    class="text-[9px] sm:text-xs text-muted-foreground truncate hidden sm:block"
+                                >
+                                    {{ $t('reports.session.stats.avgDurationDesc') }}
+                                </p>
+                            </div>
                         </CardContent>
                     </Card>
                 </div>
 
-                <!-- Views Content -->
-                <TabsContent value="participants" class="space-y-4">
-                    <ReportParticipantsView :meet="meet" />
+                <!-- Zone 3: View content -->
+                <TabsContent value="overview" class="space-y-4">
+                    <ReportOverviewView :meet="meet" />
                 </TabsContent>
 
-                <TabsContent value="overall" class="space-y-4">
-                    <ReportOverviewView :meet="meet" />
+                <TabsContent value="participants" class="space-y-4">
+                    <ReportParticipantsView :meet="meet" />
                 </TabsContent>
 
                 <TabsContent value="calendar" class="space-y-4">
@@ -156,12 +204,17 @@ const avgDuration = computed(() => {
             </Tabs>
         </div>
 
-        <div v-else class="text-center p-12">
-            <h3 class="text-lg font-medium">Report not found</h3>
-            <p class="text-muted-foreground">The requested report could not be found.</p>
-            <Button variant="outline" class="mt-4" @click="router.push({ name: 'reports' })">
-                Back to Reports
+        <!-- Not found -->
+        <EmptyState
+            v-else
+            :title="$t('reports.session.notFound')"
+            :description="$t('reports.session.notFoundDesc')"
+            :icon="AlertCircle"
+            class="min-h-[400px]"
+        >
+            <Button variant="outline" class="mt-4" @click="router.back()">
+                {{ $t('common.back') }}
             </Button>
-        </div>
+        </EmptyState>
     </div>
 </template>

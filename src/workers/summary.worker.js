@@ -5,6 +5,27 @@ import { createMarkFormatter } from '../shared/utils/grades';
  * --- Pure Helper Functions ---
  */
 
+/**
+ * Extracts a numeric score from a mark object.
+ * Falls back from `score` to `value` since marks may only have `value` populated.
+ */
+function getScore(mark) {
+    const raw = mark.score ?? mark.value;
+    return raw !== undefined && raw !== null ? Number(raw) : 0;
+}
+
+/**
+ * Infers the max points for a task.
+ * Uses the task's maxPoints if available; otherwise infers from the score range:
+ *   - scores 1-5  → max is 5 (5-point scale)
+ *   - scores 6+   → max is 100 (100-point scale)
+ */
+function inferMaxPoints(task, score) {
+    if (task && task.maxPoints && task.maxPoints > 0) return task.maxPoints;
+    if (score >= 1 && score <= 5) return 5;
+    return 100;
+}
+
 function calculateMeetDurations(meets, durationLimitSeconds) {
     const meetDurations = {};
     for (const meet of meets) {
@@ -61,85 +82,132 @@ function calculateAttendance(member, meets, meetDurations) {
 
 function calculateModuleStats(modules, studentMarks, taskMap, formatMark) {
     const moduleGrades = {};
-    const calculatedGrades = [];
-    const moduleDetailsData = {}; // Structured data for main thread to localize
-    let isAutomaticCandidate = true;
-    let automaticFailureReason = null;
-
-    if (modules.length === 0) isAutomaticCandidate = false;
+    const moduleRawGrades = [];
+    const moduleDetailsData = {};
+    let hasPartial = false;
 
     for (const module of modules) {
-        const taskIds = (module.tasks || []).map(t => t.id);
-        const testTaskId = module.test?.id;
+        const testTaskId = module.test?.id ? String(module.test.id) : null;
+        // Exclude testTaskId from task IDs to prevent it being matched as a regular task
+        const taskIds = (module.tasks || []).map(t => String(t.id)).filter(id => id !== testTaskId);
 
-        if (taskIds.length === 0 || !testTaskId) {
-            isAutomaticCandidate = false;
-            continue;
-        }
-
+        // Track which tasks are completed
+        const completedTaskIds = new Set();
         const taskMarks = [];
         let testMark = null;
         const moduleTaskIdsSet = new Set(taskIds);
 
         for (const mark of studentMarks) {
-            if (moduleTaskIdsSet.has(mark.taskId)) {
-                const task = taskMap.get(mark.taskId);
-                if (task && task.maxPoints > 0) {
-                    taskMarks.push((mark.score / task.maxPoints) * 100);
-                }
-            } else if (mark.taskId === testTaskId) {
-                const task = taskMap.get(mark.taskId);
-                if (task && task.maxPoints > 0) {
-                    testMark = (mark.score / task.maxPoints) * 100;
-                }
+            const markTaskId = String(mark.taskId);
+            const score = getScore(mark);
+
+            if (testTaskId && markTaskId === testTaskId) {
+                const task = taskMap.get(markTaskId);
+                const max = inferMaxPoints(task, score);
+                testMark = (score / max) * 100;
+            } else if (moduleTaskIdsSet.has(markTaskId)) {
+                completedTaskIds.add(markTaskId);
+                const task = taskMap.get(markTaskId);
+                const max = inferMaxPoints(task, score);
+                taskMarks.push((score / max) * 100);
             }
         }
 
-        const minRequired = module.minTasksRequired || 1;
+        // Determine missing tasks (by name)
+        const missingTaskIds = taskIds.filter(id => !completedTaskIds.has(id));
+        const missingTaskNames = missingTaskIds.map(id => {
+            const task = taskMap.get(id);
+            return task?.name || id;
+        });
 
-        if (testMark === null || taskMarks.length < minRequired) {
-            isAutomaticCandidate = false;
-            if (!automaticFailureReason) {
-                if (testMark === null) automaticFailureReason = { type: 'missingTest', module: module.name };
-                else automaticFailureReason = { type: 'notEnoughTasks', module: module.name };
-            }
-        }
+        const totalTasks = taskIds.length;
+        const completedTasks = taskMarks.length;
+        const missingTest = testTaskId !== null && testMark === null;
+        const hasTest = testTaskId !== null;
 
-        if (taskMarks.length < minRequired || testMark === null) {
-            if (testMark === null) {
-                moduleDetailsData[module.name] = { type: 'incompleteMissingTest' };
-            } else {
-                const missing = minRequired - taskMarks.length;
-                moduleDetailsData[module.name] = { type: 'incompleteMissingTasks', count: missing };
-            }
+        // Totally empty — no tasks completed and no test
+        if (completedTasks === 0 && testMark === null) {
+            moduleGrades[module.name] = null;
+            moduleRawGrades.push({ grade: null, partial: false });
+            moduleDetailsData[module.name] = {
+                type: 'empty',
+                grade: null,
+                missingTest: hasTest,
+                missingTasks: missingTaskNames,
+                completedTasks: 0,
+                totalTasks
+            };
             continue;
         }
 
-        const avgTaskMark = taskMarks.reduce((sum, mark) => sum + mark, 0) / taskMarks.length;
+        // Calculate grade
         const tasksCoeff = module.tasksCoefficient || 1;
         const testCoeff = module.testCoefficient || 1;
-        const moduleGrade = (avgTaskMark * tasksCoeff + testMark * testCoeff) / (tasksCoeff + testCoeff);
+        let rawGrade;
+        let isPartial = false;
+        const formula = {};
 
-        moduleGrades[module.name] = formatMark(moduleGrade);
-        calculatedGrades.push(moduleGrade);
-        moduleDetailsData[module.name] = {
-            type: 'details',
-            data: {
-                avg: formatMark(avgTaskMark),
-                tasksCoeff,
-                test: formatMark(testMark),
-                testCoeff
+        if (completedTasks > 0) {
+            const avgTaskMark = taskMarks.reduce((sum, m) => sum + m, 0) / taskMarks.length;
+            formula.avg = formatMark(avgTaskMark);
+            formula.tasksCoeff = tasksCoeff;
+
+            if (hasTest && testMark !== null) {
+                // Full formula: (avgTasks*taskCoef + test*testCoef) / (taskCoef + testCoef)
+                rawGrade = (avgTaskMark * tasksCoeff + testMark * testCoeff) / (tasksCoeff + testCoeff);
+                formula.test = formatMark(testMark);
+                formula.testCoeff = testCoeff;
+            } else if (hasTest && testMark === null) {
+                // Has test in config but not completed — tasks-only avg, mark as partial
+                rawGrade = avgTaskMark;
+                isPartial = true;
+            } else {
+                // No test configured — tasks-only avg
+                rawGrade = avgTaskMark;
             }
+
+            // If some tasks are missing, mark as partial
+            if (missingTaskIds.length > 0) {
+                isPartial = true;
+            }
+        } else {
+            // No tasks done but test done — use test only, mark as partial
+            rawGrade = testMark;
+            isPartial = true;
+            formula.test = formatMark(testMark);
+            formula.testCoeff = testCoeff;
+        }
+
+        if (isPartial) hasPartial = true;
+
+        const formattedGrade = formatMark(rawGrade);
+        moduleGrades[module.name] = isPartial ? `~${formattedGrade}` : formattedGrade;
+        moduleRawGrades.push({ grade: rawGrade, partial: isPartial });
+
+        moduleDetailsData[module.name] = {
+            type: isPartial ? 'partial' : 'complete',
+            grade: rawGrade,
+            missingTest: missingTest,
+            missingTasks: missingTaskNames,
+            completedTasks,
+            totalTasks,
+            formula: Object.keys(formula).length > 0 ? formula : undefined
         };
     }
 
-    const totalRaw = calculatedGrades.length === modules.length && calculatedGrades.length > 0
-        ? calculatedGrades.reduce((sum, grade) => sum + grade, 0) / calculatedGrades.length
-        : null;
+    // Total: average of all module raw grades (only for modules that have grades)
+    const validGrades = moduleRawGrades.filter(g => g.grade !== null);
+    let total = null;
+    let totalRaw = null;
+    let totalPartial = false;
 
-    const total = totalRaw !== null ? formatMark(totalRaw) : null;
+    if (validGrades.length > 0) {
+        totalRaw = validGrades.reduce((sum, g) => sum + g.grade, 0) / validGrades.length;
+        totalPartial = hasPartial || validGrades.length < modules.length;
+        total = totalPartial ? `~${formatMark(totalRaw)}` : formatMark(totalRaw);
+    }
 
-    return { moduleGrades, total, moduleDetailsData, isAutomaticCandidate, automaticFailureReason };
+    return { moduleGrades, total, totalRaw, moduleDetailsData, totalPartial };
 }
 
 /**
@@ -162,16 +230,17 @@ const summaryWorker = {
             requiredTasks = 0
         } = options;
 
-        // Index Data
+        // Index Data — coerce studentId to string for consistent lookup
         const marksByStudent = new Map();
         for (const mark of marks) {
-            const sid = mark.studentId;
+            const sid = String(mark.studentId);
             if (!marksByStudent.has(sid)) marksByStudent.set(sid, []);
             marksByStudent.get(sid).push(mark);
         }
 
+        // Index tasks by string ID
         const taskMap = new Map();
-        tasks.forEach(task => taskMap.set(task.id, task));
+        tasks.forEach(task => taskMap.set(String(task.id), task));
 
         const meetDurations = calculateMeetDurations(meets, durationLimitSeconds);
         const formatMarkFn = createMarkFormatter(gradeFormat);
@@ -179,23 +248,23 @@ const summaryWorker = {
 
         const testTaskIds = new Set();
         modules.forEach(m => {
-            if (m.test?.id) testTaskIds.add(m.test.id);
+            if (m.test?.id) testTaskIds.add(String(m.test.id));
         });
 
-        const regularTasks = tasks.filter(t => !testTaskIds.has(t.id));
+        const regularTasks = tasks.filter(t => !testTaskIds.has(String(t.id)));
 
         const results = members.map(member => {
-            // Skip hidden or teacher checks? Assuming caller filtered activeMembers.
-            // But let's check role here if passed.
             if (member.role === 'teacher' || member.hidden) return null;
 
-            const studentMarks = marksByStudent.get(member.id) || [];
+            // Coerce member.id to string for consistent lookup
+            const memberId = String(member.id);
+            const studentMarks = marksByStudent.get(memberId) || [];
 
-            // Completion
+            // Completion — coerce taskId to string for set comparison
             const completedRegularTasks = new Set(
                 studentMarks
-                    .filter(m => !testTaskIds.has(m.taskId))
-                    .map(m => m.taskId)
+                    .filter(m => !testTaskIds.has(String(m.taskId)))
+                    .map(m => String(m.taskId))
             ).size;
 
             const effectiveTotal = (requiredTasks > 0) ? requiredTasks : regularTasks.length;
@@ -207,15 +276,15 @@ const summaryWorker = {
             // Grades
             const moduleStats = calculateModuleStats(modules, studentMarks, taskMap, formatMarkFn);
 
-            // Avg Mark
+            // Avg Mark — use getScore + inferMaxPoints helpers
             let totalGrade = 0;
             let validMarksCount = 0;
             studentMarks.forEach(mark => {
-                const task = taskMap.get(mark.taskId);
-                if (task && task.maxPoints && task.maxPoints > 0) {
-                    totalGrade += formatFiveScale((mark.score / task.maxPoints) * 100);
-                    validMarksCount++;
-                }
+                const score = getScore(mark);
+                const task = taskMap.get(String(mark.taskId));
+                const max = inferMaxPoints(task, score);
+                totalGrade += formatFiveScale((score / max) * 100);
+                validMarksCount++;
             });
             const averageMark = validMarksCount > 0 ? totalGrade / validMarksCount : 0;
 
@@ -236,4 +305,5 @@ const summaryWorker = {
     }
 };
 
+export const workerForTesting = summaryWorker;
 Comlink.expose(summaryWorker);

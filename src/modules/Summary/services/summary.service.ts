@@ -1,52 +1,61 @@
-import * as Comlink from 'comlink';
-import SummaryWorker from '@/workers/summary.worker?worker';
-import { modulesRepository } from './modules.repository';
-import { finalAssessmentsRepository } from './finalAssessments.repository';
-import { studentsRepository } from '@Students/services/students.repository';
-import { tasksRepository } from '@Marks/services/tasks.repository';
-import { marksRepository } from '@Marks/services/marks.repository';
-import { meetsRepository } from '@Analytics/services/meets.repository';
-import { groupsRepository } from '@Groups/services/groups.repository';
-import { settingsRepository } from '@/shared/services/settings.repository';
-import type { Member } from '@Students/types/students';
-import type { Mark, Task } from '@Marks/types/marks';
-import type { Group } from '@Groups/types/groups';
-import type { Meet } from '@Analytics/types/analytics';
+import type { Meet } from '@Analytics/types/analytics'
+import type { Group } from '@Groups/types/groups'
+import type { Mark, Task } from '@Marks/types/marks'
+import type { Member } from '@Students/types/students'
 import type {
-    SummaryStats,
-    WorkerSummaryResult,
+    FinalAssessment,
+    Module,
     StudentSummaryData,
     SummaryLoadOptions,
-    Module,
-    FinalAssessment
-} from '../types/summary';
+    SummaryStats,
+    WorkerSummaryResult,
+} from '../types/summary'
+import type { Unit } from '@/modules/Units/types/units'
+import { meetsRepository } from '@Analytics/services/meets.repository'
+import { groupsRepository } from '@Groups/services/groups.repository'
+import { marksRepository } from '@Marks/services/marks.repository'
+import { studentsRepository } from '@Students/services/students.repository'
+import { tasksRepository } from '@Tasks/services/tasks.repository'
+import * as Comlink from 'comlink'
+import { unitsRepository } from '@/modules/Units/services/units.repository'
+import { logger } from '@/shared/lib/logger'
+import { classifyWorkerError, withTimeout } from '@/shared/lib/workerError'
+import { settingsRepository } from '@/shared/services/settings.repository'
+import { createMarkFormatter } from '@/shared/utils/grades'
+import SummaryWorker from '@/workers/summary.worker?worker'
+import { finalAssessmentsRepository } from './finalAssessments.repository'
 
-interface SummaryWorker {
-    calculateSummary(
+interface SummaryWorkerAPI {
+    calculateSummary: (
         members: Member[],
         marks: Mark[],
         meets: Meet[],
         tasks: Task[],
         modules: Module[],
         options: {
-            durationLimitSeconds: number;
-            gradeFormat: string;
-            requiredTasks: number;
-        }
-    ): Promise<WorkerSummaryResult[]>;
+            durationLimitSeconds: number
+            gradeFormat: string
+            requiredTasks: number
+        },
+    ) => Promise<WorkerSummaryResult[]>
 }
 
+const SUMMARY_TIMEOUT_MS = 60_000
+
 export class SummaryService {
-    private workerWrapper: Worker;
-    private worker: Comlink.Remote<SummaryWorker>;
+    private workerWrapper: Worker
+    private worker: Comlink.Remote<SummaryWorkerAPI>
 
     constructor() {
-        this.workerWrapper = new (SummaryWorker as any)();
-        this.worker = Comlink.wrap(this.workerWrapper);
+        this.workerWrapper = new (SummaryWorker as unknown as new () => Worker)()
+        this.worker = Comlink.wrap(this.workerWrapper)
     }
 
-    async loadExamData(group: Group, options: SummaryLoadOptions): Promise<{ students: StudentSummaryData[], context: any }> {
-        if (!group) return { students: [], context: {} };
+    async loadExamData(
+        group: Group,
+        options: SummaryLoadOptions,
+    ): Promise<{ students: StudentSummaryData[]; context: any }> {
+        if (!group) return { students: [], context: {} }
 
         const {
             modules = [],
@@ -56,9 +65,10 @@ export class SummaryService {
             gradeFormat = '5-scale',
             requiredTasks = 0,
             assessmentType = 'examination',
-            t // Localization function
-        } = options;
+            t, // Localization function
+        } = options
 
+        logger.log('[SummaryService] Fetching data for group:', group.name)
         const [
             members,
             allTasks,
@@ -66,222 +76,393 @@ export class SummaryService {
             allMeets,
             allGroupsMap,
             durationLimitMinutes,
-            allAssessments
+            allAssessments,
         ] = await Promise.all([
             studentsRepository.getMembersByGroup(group.name),
-            tasksRepository.getTasksByGroup(group.name),
+            tasksRepository.getAllTasks(),
             marksRepository.getMarksByGroup(group.name),
-            meetsRepository.getMeetsByMeetId(group.meetId),
+            group.meetId ? meetsRepository.getMeetsByMeetId(group.meetId) : Promise.resolve([]),
             groupsRepository.getGroupMap(),
             settingsRepository.getDurationLimit(),
-            finalAssessmentsRepository.getAllFinalAssessments()
-        ]);
+            finalAssessmentsRepository.getAllFinalAssessments(),
+        ])
+        logger.log('[SummaryService] Fetched data counts:', {
+            members: members.length,
+            tasks: allTasks.length,
+            marks: allMarks.length,
+            meets: allMeets.length,
+            modules: modules.length,
+        })
 
-        const durationLimitSeconds = durationLimitMinutes > 0 ? durationLimitMinutes * 60 : Infinity;
-        const activeMembers = members.filter(m => m.role !== 'teacher' && !m.hidden);
+        // Auto-repair missing or incorrect group names on members based on their marks
+        if (allMarks.length > 0) {
+            const studentIdsWithMarks = [...new Set(allMarks.map((m) => m.studentId))]
+            let fixedCount = 0
 
-        const workerResults = await this.worker.calculateSummary(
-            JSON.parse(JSON.stringify(activeMembers)),
-            JSON.parse(JSON.stringify(allMarks)),
-            JSON.parse(JSON.stringify(allMeets)),
-            JSON.parse(JSON.stringify(allTasks)),
-            JSON.parse(JSON.stringify(modules)),
-            {
-                durationLimitSeconds,
-                gradeFormat,
-                requiredTasks
+            for (const sid of studentIdsWithMarks) {
+                const member = await studentsRepository.getById(sid.toString())
+                if (member && member.groupName !== group.name) {
+                    member.groupName = group.name
+                    await studentsRepository.put(member)
+                    if (!members.some((x) => x.id === member.id)) {
+                        members.push(member)
+                    }
+                    fixedCount++
+                } else if (
+                    member &&
+                    member.groupName === group.name &&
+                    !members.some((x) => x.id === member.id)
+                ) {
+                    members.push(member) // Was missing from index somehow
+                }
             }
-        );
+            if (fixedCount > 0) {
+                logger.log(
+                    `[SummaryService] Auto-repaired ${fixedCount} members with mismatched group names.`,
+                )
+            }
+        }
 
-        const assessmentMap = new Map<string, FinalAssessment>();
+        const durationLimitSeconds = durationLimitMinutes > 0 ? durationLimitMinutes * 60 : Infinity
+        const activeMembers = members.filter((m) => m.role !== 'teacher' && !m.hidden)
+
+        let workerResults
+        try {
+            workerResults = await withTimeout(
+                this.worker.calculateSummary(
+                    JSON.parse(JSON.stringify(activeMembers)),
+                    JSON.parse(JSON.stringify(allMarks)),
+                    JSON.parse(JSON.stringify(allMeets)),
+                    JSON.parse(JSON.stringify(allTasks)),
+                    JSON.parse(JSON.stringify(modules)),
+                    {
+                        durationLimitSeconds,
+                        gradeFormat,
+                        requiredTasks,
+                    },
+                ),
+                SUMMARY_TIMEOUT_MS,
+            )
+        } catch (e) {
+            logger.error('Summary worker error:', e)
+            throw classifyWorkerError(e)
+        }
+
+        const assessmentMap = new Map<string, FinalAssessment>()
         for (const assess of allAssessments) {
-            assessmentMap.set(`${assess.studentId}_${assess.assessmentType}`, assess);
+            assessmentMap.set(`${assess.studentId}_${assess.assessmentType}`, assess)
         }
 
-        const statsMap = new Map<string, SummaryStats>();
-        workerResults.forEach(r => statsMap.set(r.id, r.stats));
+        const statsMap = new Map<string, SummaryStats>()
+        workerResults.forEach((r) => statsMap.set(r.id, r.stats))
 
-        const marksByStudent = new Map<string, Mark[]>();
+        const marksByStudent = new Map<string, Mark[]>()
         for (const mark of allMarks) {
-            const sid = mark.studentId;
-            if (!marksByStudent.has(sid)) marksByStudent.set(sid, []);
-            marksByStudent.get(sid)!.push(mark);
+            const sid = mark.studentId
+            if (!marksByStudent.has(sid)) marksByStudent.set(sid, [])
+            marksByStudent.get(sid)!.push(mark)
         }
 
-        const studentsData: StudentSummaryData[] = activeMembers.map(member => {
-            const stats = statsMap.get(member.id);
-            if (!stats) return null;
+        const studentsData: StudentSummaryData[] = activeMembers
+            .map((member) => {
+                const stats = statsMap.get(member.id)
+                if (!stats) return null
 
-            const { completionExact, completedRegularTasks, effectiveTotal, attendance, modules: moduleStats, averageMark } = stats;
-            const { percentage: attendancePercent, attendedMeets, totalMeets, attendedDuration } = attendance;
-            const { moduleGrades, total, moduleDetailsData, isAutomaticCandidate } = moduleStats;
+                const {
+                    completionExact,
+                    completedRegularTasks,
+                    effectiveTotal,
+                    attendance,
+                    modules: moduleStats,
+                    averageMark,
+                } = stats
 
-            const isAttendanceMet = !attendanceEnabled || attendancePercent >= attendanceThreshold;
-            let status: 'automatic' | 'allowed' | 'notAllowed' = 'notAllowed';
+                const {
+                    percentage: attendancePercent,
+                    attendedMeets,
+                    totalMeets,
+                    attendedDuration,
+                } = attendance
+                const { moduleGrades, total, totalRaw, moduleDetailsData } = moduleStats
 
-            if (isAutomaticCandidate && total !== null) {
-                status = 'automatic';
-            } else if (completionExact >= completionThreshold && isAttendanceMet) {
-                status = 'allowed';
-            }
+                // Formatter to convert stored 100-point grade to display scale
+                const displayFormatter = createMarkFormatter(gradeFormat)
 
-            let statusCause = '';
-            if (status === 'notAllowed') {
-                const reasons: string[] = [];
-                if (attendanceEnabled && attendancePercent < attendanceThreshold) {
-                    reasons.push(t('summary.data.reasons.attendance', {
-                        percentage: Math.round(attendancePercent),
-                        threshold: attendanceThreshold
-                    }));
+                // --- Status determination ---
+                // Check if all modules are fully complete (no partial, no empty)
+                const allModulesComplete =
+                    modules.length > 0 &&
+                    Object.values(moduleDetailsData).every((d: any) => d.type === 'complete')
+
+                let status: 'automatic' | 'allowed' | 'notAllowed' = 'notAllowed'
+
+                if (completionExact >= 100 && allModulesComplete) {
+                    status = 'automatic'
+                } else if (completionExact >= completionThreshold) {
+                    status = 'allowed'
                 }
-                if (completionExact < completionThreshold) {
-                    reasons.push(t('summary.data.reasons.completion', {
-                        percentage: Math.round(completionExact),
-                        threshold: completionThreshold
-                    }));
+
+                // --- Status tooltip (localized) ---
+                let statusCause = ''
+                if (status === 'notAllowed') {
+                    const reasons: string[] = []
+                    if (completionExact < completionThreshold) {
+                        reasons.push(
+                            t('summary.data.reasons.completion', {
+                                percentage: Math.round(completionExact),
+                                threshold: completionThreshold,
+                            }),
+                        )
+                    }
+                    if (attendanceEnabled && attendancePercent < attendanceThreshold) {
+                        reasons.push(
+                            t('summary.data.reasons.attendance', {
+                                percentage: Math.round(attendancePercent),
+                                threshold: attendanceThreshold,
+                            }),
+                        )
+                    }
+                    // List incomplete modules
+                    const incompleteModules = Object.entries(moduleDetailsData)
+                        .filter(([, d]: [string, any]) => d.type !== 'complete')
+                        .map(([name]) => name)
+                    if (incompleteModules.length > 0) {
+                        reasons.push(
+                            `${t('summary.data.reasons.modulesIncomplete')}: ${incompleteModules.join(', ')}`,
+                        )
+                    }
+                    statusCause =
+                        reasons.length === 0
+                            ? t('summary.data.cause.criteriaNotMet')
+                            : t('summary.data.cause.requirementsNotMet', {
+                                  reasons: reasons.join('; '),
+                              })
+                } else if (status === 'allowed') {
+                    const incompleteModules = Object.entries(moduleDetailsData)
+                        .filter(([, d]: [string, any]) => d.type !== 'complete')
+                        .map(([name]) => name)
+                    if (incompleteModules.length > 0) {
+                        statusCause = `${t('summary.data.cause.admitted', {
+                            attendanceThreshold,
+                            completionThreshold,
+                        })}. ${t('summary.data.status.allowedMissing', { modules: incompleteModules.join(', ') })}`
+                    } else {
+                        statusCause = t('summary.data.cause.admitted', {
+                            attendanceThreshold,
+                            completionThreshold,
+                        })
+                    }
+                } else if (status === 'automatic') {
+                    statusCause = t('summary.data.cause.excellentPerformance', {
+                        completion: Math.round(completionExact),
+                    })
                 }
-                if (completionExact >= completionThreshold && isAttendanceMet && total === null) {
-                    reasons.push(t('summary.data.reasons.modulesIncomplete'));
-                }
-                statusCause = reasons.length === 0
-                    ? t('summary.data.cause.criteriaNotMet')
-                    : t('summary.data.cause.requirementsNotMet', { reasons: reasons.join(', ') });
-            } else if (status === 'automatic') {
-                statusCause = t('summary.data.cause.excellentPerformance', {
-                    completion: Math.round(completionExact)
-                });
-            } else if (status === 'allowed') {
-                statusCause = t('summary.data.cause.admitted', {
-                    attendanceThreshold,
-                    completionThreshold
-                });
-            }
 
-            const moduleDetails: Record<string, string> = {};
-            Object.entries(moduleDetailsData).forEach(([modName, det]) => {
-                const detail = det as any;
-                if (detail.type === 'incompleteMissingTest') {
-                    moduleDetails[modName] = t('summary.data.details.modules.incompleteMissingTest');
-                } else if (detail.type === 'incompleteMissingTasks') {
-                    moduleDetails[modName] = t('summary.data.details.modules.incompleteMissingTasks', { count: detail.count }, detail.count);
-                } else if (detail.type === 'details') {
-                    moduleDetails[modName] = t('summary.data.details.modules.details', {
-                        avg: detail.data.avg,
-                        tasksCoeff: detail.data.tasksCoeff,
-                        test: detail.data.test,
-                        testCoeff: detail.data.testCoeff
-                    });
-                }
-            });
+                // --- Module detail tooltips (localized & structured) ---
+                const moduleDetails: Record<string, any> = {}
+                Object.entries(moduleDetailsData).forEach(([modName, det]) => {
+                    const detail = det as any
 
-            const assessment = assessmentMap.get(`${member.id}_${assessmentType}`);
+                    if (detail.type === 'empty') {
+                        moduleDetails[modName] = {
+                            type: 'empty',
+                            text: t('summary.data.moduleTooltip.noGrades'),
+                        }
+                        return
+                    }
 
-            return {
-                id: member.id,
-                name: member.name,
-                email: member.email,
-                aliases: member.aliases || [],
-                groups: [member.groupName],
-                marks: marksByStudent.get(member.id) || [],
+                    const metrics: any[] = []
 
-                sessionCount: attendedMeets,
-                totalSessions: totalMeets,
-                totalDuration: attendedDuration,
-                averageAttendancePercent: attendancePercent,
-                averageMark: averageMark,
-                totalTasks: effectiveTotal,
-                completedTasks: completedRegularTasks,
-                completionPercent: completionExact,
+                    // Formula / avg info
+                    if (detail.formula) {
+                        metrics.push({
+                            type: 'tasks',
+                            avg: detail.formula.avg || '-',
+                            completed: detail.completedTasks,
+                            total: detail.totalTasks,
+                            coeff: detail.formula.tasksCoeff || 1,
+                        })
 
-                completion: Math.round(completionExact),
-                completionExact: completionExact.toFixed(2),
-                completionDetails: t('summary.data.details.completion', {
-                    completed: completedRegularTasks,
-                    total: effectiveTotal
-                }),
-                attendance: Math.round(attendancePercent),
-                attendanceExact: attendancePercent.toFixed(2),
-                attendanceDetails: t('summary.data.details.attendance', {
-                    attended: attendedMeets,
-                    total: totalMeets
-                }),
-                status,
-                statusCause,
-                isAllowed: status === 'allowed' || status === 'automatic',
-                moduleGrades,
-                moduleDetails,
-                total,
-                examGrade: assessment ? assessment.value : null,
-                completedAt: assessment ? assessment.createdAt || null : null,
-                meets: allMeets
-            } as StudentSummaryData;
-        }).filter((s): s is StudentSummaryData => s !== null);
+                        if (detail.formula.test !== undefined) {
+                            metrics.push({
+                                type: 'test',
+                                val: detail.formula.test,
+                                coeff: detail.formula.testCoeff,
+                            })
+                        }
+                    }
+
+                    let missingTest = ''
+                    if (detail.missingTest) {
+                        missingTest = t('summary.data.moduleTooltip.missingTest')
+                    }
+
+                    let missingLabel = ''
+                    const missingTasks: string[] = []
+                    if (detail.missingTasks && detail.missingTasks.length > 0) {
+                        // Extracting "Missing N tasks" without the task names list
+                        missingLabel = t(
+                            'summary.data.moduleTooltip.missingTasks',
+                            {
+                                count: detail.missingTasks.length,
+                                names: '',
+                            },
+                            detail.missingTasks.length,
+                        )
+                            .replace(/:[ \t]*$/, '')
+                            .replace(':', '')
+                            .trim()
+                        missingTasks.push(...detail.missingTasks)
+                    }
+
+                    moduleDetails[modName] = {
+                        type: detail.type,
+                        metrics,
+                        missingTest,
+                        missingLabel,
+                        missingTasks,
+                    }
+                })
+
+                const assessment = assessmentMap.get(`${member.id}_${assessmentType}`)
+                // examGrade is stored as 100-point — convert to display scale
+                const examGradeRaw = assessment ? Number(assessment.value) : null
+                const examGrade =
+                    examGradeRaw !== null && !isNaN(examGradeRaw)
+                        ? displayFormatter(examGradeRaw)
+                        : null
+                const completedAt =
+                    assessment && assessment.documentedAt ? assessment.documentedAt : null
+
+                return {
+                    id: member.id,
+                    name: member.name,
+                    email: member.email,
+                    aliases: member.aliases || [],
+                    groups: [member.groupName],
+                    marks: marksByStudent.get(member.id) || [],
+
+                    sessionCount: attendedMeets,
+                    totalSessions: totalMeets,
+                    totalDuration: attendedDuration,
+                    averageAttendancePercent: attendancePercent,
+                    averageMark,
+                    totalTasks: effectiveTotal,
+                    completedTasks: completedRegularTasks,
+                    completionPercent: completionExact,
+
+                    completion: Math.round(completionExact),
+                    completionExact: completionExact.toFixed(2),
+                    completionDetails: t('summary.data.details.completion', {
+                        completed: completedRegularTasks,
+                        total: effectiveTotal,
+                    }),
+                    attendance: Math.round(attendancePercent),
+                    attendanceExact: attendancePercent.toFixed(2),
+                    attendanceDetails: t('summary.data.details.attendance', {
+                        attended: attendedMeets,
+                        total: totalMeets,
+                    }),
+                    status,
+                    statusCause,
+                    isAllowed: status === 'automatic' || status === 'allowed',
+                    moduleGrades,
+                    moduleDetails,
+                    total,
+                    totalRaw: totalRaw ?? null,
+                    examGrade,
+                    examGradeRaw,
+                    examIsAuto: assessment?.isAuto !== false, // Default to true for backwards compatibility if undefined
+                    completedAt,
+                    meets: allMeets,
+                } as StudentSummaryData
+            })
+            .filter((s): s is StudentSummaryData => s !== null)
 
         return {
             students: studentsData,
             context: {
                 meets: allMeets,
                 tasks: allTasks,
-                groupsMap: allGroupsMap
-            }
-        };
+                groupsMap: allGroupsMap,
+            },
+        }
     }
 
     async getAllFinalAssessments(): Promise<FinalAssessment[]> {
-        return finalAssessmentsRepository.getAllFinalAssessments();
+        return finalAssessmentsRepository.getAllFinalAssessments()
     }
 
     async getMembersByGroup(groupName: string): Promise<Member[]> {
-        return studentsRepository.getMembersByGroup(groupName);
+        return studentsRepository.getMembersByGroup(groupName)
     }
 
     async updateAssessmentSyncStatus(id: string | number, syncedAt: string | null): Promise<void> {
-        return finalAssessmentsRepository.updateSyncStatus(id, syncedAt);
+        return finalAssessmentsRepository.updateSyncStatus(id, syncedAt)
     }
 
-    async updateAssessmentDocumentStatus(id: string | number, documentedAt: string | null): Promise<void> {
-        return finalAssessmentsRepository.updateDocumentStatus(id, documentedAt);
+    async updateAssessmentDocumentStatus(
+        id: string | number,
+        documentedAt: string | null,
+    ): Promise<void> {
+        return finalAssessmentsRepository.updateDocumentStatus(id, documentedAt)
     }
 
     async getGroups(): Promise<Group[]> {
-        return groupsRepository.getAll();
+        return groupsRepository.getAll()
     }
 
     async getExamSettings(): Promise<any> {
-        return settingsRepository.getExamSettings();
+        return settingsRepository.getExamSettings()
     }
 
     async saveExamSettings(settings: any): Promise<void> {
-        return settingsRepository.saveExamSettings(settings);
+        return settingsRepository.saveExamSettings(settings)
     }
 
-    async getTasksByGroup(groupName: string): Promise<Task[]> {
-        return tasksRepository.getTasksByGroup(groupName);
+    async getTasksByGroup(_groupName: string): Promise<Task[]> {
+        return tasksRepository.getAllTasks()
     }
 
-    async saveFinalAssessment(assessment: Partial<FinalAssessment> & { studentId: string, assessmentType: string }): Promise<any> {
-        return finalAssessmentsRepository.saveFinalAssessment(assessment);
+    async saveFinalAssessment(
+        assessment: Partial<FinalAssessment> & { studentId: string; assessmentType: string },
+    ): Promise<any> {
+        return finalAssessmentsRepository.saveFinalAssessment(assessment)
     }
 
-    async getFinalAssessmentByStudent(studentId: string, type: string): Promise<FinalAssessment | undefined> {
-        return finalAssessmentsRepository.getFinalAssessmentByStudent(studentId, type);
+    async getFinalAssessmentByStudent(
+        studentId: string,
+        type: string,
+    ): Promise<FinalAssessment | undefined> {
+        return finalAssessmentsRepository.getFinalAssessmentByStudent(studentId, type)
     }
 
     async deleteFinalAssessment(id: string | number): Promise<void> {
-        return finalAssessmentsRepository.deleteFinalAssessment(id);
+        return finalAssessmentsRepository.deleteFinalAssessment(id)
     }
 
     async getModulesByGroup(groupName: string): Promise<Module[]> {
-        return modulesRepository.getModulesByGroup(groupName);
+        const units = await unitsRepository.getAllUnits()
+        return units.map((u: Unit) => ({
+            id: u.id,
+            name: u.name,
+            groupId: groupName,
+            groupName,
+            tasks: u.taskIds.map((tId: string) => ({ id: tId })),
+            test: u.testTaskId ? { id: u.testTaskId } : undefined,
+            tasksCoefficient: u.taskCoef || 1,
+            testCoefficient: u.testCoef || 1,
+            minTasksRequired: 1,
+        })) as Module[]
     }
 
-    async saveModule(module: Module): Promise<string | number> {
-        return modulesRepository.saveModule(module);
+    async saveModule(_module: Module): Promise<string | number> {
+        throw new Error('Not implemented. Define Units instead.')
     }
 
-    async deleteModule(id: string | number): Promise<void> {
-        return modulesRepository.deleteModule(id);
+    async deleteModule(_id: string | number): Promise<void> {
+        throw new Error('Not implemented. Delete Units instead.')
     }
 }
 
-export const summaryService = new SummaryService();
+export const summaryService = new SummaryService()

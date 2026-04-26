@@ -1,27 +1,28 @@
-<script setup>
-import { onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import AnalyticsDashboard from '../components/AnalyticsDashboard.vue';
-import { useAnalytics } from '../composables/useAnalytics';
-import { useMeets } from '@/modules/Analytics/composables/useMeets';
+<script setup lang="ts">
+import { useAnalytics } from '@Analytics/composables/useAnalytics'
+import AnalyticsDashboard from '@Analytics/views/AnalyticsDashboard.vue'
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
-const router = useRouter();
-const { stats, loading, loadStats } = useAnalytics();
-const { groupsMap, loadMeets } = useMeets();
+const router = useRouter()
+const { stats, loading, loadStats } = useAnalytics()
 
 onMounted(() => {
-    loadStats();
-    loadMeets();
-});
+    loadStats()
+})
 
-function handleViewDetails(meetId) {
-    router.push({ name: 'AnalyticsDetails', params: { id: meetId } });
+function handleViewDetails(meetId: string): void {
+    router.push({ name: 'AnalyticsDetails', params: { id: meetId } })
 }
 </script>
 
 <template>
-    <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <AnalyticsDashboard :stats="stats" :loading="loading" :groups-map="groupsMap" @view-details="handleViewDetails"
-            @refresh="loadStats" />
+    <div class="container py-4 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <AnalyticsDashboard
+            :stats="stats"
+            :loading="loading"
+            @view-details="handleViewDetails"
+            @refresh="loadStats"
+        />
     </div>
 </template>

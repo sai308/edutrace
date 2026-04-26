@@ -1,41 +1,46 @@
-import { ref } from 'vue';
-import { meetsRepository } from '../services/meets.repository';
-import { groupsRepository } from '@Groups/services/groups.repository';
-import type { Meet } from '../types/analytics';
-import type { Group } from '@Groups/types/groups';
+import type { Meet } from '@Analytics/types/analytics'
+import type { Group } from '@Groups/types/groups'
+import { meetsRepository } from '@Analytics/services/meets.repository'
+import { groupsRepository } from '@Groups/services/groups.repository'
+import { ref } from 'vue'
+import { logger } from '@/shared/lib/logger'
+import { toast } from '@/shared/services/toast'
 
-// Global state - kept global to share across components if needed, or scoped if preferred.
-// Keeping global/module-singleton pattern as per original file.
-const meets = ref<Meet[]>([]);
-const groupsMap = ref<Record<string, Group>>({});
+// Module-level singleton state — shared across all components that call useMeets()
+// so that deletes in one component are reflected everywhere without re-mounting.
+const meets = ref<Meet[]>([])
+const groupsMap = ref<Record<string, Group>>({})
 
 export function useMeets() {
-
-    async function loadMeets() {
-        // Parallel load
+    async function loadMeets(): Promise<void> {
         const [allMeets, groupMap] = await Promise.all([
             meetsRepository.getAllMeets(),
-            groupsRepository.getGroupMap()
-        ]);
-        meets.value = allMeets;
-        groupsMap.value = groupMap;
+            groupsRepository.getGroupMap(),
+        ])
+        meets.value = allMeets
+        groupsMap.value = groupMap
     }
 
-    async function deleteMeet(id: string) {
-        await meetsRepository.deleteMeets([id]);
-        await loadMeets();
+    async function deleteMeet(id: string): Promise<void> {
+        try {
+            await meetsRepository.deleteMeets([id])
+            await loadMeets()
+        } catch (err) {
+            logger.error('Failed to delete meet:', err)
+            toast.error('Failed to delete session')
+        }
     }
 
-    async function bulkDeleteMeets(ids: string[]) {
-        await meetsRepository.deleteMeets(ids);
-        await loadMeets();
+    async function bulkDeleteMeets(ids: string[]): Promise<void> {
+        if (!ids.length) return
+        try {
+            await meetsRepository.deleteMeets(ids)
+            await loadMeets()
+        } catch (err) {
+            logger.error('Failed to bulk delete meets:', err)
+            toast.error('Failed to delete sessions')
+        }
     }
 
-    return {
-        meets,
-        groupsMap,
-        loadMeets,
-        deleteMeet,
-        bulkDeleteMeets
-    };
+    return { meets, groupsMap, loadMeets, deleteMeet, bulkDeleteMeets }
 }

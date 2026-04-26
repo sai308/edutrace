@@ -1,33 +1,26 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { studentsService } from '../students.service';
-import { studentsRepository } from '../students.repository';
-import { meetsRepository } from '@Analytics/services/meets.repository';
-import { groupsRepository } from '@Groups/services/groups.repository';
-import { tasksRepository } from '@Marks/services/tasks.repository';
-import { marksRepository } from '@Marks/services/marks.repository';
-import { settingsRepository } from '@/shared/services/settings.repository';
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { studentsRepository } from '../students.repository'
+import { studentsService } from '../students.service'
 
 // Mock all repositories
-vi.mock('../students.repository');
-vi.mock('../../../Analytics/services/meets.repository');
-vi.mock('../../../Groups/services/groups.repository');
-vi.mock('../../../Marks/services/tasks.repository');
-vi.mock('../../../Marks/services/marks.repository');
-vi.mock('@/shared/services/settings.repository');
+vi.mock('../students.repository')
+vi.mock('../../../Analytics/services/meets.repository')
+vi.mock('../../../Groups/services/groups.repository')
+vi.mock('../../../Marks/services/tasks.repository')
+vi.mock('../../../Marks/services/marks.repository')
+vi.mock('@/shared/services/settings.repository')
 
-describe('StudentsService', () => {
+describe('studentsService', () => {
     beforeEach(() => {
-        vi.clearAllMocks();
-    });
-
-
+        vi.clearAllMocks()
+    })
 
     describe('saveStudent', () => {
         it('should delegate to repository and handle aliases logic', async () => {
-            const originalUser = { id: '1', name: 'OldName', aliases: [] };
-            const formData = { name: 'NewName', email: 'new@example.com' };
+            const originalUser = { id: '1', name: 'OldName', aliases: [] }
+            const formData = { name: 'NewName', email: 'new@example.com' }
 
-            await studentsService.saveStudent(formData, originalUser);
+            await studentsService.saveStudent(formData, originalUser)
 
             expect(studentsRepository.saveMember).toHaveBeenCalledWith(expect.objectContaining({
                 id: '1',
@@ -36,8 +29,8 @@ describe('StudentsService', () => {
                 aliases: ['OldName'],
                 role: 'student',
                 hidden: false,
-                createdAt: expect.any(String)
-            }));
-        });
-    });
-});
+                createdAt: expect.any(String),
+            }))
+        })
+    })
+})

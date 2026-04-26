@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { onMounted, watch } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import MarksView from '../views/MarksView.vue';
-import { useMarks } from '../composables/useMarks';
-import type { Group } from '@/modules/Groups/types/groups';
+import type { Group } from '@/modules/Groups/types/groups'
+import { onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useMarks } from '../composables/useMarks'
+import MarksView from '../views/MarksView.vue'
 
-const route = useRoute();
-const router = useRouter();
+const route = useRoute()
+const router = useRouter()
 
 const {
     groups,
@@ -22,70 +22,93 @@ const {
     toggleSynced,
     deleteMark,
     deleteMarks,
-    isLoading
-} = useMarks();
+    saveManualMark,
+    isLoading,
+} = useMarks()
 
 onMounted(async () => {
     // 1. Load auxiliary data
-    await Promise.all([
-        loadGroups(),
-        loadSuggestions()
-    ]);
+    await Promise.all([loadGroups(), loadSuggestions()])
 
     // 2. Determine initial group
     // Priority: URL query -> First available group -> None
-    let targetGroup = route.query.group as string | undefined;
+    let targetGroup = route.query.group as string | undefined
 
     if (!targetGroup && groups.value.length > 0) {
-        targetGroup = groups.value[0].name;
-        // Sync URL without triggering a navigation stack push if possible, 
-        // but replace is good. 
-        // Note: useQuerySync in MarksView might also try to sync. 
-        // We set it here so MarksView picks it up.
-        router.replace({ query: { ...route.query, group: targetGroup } });
+        targetGroup = groups.value[0]!.name
+        router.replace({ query: { ...route.query, group: targetGroup } })
     }
 
     // 3. Load Marks
-    await loadMarksData(targetGroup);
-});
+    await loadMarksData(targetGroup)
+})
 
 // Watch for URL changes (e.g. user changes filter in MarksView)
-watch(() => route.query.group, async (newGroup) => {
-    await loadMarksData(newGroup as string | null);
-});
+watch(
+    () => route.query.group,
+    async (newGroup) => {
+        await loadMarksData(newGroup as string | null)
+    },
+)
 
-async function handleProcessFile(payload: { file: File; groupName: string }) {
-    await processFile(payload.file, payload.groupName);
-    // Switch view to the imported group
-    router.replace({ query: { ...route.query, group: payload.groupName } });
+async function handleProcessFile(payload: { file: File; groupName: string }): Promise<void> {
+    await processFile(payload.file, payload.groupName)
 }
 
-function handleCreateGroup(groupData: Partial<Group>) {
-    createGroup(groupData);
+async function handleCreateGroup(groupData: Partial<Group>): Promise<Group> {
+    const newGroup = await createGroup(groupData)
+    await loadGroups() // Refresh group list so new group is available
+    return newGroup
+}
+
+async function handleQueueComplete(): Promise<void> {
+    // Reload all marks after the full import queue drains
+    await loadMarksData(null)
 }
 
 function handleToggleSynced(mark: any) {
-    toggleSynced(mark);
+    toggleSynced(mark)
 }
 
 function handleDeleteMark(id: string | number) {
-    deleteMark(id);
+    deleteMark(id)
 }
 
 function handleBulkDeleteMarks(ids: (string | number)[]) {
-    deleteMarks(ids);
+    deleteMarks(ids)
 }
 
 function handleRefresh() {
-    loadMarksData(route.query.group as string | null);
+    loadMarksData(route.query.group as string | null)
+}
+
+async function handleSaveManualMark(data: {
+    groupName: string
+    studentId: string
+    taskId: string
+    score: number
+}) {
+    await saveManualMark(data)
 }
 </script>
 
 <template>
     <div class="animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <MarksView :marks="flatMarks" :groups="groups" :is-processing="isProcessing" :all-meet-ids="allMeetIds"
-            :all-teachers="allTeachers" :is-loading="isLoading" @process-file="handleProcessFile"
-            @create-group="handleCreateGroup" @toggle-synced="handleToggleSynced" @delete-mark="handleDeleteMark"
-            @bulk-delete-marks="handleBulkDeleteMarks" @refresh="handleRefresh" />
+        <MarksView
+            :marks="flatMarks"
+            :groups="groups"
+            :is-processing="isProcessing"
+            :all-meet-ids="allMeetIds"
+            :all-teachers="allTeachers"
+            :is-loading="isLoading"
+            :process-file-fn="handleProcessFile"
+            :create-group-fn="handleCreateGroup"
+            @toggle-synced="handleToggleSynced"
+            @delete-mark="handleDeleteMark"
+            @bulk-delete-marks="handleBulkDeleteMarks"
+            @refresh="handleRefresh"
+            @queue-complete="handleQueueComplete"
+            @save-manual-mark="handleSaveManualMark"
+        />
     </div>
 </template>

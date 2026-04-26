@@ -1,78 +1,100 @@
-import { BaseRepository } from '@/shared/services/BaseRepository';
-import type { Meet, Participant } from '../types/analytics';
+import type { Meet, Participant } from '../types/analytics'
+import { BaseRepository } from '@/shared/services/BaseRepository'
 
 class MeetsRepository extends BaseRepository<'meets'> {
     constructor() {
-        super('meets');
+        super('meets')
     }
 
     async saveMeet(meetData: Meet): Promise<string> {
-        return this.put(meetData);
+        if (!meetData || !meetData.meetId) {
+            throw new Error('saveMeet: meetData must have a meetId')
+        }
+        return this.put(meetData)
     }
 
     async getAllMeets(): Promise<Meet[]> {
-        return this.getAll();
+        return this.getAll()
     }
 
     async getMeetsByMeetId(meetId: string): Promise<Meet[]> {
-        return this.getAllFromIndex('meetId', meetId);
+        if (!meetId || typeof meetId !== 'string') return []
+        return this.getAllFromIndex('meetId', meetId)
     }
 
     async getMeetById(id: string): Promise<Meet | undefined> {
-        return this.getById(id);
+        if (!id || typeof id !== 'string') return undefined
+        return this.getById(id)
     }
 
     async checkMeetExists(meetId: string, date: string): Promise<boolean> {
-        const meets = await this.getAllFromIndex('meetId', meetId);
-        return meets.some(m => m.date === date);
+        if (!meetId || !date) return false
+        const db = await this.getDb()
+        let cursor = await db.transaction('meets').store.index('meetId').openCursor(meetId)
+        while (cursor) {
+            if (cursor.value.date === date) return true
+            cursor = (await cursor.continue()) ?? null
+        }
+        return false
     }
 
     async isDuplicateFile(filename: string, meetId: string, date: string): Promise<boolean> {
-        const meets = await this.getAllFromIndex('meetId', meetId);
-        // Check if consistent date AND filename match
-        return meets.some(m => m.date === date && m.filename === filename);
+        if (!filename || !meetId || !date) return false
+        const db = await this.getDb()
+        let cursor = await db.transaction('meets').store.index('meetId').openCursor(meetId)
+        while (cursor) {
+            const m = cursor.value
+            if (m.date === date && m.filename === filename) return true
+            cursor = (await cursor.continue()) ?? null
+        }
+        return false
     }
 
     async deleteMeets(ids: string[]): Promise<void> {
-        const db = await this.getDb();
-        const tx = db.transaction(this.storeName, 'readwrite');
-        const store = tx.objectStore(this.storeName);
-        await Promise.all(ids.map(id => store.delete(id)));
-        await tx.done;
+        if (!ids || ids.length === 0) return
+        const db = await this.getDb()
+        const tx = db.transaction(this.storeName, 'readwrite')
+        const store = tx.objectStore(this.storeName)
+        await Promise.all(ids.map((id) => store.delete(id)))
+        await tx.done
     }
 
+    /**
+     * Caps every participant's duration to limitMinutes across all stored meets.
+     * Returns the number of meet records that were modified.
+     */
     async applyDurationLimitToAll(limitMinutes: number): Promise<number> {
-        if (!limitMinutes || limitMinutes <= 0) return 0;
+        if (typeof limitMinutes !== 'number' || !isFinite(limitMinutes) || limitMinutes <= 0) {
+            return 0
+        }
 
-        const limitSeconds = limitMinutes * 60;
-        const db = await this.getDb();
+        const limitSeconds = limitMinutes * 60
+        const db = await this.getDb()
+        const tx = db.transaction(this.storeName, 'readwrite')
+        const store = tx.objectStore(this.storeName)
+        const meets: Meet[] = await store.getAll()
 
-        const tx = db.transaction(this.storeName, 'readwrite');
-        const store = tx.objectStore(this.storeName);
-        const meets: Meet[] = await store.getAll();
-
-        let fixedCount = 0;
+        let fixedCount = 0
 
         for (const meet of meets) {
-            let changed = false;
-            if (meet.participants) {
+            let changed = false
+            if (Array.isArray(meet.participants)) {
                 meet.participants.forEach((p: Participant) => {
-                    if (p.duration > limitSeconds) {
-                        p.duration = limitSeconds;
-                        changed = true;
+                    if (typeof p.duration === 'number' && p.duration > limitSeconds) {
+                        p.duration = limitSeconds
+                        changed = true
                     }
-                });
+                })
             }
-
             if (changed) {
-                await store.put(meet);
-                fixedCount++;
+                await store.put(meet)
+                fixedCount++
             }
         }
 
-        await tx.done;
-        return fixedCount;
+        await tx.done
+        return fixedCount
     }
 }
 
-export const meetsRepository = new MeetsRepository();
+export const meetsRepository = new MeetsRepository()

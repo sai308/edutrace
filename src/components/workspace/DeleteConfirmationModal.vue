@@ -1,47 +1,50 @@
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
-import { AlertTriangle, Trash2 } from 'lucide-vue-next';
+import { AlertTriangle, Trash2 } from 'lucide-vue-next'
+import { computed, ref, watch } from 'vue'
+import { Button } from '@/components/ui/button'
 import {
     Dialog,
+    DialogClose,
     DialogContent,
     DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogClose
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+} from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 const props = defineProps<{
-    open: boolean;
-    workspaceName: string;
-}>();
+    open: boolean
+    workspaceName: string
+}>()
 
 const emit = defineEmits<{
-    (e: 'update:open', value: boolean): void;
-    (e: 'confirm'): void;
-}>();
+    (e: 'update:open', value: boolean): void
+    (e: 'confirm'): void
+}>()
 
-const confirmationInput = ref('');
+const confirmationInput = ref('')
 
 // Reset input when modal opens
-watch(() => props.open, (isOpen) => {
-    if (isOpen) {
-        confirmationInput.value = '';
-    }
-});
+watch(
+    () => props.open,
+    (isOpen) => {
+        if (isOpen) {
+            confirmationInput.value = ''
+        }
+    },
+)
 
 const isConfirmed = computed(() => {
-    return confirmationInput.value === props.workspaceName;
-});
+    return confirmationInput.value === props.workspaceName
+})
 
-const handleConfirm = () => {
+function handleConfirm() {
     if (isConfirmed.value) {
-        emit('confirm');
+        emit('confirm')
     }
-};
+}
 </script>
 
 <template>
@@ -55,14 +58,20 @@ const handleConfirm = () => {
                     <DialogTitle>{{ $t('workspace.delete_modal_title') }}</DialogTitle>
                 </div>
                 <DialogDescription class="pt-2">
-                    <span v-html="$t('workspace.delete_warning', { name: `<strong>${workspaceName}</strong>` })"></span>
+                    <i18n-t keypath="workspace.delete_warning" tag="span">
+                        <template #name>
+                            <strong>{{ workspaceName }}</strong>
+                        </template>
+                    </i18n-t>
                 </DialogDescription>
             </DialogHeader>
 
             <div class="space-y-4 py-4">
                 <div class="space-y-2">
-                    <Label>{{ $t('workspace.delete_confirm_label', { name: workspaceName }) }}</Label>
-                    <Input 
+                    <Label>{{
+                        $t('workspace.delete_confirm_label', { name: workspaceName })
+                    }}</Label>
+                    <Input
                         v-model="confirmationInput"
                         :placeholder="workspaceName"
                         class="border-destructive/50 focus-visible:ring-destructive"
@@ -77,11 +86,11 @@ const handleConfirm = () => {
                         {{ $t('common.cancel') }}
                     </Button>
                 </DialogClose>
-                <Button 
-                    variant="destructive" 
+                <Button
+                    variant="destructive"
                     :disabled="!isConfirmed"
-                    @click="handleConfirm"
                     class="gap-2"
+                    @click="handleConfirm"
                 >
                     <Trash2 class="size-4" />
                     {{ $t('workspace.delete_button') }}
