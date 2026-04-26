@@ -198,7 +198,7 @@ defineExpose({ table })
                                     @dragstart="handleDragStart($event, index)"
                                     @dragover="handleDragOver($event, index)"
                                     @dragleave="
-                                        draggedOverIndex = null
+                                        draggedOverIndex = null;
                                         dragDirection = null
                                     "
                                     @drop="handleDrop($event, index)"

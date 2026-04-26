@@ -122,8 +122,8 @@ function getTaskActions(task: Task): RowActionItem[] {
                     class="gap-2"
                     @click="
                         () => {
-                            editingTask = null
-                            showTaskDialog = true
+                            editingTask = null;
+                            showTaskDialog = true;
                         }
                     "
                 >
@@ -232,8 +232,8 @@ function getTaskActions(task: Task): RowActionItem[] {
                     class="gap-2"
                     @click="
                         () => {
-                            editingTask = null
-                            showTaskDialog = true
+                            editingTask = null;
+                            showTaskDialog = true;
                         }
                     "
                 >

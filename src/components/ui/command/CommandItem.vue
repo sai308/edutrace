@@ -74,7 +74,7 @@ onUnmounted(() => {
         "
         @select="
             () => {
-                filterState.search = ''
+                filterState.search = '';
             }
         "
     >
