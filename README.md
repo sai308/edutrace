@@ -47,4 +47,4 @@ Build command: `pnpm install --frozen-lockfile && pnpm build`
 Output directory: `dist`  
 Node version: 22
 
-`public/_redirects` handles SPA routing fallback. `public/_headers` sets security headers.
+`wrangler.jsonc` handles SPA routing (`not_found_handling`). `public/_headers` sets security headers.
