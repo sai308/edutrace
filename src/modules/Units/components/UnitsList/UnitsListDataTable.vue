@@ -2,13 +2,7 @@
 import type { RowSelectionState, SortingState, VisibilityState } from '@tanstack/vue-table'
 import type { Unit } from '@Units/types/units'
 import type { RowActionItem } from '@/shared/types/table'
-import {
-    FlexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getSortedRowModel,
-    useVueTable,
-} from '@tanstack/vue-table'
+import { FlexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table'
 import { useStorage } from '@vueuse/core'
 import { Layers } from 'lucide-vue-next'
 import { ref, watch } from 'vue'
@@ -20,14 +14,7 @@ import {
     ContextMenuSeparator,
     ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import DataTableEmptyState from '@/shared/components/DataTableEmptyState.vue'
 import { valueUpdater } from '@/shared/lib/utils'
 import { createColumns } from './columns'
@@ -79,7 +66,7 @@ const table = useVueTable({
 
 watch(
     () => props.searchQuery,
-    (q) => table.setGlobalFilter(q ?? ''),
+    (q) => table.setGlobalFilter(q ?? '')
 )
 
 watch(
@@ -88,7 +75,7 @@ watch(
         table.setColumnVisibility((prev) => ({ ...prev, select: !!enabled }))
         if (!enabled) table.toggleAllRowsSelected(false)
     },
-    { immediate: true },
+    { immediate: true }
 )
 
 // ── Drag-to-reorder ──────────────────────────────────────────────────────────
@@ -163,13 +150,9 @@ defineExpose({ table })
         <slot name="toolbar" :table="table" />
 
         <!-- Table -->
-        <div
-            class="rounded-md border bg-card overflow-auto max-h-[calc(100svh-20rem)] custom-scrollbar"
-        >
+        <div class="rounded-md border bg-card overflow-auto max-h-[calc(100svh-20rem)] custom-scrollbar">
             <Table>
-                <TableHeader
-                    class="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]"
-                >
+                <TableHeader class="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
                     <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
                         <TableHead
                             v-for="header in headerGroup.headers"
@@ -213,10 +196,7 @@ defineExpose({ table })
                                     @dragend="handleDragEnd"
                                 >
                                     <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-                                        <FlexRender
-                                            :render="cell.column.columnDef.cell"
-                                            :props="cell.getContext()"
-                                        />
+                                        <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
                                     </TableCell>
                                 </TableRow>
                             </ContextMenuTrigger>

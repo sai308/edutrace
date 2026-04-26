@@ -31,13 +31,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { localeService } from '@/services/locale'
 import { logger } from '@/shared/lib/logger'
@@ -183,9 +177,7 @@ function getTimestamp() {
 </script>
 
 <template>
-    <div
-        class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500"
-    >
+    <div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <!-- Header -->
         <div>
             <h1 class="text-2xl font-bold tracking-tight">
@@ -220,11 +212,7 @@ function getTimestamp() {
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem
-                                    v-for="loc in availableLocales"
-                                    :key="loc.code"
-                                    :value="loc.code"
-                                >
+                                <SelectItem v-for="loc in availableLocales" :key="loc.code" :value="loc.code">
                                     <div class="flex items-center">
                                         <span class="text-base leading-none">{{ loc.flag }}</span>
                                         <span>&nbsp;&nbsp;{{ loc.label }}</span>
@@ -282,20 +270,11 @@ function getTimestamp() {
                             v-for="ws in workspaces"
                             :key="ws.id"
                             class="flex items-center gap-2 rounded-md border px-3 py-2"
-                            :class="
-                                ws.id === currentWorkspaceId ? 'bg-muted/40 border-primary/30' : ''
-                            "
+                            :class="ws.id === currentWorkspaceId ? 'bg-muted/40 border-primary/30' : ''"
                         >
-                            <component
-                                :is="getWorkspaceIcon(ws.icon)"
-                                class="size-4 shrink-0 text-muted-foreground"
-                            />
+                            <component :is="getWorkspaceIcon(ws.icon)" class="size-4 shrink-0 text-muted-foreground" />
                             <span class="flex-1 truncate text-sm font-medium">{{ ws.name }}</span>
-                            <Badge
-                                v-if="ws.id === currentWorkspaceId"
-                                variant="secondary"
-                                class="text-xs shrink-0"
-                            >
+                            <Badge v-if="ws.id === currentWorkspaceId" variant="secondary" class="text-xs shrink-0">
                                 {{ $t('globalSettings.workspaces.active') }}
                             </Badge>
                             <Button
@@ -324,16 +303,9 @@ function getTimestamp() {
 
                     <!-- Actions -->
                     <div class="flex w-full gap-3 sm:w-auto">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            class="gap-1.5 flex-1"
-                            @click="importInput?.click()"
-                        >
+                        <Button variant="outline" size="sm" class="gap-1.5 flex-1" @click="importInput?.click()">
                             <Upload class="size-3.5 shrink-0" />
-                            <span class="truncate">{{
-                                $t('globalSettings.workspaces.import')
-                            }}</span>
+                            <span class="truncate">{{ $t('globalSettings.workspaces.import') }}</span>
                         </Button>
                         <Button
                             variant="outline"
@@ -343,19 +315,11 @@ function getTimestamp() {
                             @click="exportAllWorkspaces"
                         >
                             <Download class="size-3.5 shrink-0" />
-                            <span class="truncate">{{
-                                $t('globalSettings.workspaces.exportAll')
-                            }}</span>
+                            <span class="truncate">{{ $t('globalSettings.workspaces.exportAll') }}</span>
                         </Button>
                     </div>
 
-                    <input
-                        ref="importInput"
-                        type="file"
-                        accept=".json"
-                        class="hidden"
-                        @change="handleImportFile"
-                    />
+                    <input ref="importInput" type="file" accept=".json" class="hidden" @change="handleImportFile" />
                 </CardContent>
             </Card>
         </div>
@@ -431,9 +395,7 @@ function getTimestamp() {
                         <ClipboardCheck v-if="copied" class="size-3.5 shrink-0 text-green-500" />
                         <ClipboardCopy v-else class="size-3.5 shrink-0" />
                         <span class="truncate">{{
-                            copied
-                                ? $t('globalSettings.dev.copied')
-                                : $t('globalSettings.dev.copyDiagnostics')
+                            copied ? $t('globalSettings.dev.copied') : $t('globalSettings.dev.copyDiagnostics')
                         }}</span>
                     </Button>
                 </div>

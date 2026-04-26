@@ -14,7 +14,7 @@ describe('tasksRepository', () => {
                     name: '',
                     normalizedName: 'test',
                     maxPoints: 0,
-                }),
+                })
             ).rejects.toThrow('Task name is required')
         })
 
@@ -25,7 +25,7 @@ describe('tasksRepository', () => {
                     name: '   ',
                     normalizedName: 'test',
                     maxPoints: 0,
-                }),
+                })
             ).rejects.toThrow('Task name is required')
         })
 
@@ -36,7 +36,7 @@ describe('tasksRepository', () => {
                     name: 'Task',
                     normalizedName: '',
                     maxPoints: 0,
-                }),
+                })
             ).rejects.toThrow('Task normalizedName is required')
         })
 
@@ -48,9 +48,7 @@ describe('tasksRepository', () => {
                 normalizedName: 'task1',
                 maxPoints: 5,
             })
-            expect(putSpy).toHaveBeenCalledWith(
-                expect.objectContaining({ id: 'a', name: 'Task 1' }),
-            )
+            expect(putSpy).toHaveBeenCalledWith(expect.objectContaining({ id: 'a', name: 'Task 1' }))
         })
 
         it('calls add when task has no id', async () => {
@@ -90,9 +88,7 @@ describe('tasksRepository', () => {
             const result = await tasksRepository.getAllTasks()
 
             expect(result).toHaveLength(2)
-            expect(result.map((t) => t.name)).toEqual(
-                expect.arrayContaining(['Task Alpha', 'Task Beta']),
-            )
+            expect(result.map((t) => t.name)).toEqual(expect.arrayContaining(['Task Alpha', 'Task Beta']))
         })
 
         it('includes all task fields in the result', async () => {

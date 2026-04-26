@@ -12,8 +12,7 @@ const { locale } = useI18n()
 const sections = shallowRef<GuideSection[]>([])
 
 watchEffect(async () => {
-    const mod =
-        locale.value === 'uk-UA' ? await import('./guide/uk-UA') : await import('./guide/en-US')
+    const mod = locale.value === 'uk-UA' ? await import('./guide/uk-UA') : await import('./guide/en-US')
     sections.value = mod.sections
 })
 
@@ -37,7 +36,7 @@ function setupScrollObserver() {
                 if (id) activeSection.value = id
             }
         },
-        { rootMargin: '-20% 0px -70% 0px', threshold: 0 },
+        { rootMargin: '-20% 0px -70% 0px', threshold: 0 }
     )
 
     sections.value.forEach((s) => {
@@ -54,9 +53,7 @@ onUnmounted(() => observer?.disconnect())
     <div class="container max-w-6xl py-4">
         <div class="flex gap-12 relative">
             <aside class="w-64 shrink-0 hidden lg:block sticky top-24 h-fit">
-                <div
-                    class="font-semibold mb-4 px-2 text-sm uppercase tracking-wider text-muted-foreground/70"
-                >
+                <div class="font-semibold mb-4 px-2 text-sm uppercase tracking-wider text-muted-foreground/70">
                     Sections
                 </div>
                 <nav class="space-y-1">
@@ -79,12 +76,7 @@ onUnmounted(() => observer?.disconnect())
             </aside>
 
             <div class="flex-1 space-y-24">
-                <section
-                    v-for="s in sections"
-                    :id="s.id"
-                    :key="s.id"
-                    class="scroll-mt-24 space-y-6"
-                >
+                <section v-for="s in sections" :id="s.id" :key="s.id" class="scroll-mt-24 space-y-6">
                     <div class="flex items-center gap-4 border-b pb-4">
                         <div class="p-2.5 rounded-xl bg-primary/10 text-primary shadow-sm">
                             <component :is="getIcon(s.icon)" class="size-6" />
@@ -108,11 +100,7 @@ onUnmounted(() => observer?.disconnect())
                         </div>
 
                         <div class="grid gap-6 md:grid-cols-2">
-                            <Card
-                                v-for="(group, idx) in s.details"
-                                :key="idx"
-                                class="border shadow-sm overflow-hidden"
-                            >
+                            <Card v-for="(group, idx) in s.details" :key="idx" class="border shadow-sm overflow-hidden">
                                 <div class="p-6 bg-muted/30 border-b">
                                     <h3 class="text-xl font-bold text-foreground leading-none">
                                         {{ group.title }}
@@ -134,9 +122,7 @@ onUnmounted(() => observer?.disconnect())
                                                 >
                                                     {{ item.title }}
                                                 </h4>
-                                                <p
-                                                    class="text-sm text-muted-foreground leading-relaxed"
-                                                >
+                                                <p class="text-sm text-muted-foreground leading-relaxed">
                                                     {{ item.description }}
                                                 </p>
                                             </div>

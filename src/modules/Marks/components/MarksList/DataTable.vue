@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import type { Group } from '@Groups/types/groups'
-import type {
-    ColumnFiltersState,
-    PaginationState,
-    SortingState,
-    VisibilityState,
-} from '@tanstack/vue-table'
+import type { ColumnFiltersState, PaginationState, SortingState, VisibilityState } from '@tanstack/vue-table'
 import type { ActiveFilters, UIMark } from './columns'
 import type { MarkFormat } from '@/shared/composables/useMarkFormat'
 import {
@@ -20,14 +15,7 @@ import { useStorage } from '@vueuse/core'
 import { GraduationCap } from 'lucide-vue-next'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import DataTableEmptyState from '@/shared/components/DataTableEmptyState.vue'
 import { useCompactName } from '@/shared/composables/useCompactName'
 import { useFormatters } from '@/shared/composables/useFormatters'
@@ -65,9 +53,7 @@ const formatters = {
 // columns is a computed so TanStack re-evaluates cells when isCompact changes
 // (breakpoint crossing sm=640px), without resetting sort/filter/selection state
 // because column IDs remain stable across recomputes.
-const columns = computed(() =>
-    createColumns(emit, formatters, t, () => props.selectedFormat ?? '', isCompact),
-)
+const columns = computed(() => createColumns(emit, formatters, t, () => props.selectedFormat ?? '', isCompact))
 
 const sorting = ref<SortingState>([{ id: 'added', desc: true }])
 const rowSelection = ref({})
@@ -130,7 +116,7 @@ watch(
     () => props.searchQuery,
     (q) => {
         table.setGlobalFilter(q)
-    },
+    }
 )
 
 watch(
@@ -144,7 +130,7 @@ watch(
         }
         table.setColumnFilters([{ id: '_filters', value: filters ?? defaultFilters }])
     },
-    { immediate: true, deep: true },
+    { immediate: true, deep: true }
 )
 
 // Reveal/hide the select column in response to bulk mode toggle (Rule 9).
@@ -157,7 +143,7 @@ watch(
         table.setColumnVisibility((prev) => ({ ...prev, select: !!enabled }))
         if (!enabled) table.toggleAllRowsSelected(false)
     },
-    { immediate: true },
+    { immediate: true }
 )
 
 defineExpose({ table })
@@ -167,13 +153,9 @@ defineExpose({ table })
     <div class="space-y-3">
         <slot name="toolbar" :table="table" />
 
-        <div
-            class="rounded-md border bg-card overflow-auto max-h-[calc(100svh-20rem)] custom-scrollbar"
-        >
+        <div class="rounded-md border bg-card overflow-auto max-h-[calc(100svh-20rem)] custom-scrollbar">
             <Table>
-                <TableHeader
-                    class="sticky top-0 z-30 bg-card shadow-[0_1px_0_0_hsl(var(--border))]"
-                >
+                <TableHeader class="sticky top-0 z-30 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
                     <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
                         <TableHead
                             v-for="header in headerGroup.headers"
@@ -211,10 +193,7 @@ defineExpose({ table })
                                     cell.column.id === 'actions' ? 'p-0' : '',
                                 ]"
                             >
-                                <FlexRender
-                                    :render="cell.column.columnDef.cell"
-                                    :props="cell.getContext()"
-                                />
+                                <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
                             </TableCell>
                         </TableRow>
                     </template>

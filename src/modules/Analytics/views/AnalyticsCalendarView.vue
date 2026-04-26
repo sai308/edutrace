@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import type { DetailedSession, DetailedStats } from '@Analytics/types/analytics'
 import DayDetailsModal from '@Analytics/components/DayDetailsModal.vue'
-import {
-    ATTENDANCE_BADGE_THRESHOLDS,
-    TARGET_SESSION_SECONDS,
-} from '@Analytics/constants/analytics.constants'
+import { ATTENDANCE_BADGE_THRESHOLDS, TARGET_SESSION_SECONDS } from '@Analytics/constants/analytics.constants'
 import { format, parseISO } from 'date-fns'
 import { Calendar, ChevronLeft, ChevronRight, Clock, Users } from 'lucide-vue-next'
 import { computed, ref, watch } from 'vue'
@@ -39,10 +36,7 @@ function computeSemesterMetrics(sessions: Record<string, DetailedSession>, start
         return d >= start && d <= end
     })
     if (!entries.length) return { sessions: 0, avgParticipants: 0, avgDuration: 0 }
-    const totalParticipants = entries.reduce(
-        (s, [, sess]) => s + Object.keys(sess.participants).length,
-        0,
-    )
+    const totalParticipants = entries.reduce((s, [, sess]) => s + Object.keys(sess.participants).length, 0)
     const totalDuration = entries.reduce((s, [, sess]) => s + sess.maxDuration, 0)
     return {
         sessions: entries.length,
@@ -64,11 +58,7 @@ const semesterStats = computed(() => {
     const currentRange = semesterRange(currentYear, currentSem)
     const prevRange = semesterRange(prevYear, prevSem)
 
-    const current = computeSemesterMetrics(
-        props.stats.sessions,
-        currentRange.start,
-        currentRange.end,
-    )
+    const current = computeSemesterMetrics(props.stats.sessions, currentRange.start, currentRange.end)
     const previous = computeSemesterMetrics(props.stats.sessions, prevRange.start, prevRange.end)
 
     return {
@@ -108,7 +98,7 @@ watch(
         const last = dates?.[dates.length - 1]
         if (last) currentMonth.value = parseISO(last)
     },
-    { immediate: true },
+    { immediate: true }
 )
 
 const calendarDays = computed<ExtendedCalendarDay[]>(() => {
@@ -195,13 +185,9 @@ const selectedDayLabel = computed<string>(() => {
         <div v-if="semesterStats" class="grid grid-cols-3 gap-2">
             <Card class="min-w-0">
                 <CardContent class="p-2 sm:p-3 flex items-center gap-2 sm:gap-3">
-                    <Calendar
-                        class="h-5 w-5 sm:h-7 sm:w-7 text-muted-foreground opacity-60 shrink-0"
-                    />
+                    <Calendar class="h-5 w-5 sm:h-7 sm:w-7 text-muted-foreground opacity-60 shrink-0" />
                     <div class="min-w-0">
-                        <p
-                            class="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground"
-                        >
+                        <p class="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground">
                             {{ $t('analytics.details.calendar.semester.sessions') }}
                         </p>
                         <div class="flex items-baseline gap-1.5 flex-wrap">
@@ -211,19 +197,12 @@ const selectedDayLabel = computed<string>(() => {
                             <span
                                 v-if="semesterStats.hasPrev && semesterStats.sessionsDelta !== 0"
                                 class="text-[10px] font-semibold"
-                                :class="
-                                    semesterStats.sessionsDelta > 0
-                                        ? 'text-emerald-500'
-                                        : 'text-red-500'
-                                "
+                                :class="semesterStats.sessionsDelta > 0 ? 'text-emerald-500' : 'text-red-500'"
                             >
-                                {{ semesterStats.sessionsDelta > 0 ? '+' : ''
-                                }}{{ semesterStats.sessionsDelta }}
+                                {{ semesterStats.sessionsDelta > 0 ? '+' : '' }}{{ semesterStats.sessionsDelta }}
                             </span>
                         </div>
-                        <p
-                            class="text-[9px] sm:text-xs text-muted-foreground truncate hidden sm:block"
-                        >
+                        <p class="text-[9px] sm:text-xs text-muted-foreground truncate hidden sm:block">
                             {{ semesterStats.currentLabel }}
                         </p>
                     </div>
@@ -232,13 +211,9 @@ const selectedDayLabel = computed<string>(() => {
 
             <Card class="min-w-0">
                 <CardContent class="p-2 sm:p-3 flex items-center gap-2 sm:gap-3">
-                    <Users
-                        class="h-5 w-5 sm:h-7 sm:w-7 text-muted-foreground opacity-60 shrink-0"
-                    />
+                    <Users class="h-5 w-5 sm:h-7 sm:w-7 text-muted-foreground opacity-60 shrink-0" />
                     <div class="min-w-0">
-                        <p
-                            class="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground"
-                        >
+                        <p class="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground">
                             {{ $t('analytics.details.calendar.semester.avgParticipants') }}
                         </p>
                         <div class="flex items-baseline gap-1.5 flex-wrap">
@@ -246,24 +221,15 @@ const selectedDayLabel = computed<string>(() => {
                                 {{ semesterStats.current.avgParticipants }}
                             </div>
                             <span
-                                v-if="
-                                    semesterStats.hasPrev &&
-                                    semesterStats.avgParticipantsDelta !== 0
-                                "
+                                v-if="semesterStats.hasPrev && semesterStats.avgParticipantsDelta !== 0"
                                 class="text-[10px] font-semibold"
-                                :class="
-                                    semesterStats.avgParticipantsDelta > 0
-                                        ? 'text-emerald-500'
-                                        : 'text-red-500'
-                                "
+                                :class="semesterStats.avgParticipantsDelta > 0 ? 'text-emerald-500' : 'text-red-500'"
                             >
                                 {{ semesterStats.avgParticipantsDelta > 0 ? '+' : ''
                                 }}{{ semesterStats.avgParticipantsDelta }}
                             </span>
                         </div>
-                        <p
-                            class="text-[9px] sm:text-xs text-muted-foreground truncate hidden sm:block"
-                        >
+                        <p class="text-[9px] sm:text-xs text-muted-foreground truncate hidden sm:block">
                             {{ semesterStats.currentLabel }}
                         </p>
                     </div>
@@ -272,13 +238,9 @@ const selectedDayLabel = computed<string>(() => {
 
             <Card class="min-w-0">
                 <CardContent class="p-2 sm:p-3 flex items-center gap-2 sm:gap-3">
-                    <Clock
-                        class="h-5 w-5 sm:h-7 sm:w-7 text-muted-foreground opacity-60 shrink-0"
-                    />
+                    <Clock class="h-5 w-5 sm:h-7 sm:w-7 text-muted-foreground opacity-60 shrink-0" />
                     <div class="min-w-0">
-                        <p
-                            class="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground"
-                        >
+                        <p class="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground">
                             {{ $t('analytics.details.calendar.semester.avgDuration') }}
                         </p>
                         <div class="flex items-baseline gap-1.5 flex-wrap">
@@ -288,19 +250,13 @@ const selectedDayLabel = computed<string>(() => {
                             <span
                                 v-if="semesterStats.hasPrev && semesterStats.avgDurationDelta !== 0"
                                 class="text-[10px] font-semibold shrink-0"
-                                :class="
-                                    semesterStats.avgDurationDelta > 0
-                                        ? 'text-emerald-500'
-                                        : 'text-red-500'
-                                "
+                                :class="semesterStats.avgDurationDelta > 0 ? 'text-emerald-500' : 'text-red-500'"
                             >
                                 {{ semesterStats.avgDurationDelta > 0 ? '+' : ''
                                 }}{{ Math.round(semesterStats.avgDurationDelta / 60) }}m
                             </span>
                         </div>
-                        <p
-                            class="text-[9px] sm:text-xs text-muted-foreground truncate hidden sm:block"
-                        >
+                        <p class="text-[9px] sm:text-xs text-muted-foreground truncate hidden sm:block">
                             {{ semesterStats.currentLabel }}
                         </p>
                     </div>
@@ -340,10 +296,7 @@ const selectedDayLabel = computed<string>(() => {
                     v-for="day in calendarDays"
                     :key="day.dateStr"
                     class="min-h-[80px] sm:min-h-[120px] p-1 sm:p-2 transition-colors relative"
-                    :class="[
-                        !day.isCurrentMonth && 'bg-muted/10 text-muted-foreground',
-                        day.isToday && 'bg-primary/5',
-                    ]"
+                    :class="[!day.isCurrentMonth && 'bg-muted/10 text-muted-foreground', day.isToday && 'bg-primary/5']"
                 >
                     <div class="flex items-center justify-between mb-1 sm:mb-2">
                         <span
@@ -366,9 +319,7 @@ const selectedDayLabel = computed<string>(() => {
                         </div>
 
                         <div class="hidden sm:block space-y-0.5">
-                            <div
-                                class="flex items-center justify-between text-[10px] text-muted-foreground"
-                            >
+                            <div class="flex items-center justify-between text-[10px] text-muted-foreground">
                                 <span>{{ formatDuration(day.maxDuration) }}</span>
                                 <span>{{ day.durationPercent }}%</span>
                             </div>
@@ -388,9 +339,7 @@ const selectedDayLabel = computed<string>(() => {
                             <span class="truncate">{{ formatTime(day.startTime) }}</span>
                         </div>
 
-                        <div
-                            class="flex items-center gap-1 text-[9px] sm:text-xs font-medium text-primary"
-                        >
+                        <div class="flex items-center gap-1 text-[9px] sm:text-xs font-medium text-primary">
                             <Users class="w-2.5 h-2.5 sm:w-3 sm:h-3" />
                             <span class="hidden sm:inline">{{
                                 $t('analytics.details.calendar.participants', {
@@ -412,9 +361,7 @@ const selectedDayLabel = computed<string>(() => {
             <div class="grid grid-cols-3 gap-2">
                 <Card class="min-w-0">
                     <CardContent class="p-2 sm:p-3 flex items-center gap-2 sm:gap-3">
-                        <Calendar
-                            class="h-5 w-5 sm:h-7 sm:w-7 text-muted-foreground opacity-60 shrink-0"
-                        />
+                        <Calendar class="h-5 w-5 sm:h-7 sm:w-7 text-muted-foreground opacity-60 shrink-0" />
                         <div class="min-w-0">
                             <p
                                 class="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground"
@@ -424,9 +371,7 @@ const selectedDayLabel = computed<string>(() => {
                             <div class="text-sm sm:text-xl font-bold">
                                 {{ semesterStats.previous.sessions }}
                             </div>
-                            <p
-                                class="text-[9px] sm:text-xs text-muted-foreground truncate hidden sm:block"
-                            >
+                            <p class="text-[9px] sm:text-xs text-muted-foreground truncate hidden sm:block">
                                 {{ semesterStats.prevLabel }}
                             </p>
                         </div>
@@ -435,9 +380,7 @@ const selectedDayLabel = computed<string>(() => {
 
                 <Card class="min-w-0">
                     <CardContent class="p-2 sm:p-3 flex items-center gap-2 sm:gap-3">
-                        <Users
-                            class="h-5 w-5 sm:h-7 sm:w-7 text-muted-foreground opacity-60 shrink-0"
-                        />
+                        <Users class="h-5 w-5 sm:h-7 sm:w-7 text-muted-foreground opacity-60 shrink-0" />
                         <div class="min-w-0">
                             <p
                                 class="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground"
@@ -447,9 +390,7 @@ const selectedDayLabel = computed<string>(() => {
                             <div class="text-sm sm:text-xl font-bold">
                                 {{ semesterStats.previous.avgParticipants }}
                             </div>
-                            <p
-                                class="text-[9px] sm:text-xs text-muted-foreground truncate hidden sm:block"
-                            >
+                            <p class="text-[9px] sm:text-xs text-muted-foreground truncate hidden sm:block">
                                 {{ semesterStats.prevLabel }}
                             </p>
                         </div>
@@ -458,9 +399,7 @@ const selectedDayLabel = computed<string>(() => {
 
                 <Card class="min-w-0">
                     <CardContent class="p-2 sm:p-3 flex items-center gap-2 sm:gap-3">
-                        <Clock
-                            class="h-5 w-5 sm:h-7 sm:w-7 text-muted-foreground opacity-60 shrink-0"
-                        />
+                        <Clock class="h-5 w-5 sm:h-7 sm:w-7 text-muted-foreground opacity-60 shrink-0" />
                         <div class="min-w-0">
                             <p
                                 class="text-[10px] sm:text-xs font-medium uppercase tracking-wider text-muted-foreground"
@@ -470,9 +409,7 @@ const selectedDayLabel = computed<string>(() => {
                             <div class="text-sm sm:text-xl font-bold truncate">
                                 {{ formatDuration(semesterStats.previous.avgDuration) }}
                             </div>
-                            <p
-                                class="text-[9px] sm:text-xs text-muted-foreground truncate hidden sm:block"
-                            >
+                            <p class="text-[9px] sm:text-xs text-muted-foreground truncate hidden sm:block">
                                 {{ semesterStats.prevLabel }}
                             </p>
                         </div>

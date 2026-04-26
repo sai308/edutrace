@@ -15,12 +15,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-import {
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    useSidebar,
-} from '@/components/ui/sidebar'
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
 import DeleteConfirmationModal from '@/components/workspace/DeleteConfirmationModal.vue'
 import WorkspaceModal from '@/components/workspace/WorkspaceModal.vue'
 import { logger } from '@/shared/lib/logger'
@@ -42,7 +37,7 @@ const selectedWorkspace = ref<Workspace | null>(null)
 
 // --- Computed ---
 const activeWorkspace = computed(
-    () => workspaces.value.find((ws) => ws.id === currentWorkspaceId.value) || workspaces.value[0],
+    () => workspaces.value.find((ws) => ws.id === currentWorkspaceId.value) || workspaces.value[0]
 )
 
 const sortedWorkspaces = computed(() => {
@@ -102,15 +97,11 @@ async function handleCreate(data: { name: string; icon: string; copySettings?: b
             })
             // We use the same repository to save to the NEW workspace context
             options.saveSettings = async (settings: any) => {
-                if (settings.durationLimit)
-                    await settingsRepository.saveDurationLimit(settings.durationLimit)
-                if (settings.defaultTeacher)
-                    await settingsRepository.saveDefaultTeacher(settings.defaultTeacher)
-                if (settings.ignoredUsers)
-                    await settingsRepository.saveIgnoredUsers(settings.ignoredUsers)
+                if (settings.durationLimit) await settingsRepository.saveDurationLimit(settings.durationLimit)
+                if (settings.defaultTeacher) await settingsRepository.saveDefaultTeacher(settings.defaultTeacher)
+                if (settings.ignoredUsers) await settingsRepository.saveIgnoredUsers(settings.ignoredUsers)
                 if (settings.teachers) await settingsRepository.saveTeachers(settings.teachers)
-                if (settings.examSettings)
-                    await settingsRepository.saveExamSettings(settings.examSettings)
+                if (settings.examSettings) await settingsRepository.saveExamSettings(settings.examSettings)
             }
         }
 
@@ -201,18 +192,12 @@ onMounted(() => {
                             <component :is="getIcon(activeWorkspace?.icon)" class="size-4" />
                         </div>
 
-                        <div
-                            class="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden"
-                        >
+                        <div class="grid flex-1 text-left text-sm leading-tight group-data-[collapsible=icon]:hidden">
                             <span class="truncate font-semibold">{{ activeWorkspace?.name }}</span>
-                            <span class="truncate text-xs text-muted-foreground">{{
-                                $t('app.title')
-                            }}</span>
+                            <span class="truncate text-xs text-muted-foreground">{{ $t('app.title') }}</span>
                         </div>
 
-                        <ChevronsUpDown
-                            class="ml-auto size-4 group-data-[collapsible=icon]:hidden"
-                        />
+                        <ChevronsUpDown class="ml-auto size-4 group-data-[collapsible=icon]:hidden" />
                     </SidebarMenuButton>
                 </DropdownMenuTrigger>
 
@@ -240,18 +225,13 @@ onMounted(() => {
                         }"
                         @click="handleSwitch(ws.id)"
                     >
-                        <div
-                            class="flex size-6 items-center justify-center rounded-sm border bg-background"
-                        >
+                        <div class="flex size-6 items-center justify-center rounded-sm border bg-background">
                             <component :is="getIcon(ws.icon)" class="size-4 shrink-0" />
                         </div>
                         <span class="flex-1 truncate pr-8">{{ ws.name }}</span>
 
                         <!-- Check icon for active workspace -->
-                        <Check
-                            v-if="ws.id === currentWorkspaceId"
-                            class="size-4 text-primary absolute right-2"
-                        />
+                        <Check v-if="ws.id === currentWorkspaceId" class="size-4 text-primary absolute right-2" />
 
                         <!-- Action buttons for non-default/active workspaces (or just non-default) -->
                         <!-- Requirements: Default workspace protected. -->
@@ -281,9 +261,7 @@ onMounted(() => {
                     <DropdownMenuSeparator />
 
                     <DropdownMenuItem class="gap-2 p-2 cursor-pointer" @click="openCreateModal">
-                        <div
-                            class="flex size-6 items-center justify-center rounded-md border bg-background"
-                        >
+                        <div class="flex size-6 items-center justify-center rounded-md border bg-background">
                             <Plus class="size-4" />
                         </div>
                         <div class="font-medium text-muted-foreground">

@@ -36,9 +36,7 @@ export class BaseRepository<T extends StoreNames<IDBCustomSchema>> {
     /**
      * Get a single item by its primary key
      */
-    async getById(
-        id: StoreKey<IDBCustomSchema, T>,
-    ): Promise<StoreValue<IDBCustomSchema, T> | undefined> {
+    async getById(id: StoreKey<IDBCustomSchema, T>): Promise<StoreValue<IDBCustomSchema, T> | undefined> {
         const db = await this.getDb()
         return db.get(this.storeName, id)
     }
@@ -75,7 +73,7 @@ export class BaseRepository<T extends StoreNames<IDBCustomSchema>> {
     async getAllFromIndex(
         indexName: IndexNames<IDBCustomSchema, T>,
         query: IDBKeyRange | any = null,
-        count?: number,
+        count?: number
     ): Promise<StoreValue<IDBCustomSchema, T>[]> {
         const db = await this.getDb()
         return db.getAllFromIndex(this.storeName, indexName, query, count)
@@ -86,7 +84,7 @@ export class BaseRepository<T extends StoreNames<IDBCustomSchema>> {
      */
     async getFromIndex(
         indexName: IndexNames<IDBCustomSchema, T>,
-        query: IDBKeyRange | any,
+        query: IDBKeyRange | any
     ): Promise<StoreValue<IDBCustomSchema, T> | undefined> {
         const db = await this.getDb()
         return db.getFromIndex(this.storeName, indexName, query)
@@ -100,7 +98,7 @@ export class BaseRepository<T extends StoreNames<IDBCustomSchema>> {
     async getManyFromIndex(
         indexName: IndexNames<IDBCustomSchema, T>,
         query: IDBKeyRange | any,
-        { limit, offset = 0 }: PageOptions = {},
+        { limit, offset = 0 }: PageOptions = {}
     ): Promise<StoreValue<IDBCustomSchema, T>[]> {
         const db = await this.getDb()
         const tx = db.transaction(this.storeName, 'readonly')

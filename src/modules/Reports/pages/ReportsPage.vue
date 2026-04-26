@@ -23,8 +23,7 @@ import { useReportProcessing } from '../composables/useReportProcessing'
 const router = useRouter()
 const { t } = useI18n()
 const { meets, loadMeets } = useMeets()
-const { isProcessing, handleFilesDropped, showFilterModal, processFiles, cancelFilter } =
-    useReportProcessing()
+const { isProcessing, handleFilesDropped, showFilterModal, processFiles, cancelFilter } = useReportProcessing()
 
 const showDeleteConfirm = ref(false)
 const meetToDeleteId = ref<string | null>(null)
@@ -66,9 +65,7 @@ function getMeetActions(meet: Meet): RowActionItem[] {
 </script>
 
 <template>
-    <div
-        class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500"
-    >
+    <div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <!-- Zone 1: Page header -->
         <div class="flex flex-row items-start sm:items-center justify-between gap-4">
             <div class="min-w-0">
@@ -79,9 +76,7 @@ function getMeetActions(meet: Meet): RowActionItem[] {
                     <template v-if="meets.length > 0">
                         {{
                             t('reports.subtitle', {
-                                count:
-                                    reportsTableRef?.table?.getFilteredRowModel().rows.length ??
-                                    meets.length,
+                                count: reportsTableRef?.table?.getFilteredRowModel().rows.length ?? meets.length,
                                 total: meets.length,
                             })
                         }}
@@ -113,9 +108,7 @@ function getMeetActions(meet: Meet): RowActionItem[] {
                     <div class="flex flex-col gap-2 sm:hidden">
                         <!-- Row 1: full-width search -->
                         <div class="relative">
-                            <Search
-                                class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
-                            />
+                            <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                                 v-model="searchQuery"
                                 :placeholder="t('reports.searchPlaceholder')"
@@ -126,17 +119,13 @@ function getMeetActions(meet: Meet): RowActionItem[] {
                         <div class="grid grid-cols-2 gap-2">
                             <!-- Left: compact delete when rows selected, otherwise bulk toggle -->
                             <Button
-                                v-if="
-                                    bulkMode && table.getFilteredSelectedRowModel().rows.length > 0
-                                "
+                                v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
                                 variant="destructive"
                                 size="sm"
                                 class="h-9 gap-2 w-full"
                                 @click="
                                     confirmBulkDelete(
-                                        table
-                                            .getFilteredSelectedRowModel()
-                                            .rows.map((r: any) => r.original.id),
+                                        table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id)
                                     )
                                 "
                             >
@@ -151,16 +140,12 @@ function getMeetActions(meet: Meet): RowActionItem[] {
                                     class="cursor-pointer"
                                     @update:model-value="bulkMode = $event"
                                 />
-                                <span class="text-sm text-muted-foreground select-none">{{
-                                    t('common.bulk')
-                                }}</span>
+                                <span class="text-sm text-muted-foreground select-none">{{ t('common.bulk') }}</span>
                             </div>
                             <!-- Right: columns picker, compact when rows are selected -->
                             <DataTableViewOptions
                                 :table="table"
-                                :compact="
-                                    bulkMode && table.getFilteredSelectedRowModel().rows.length > 0
-                                "
+                                :compact="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
                                 button-class="w-full"
                             />
                         </div>
@@ -170,9 +155,7 @@ function getMeetActions(meet: Meet): RowActionItem[] {
                     <div class="hidden sm:flex items-center justify-between gap-3">
                         <div class="flex items-center gap-3 flex-1 min-w-0">
                             <div class="relative max-w-xs flex-1">
-                                <Search
-                                    class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
-                                />
+                                <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     v-model="searchQuery"
                                     :placeholder="t('reports.searchPlaceholder')"
@@ -185,22 +168,16 @@ function getMeetActions(meet: Meet): RowActionItem[] {
                                     class="cursor-pointer"
                                     @update:model-value="bulkMode = $event"
                                 />
-                                <span class="text-sm text-muted-foreground select-none">{{
-                                    t('common.bulk')
-                                }}</span>
+                                <span class="text-sm text-muted-foreground select-none">{{ t('common.bulk') }}</span>
                             </div>
                             <Button
-                                v-if="
-                                    bulkMode && table.getFilteredSelectedRowModel().rows.length > 0
-                                "
+                                v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
                                 variant="destructive"
                                 size="sm"
                                 class="h-8 gap-2 shrink-0"
                                 @click="
                                     confirmBulkDelete(
-                                        table
-                                            .getFilteredSelectedRowModel()
-                                            .rows.map((r: any) => r.original.id),
+                                        table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id)
                                     )
                                 "
                             >

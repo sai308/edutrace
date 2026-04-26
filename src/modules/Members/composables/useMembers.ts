@@ -57,11 +57,7 @@ export function useMembers() {
     async function handleSave(formData: MemberFormData): Promise<void> {
         try {
             await membersService.saveMember(formData, selectedMember.value)
-            toast.success(
-                selectedMember.value
-                    ? t('members.toasts.saveSuccess')
-                    : t('members.toasts.addSuccess'),
-            )
+            toast.success(selectedMember.value ? t('members.toasts.saveSuccess') : t('members.toasts.addSuccess'))
             isDialogOpen.value = false
             await loadMembers()
         } catch (error) {

@@ -15,9 +15,7 @@ const props = defineProps<{
 }>()
 
 const sortedEntries = computed(() =>
-    [...props.session.entries].sort((a, b) =>
-        a.studentSnapshot.fullName.localeCompare(b.studentSnapshot.fullName),
-    ),
+    [...props.session.entries].sort((a, b) => a.studentSnapshot.fullName.localeCompare(b.studentSnapshot.fullName))
 )
 
 const t = i18n.global.t.bind(i18n.global)
@@ -137,11 +135,9 @@ const gradeRows = [
                         </td>
                         <td style="text-align: center; padding: 2px 8px; font-weight: 600">
                             {{ $t('sessions.printTemplate.recordTitle') }}&nbsp;
-                            <span
-                                class="print-underline"
-                                style="min-width: 50px; display: inline-block"
-                                >{{ formData.recordNumber }}</span
-                            >
+                            <span class="print-underline" style="min-width: 50px; display: inline-block">{{
+                                formData.recordNumber
+                            }}</span>
                         </td>
                     </tr>
                     <tr>
@@ -170,10 +166,7 @@ const gradeRows = [
                         <td class="print-value-cell print-underline">
                             {{ formData.semester }} {{ $t('sessions.printTemplate.academicYear') }}
                         </td>
-                        <td
-                            class="print-label-cell"
-                            style="white-space: nowrap; padding-left: 12px"
-                        >
+                        <td class="print-label-cell" style="white-space: nowrap; padding-left: 12px">
                             {{ $t('sessions.printTemplate.formOfControl') }}
                         </td>
                         <td class="print-value-cell print-underline print-bold">
@@ -191,9 +184,7 @@ const gradeRows = [
                             <span class="print-label-cell" style="padding-left: 12px">{{
                                 $t('sessions.printTemplate.examinerPib')
                             }}</span>
-                            <span class="print-value-cell print-underline print-bold">{{
-                                examinersDisplay
-                            }}</span>
+                            <span class="print-value-cell print-underline print-bold">{{ examinersDisplay }}</span>
                         </td>
                     </tr>
                     <tr>
@@ -201,11 +192,9 @@ const gradeRows = [
                             <span class="print-label-cell" style="font-size: 9pt">{{
                                 $t('sessions.printTemplate.practicalTeacherHint')
                             }}</span>
-                            <span
-                                class="print-value-cell print-underline"
-                                style="padding-left: 8px"
-                                >{{ formData.practicalTeacher }}</span
-                            >
+                            <span class="print-value-cell print-underline" style="padding-left: 8px">{{
+                                formData.practicalTeacher
+                            }}</span>
                         </td>
                     </tr>
                 </tbody>
@@ -248,9 +237,7 @@ const gradeRows = [
                         </td>
                         <td
                             class="print-td-center"
-                            :style="
-                                entry.grade !== null && entry.grade < 60 ? 'font-style: italic' : ''
-                            "
+                            :style="entry.grade !== null && entry.grade < 60 ? 'font-style: italic' : ''"
                         >
                             {{ toNationalScaleFull(entry.grade, formData.formOfControl) }}
                         </td>
@@ -268,9 +255,7 @@ const gradeRows = [
             <!-- Head of Department Signature -->
             <div class="print-signature-row">
                 <span>{{ $t('sessions.printTemplate.headOfDepartment') }} _________________</span>
-                <span style="margin-left: 16px; min-width: 200px"
-                    >_______________________________________</span
-                >
+                <span style="margin-left: 16px; min-width: 200px">_______________________________________</span>
             </div>
 
             <!-- ECTS Legend Table (always starts on a new page) -->

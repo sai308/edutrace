@@ -48,9 +48,7 @@ export function usePlans() {
 
         // Auto-select the first group that has students with IEP (if no URL param set)
         if (!filterGroup.value && students.value.length > 0) {
-            const groupsWithIep = [
-                ...new Set(students.value.filter((s) => !!s.groupName).map((s) => s.groupName)),
-            ]
+            const groupsWithIep = [...new Set(students.value.filter((s) => !!s.groupName).map((s) => s.groupName))]
             if (groupsWithIep.length > 0) {
                 filterGroup.value = groupsWithIep[0] as string
             }
@@ -102,7 +100,7 @@ export function usePlans() {
     })
 
     const stats = computed<EctsStats>(() =>
-        computeECTSStats(studentPlans.value.map((item) => item.plan?.grade ?? null)),
+        computeECTSStats(studentPlans.value.map((item) => item.plan?.grade ?? null))
     )
 
     async function handleToggleSync(
@@ -110,7 +108,7 @@ export function usePlans() {
         iep: string,
         isSynced: boolean,
         hasPlan: boolean,
-        existingPlan?: Plan,
+        existingPlan?: Plan
     ): Promise<void> {
         try {
             let updated: Plan | null = null
@@ -128,9 +126,7 @@ export function usePlans() {
 
             // Reload all plans from DB to guarantee reactive accuracy after persist
             plans.value = await plansService.getAllPlans()
-            toast.success(
-                isSynced ? t('plans.messages.syncEnabled') : t('plans.messages.syncDisabled'),
-            )
+            toast.success(isSynced ? t('plans.messages.syncEnabled') : t('plans.messages.syncDisabled'))
         } catch (err: any) {
             logger.error('Failed to toggle plan sync:', err)
             toast.error(err.message || t('plans.messages.syncError'))

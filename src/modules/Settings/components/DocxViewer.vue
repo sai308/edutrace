@@ -84,7 +84,7 @@ watch(
     () => props.documentBlob,
     () => {
         renderDocument()
-    },
+    }
 )
 
 onMounted(() => {
@@ -99,18 +99,12 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div
-        class="relative w-full h-full min-h-[400px] border rounded-md bg-muted/20 overflow-hidden flex flex-col"
-    >
+    <div class="relative w-full h-full min-h-[400px] border rounded-md bg-muted/20 overflow-hidden flex flex-col">
         <!-- Toolbar -->
-        <div
-            class="flex items-center justify-between p-2 border-b bg-background sticky top-0 z-20 shadow-sm shrink-0"
-        >
+        <div class="flex items-center justify-between p-2 border-b bg-background sticky top-0 z-20 shadow-sm shrink-0">
             <div class="text-sm font-medium px-2 flex items-center gap-2">
                 Document Viewer
-                <Badge variant="secondary" class="font-mono text-[10px] hidden sm:inline-flex">
-                    A4 Layout
-                </Badge>
+                <Badge variant="secondary" class="font-mono text-[10px] hidden sm:inline-flex"> A4 Layout </Badge>
             </div>
 
             <TooltipProvider>
@@ -131,9 +125,7 @@ onUnmounted(() => {
                         <TooltipContent>Zoom Out</TooltipContent>
                     </Tooltip>
 
-                    <span class="text-xs font-mono w-12 text-center select-none"
-                        >{{ Math.round(scale * 100) }}%</span
-                    >
+                    <span class="text-xs font-mono w-12 text-center select-none">{{ Math.round(scale * 100) }}%</span>
 
                     <Tooltip>
                         <TooltipTrigger as-child>
@@ -206,9 +198,7 @@ onUnmounted(() => {
                 <p class="font-medium">
                     {{ error }}
                 </p>
-                <p class="text-xs opacity-70">
-                    Try downloading the file and opening it in a desktop application.
-                </p>
+                <p class="text-xs opacity-70">Try downloading the file and opening it in a desktop application.</p>
             </div>
 
             <!-- Empty State -->

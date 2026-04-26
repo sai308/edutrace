@@ -22,10 +22,7 @@ watchEffect(() => {
         const color = activeWorkspace.value.color
         document.documentElement.style.setProperty('--workspace-color', color)
         document.documentElement.style.setProperty('--primary', color)
-        document.documentElement.style.setProperty(
-            '--primary-foreground',
-            contrastForeground(color),
-        )
+        document.documentElement.style.setProperty('--primary-foreground', contrastForeground(color))
     } else {
         document.documentElement.style.removeProperty('--workspace-color')
         document.documentElement.style.removeProperty('--primary')

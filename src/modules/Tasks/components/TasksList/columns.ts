@@ -15,7 +15,7 @@ interface Formatters {
 export function createColumns(
     rowActions: (task: Task) => RowActionItem[],
     t: ComposerTranslation,
-    formatters: Formatters,
+    formatters: Formatters
 ): ColumnDef<Task>[] {
     return [
         {
@@ -23,8 +23,7 @@ export function createColumns(
             header: ({ table }) =>
                 h(Checkbox, {
                     modelValue:
-                        table.getIsAllPageRowsSelected() ||
-                        (table.getIsSomePageRowsSelected() && 'indeterminate'),
+                        table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
                     'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
                         table.toggleAllPageRowsSelected(!!value),
                     ariaLabel: t('common.selectAll'),
@@ -33,8 +32,7 @@ export function createColumns(
             cell: ({ row }) =>
                 h(Checkbox, {
                     modelValue: row.getIsSelected(),
-                    'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
-                        row.toggleSelected(!!value),
+                    'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
                     ariaLabel: t('common.selectRow'),
                     class: 'translate-y-[2px]',
                 }),
@@ -44,15 +42,13 @@ export function createColumns(
         {
             accessorKey: 'name',
             meta: { label: t('tasks.columns.name') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('tasks.columns.name') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('tasks.columns.name') }),
             cell: ({ row }) => h('div', { class: 'font-medium' }, row.getValue('name')),
         },
         {
             accessorKey: 'date',
             meta: { label: t('tasks.columns.date') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('tasks.columns.date') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('tasks.columns.date') }),
             cell: ({ row }) =>
                 h('div', { class: 'flex items-center gap-1 text-xs text-muted-foreground' }, [
                     h(Calendar, { class: 'w-3 h-3 shrink-0' }),
@@ -62,19 +58,14 @@ export function createColumns(
         {
             accessorKey: 'maxPoints',
             meta: { label: t('tasks.columns.maxPoints') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('tasks.columns.maxPoints') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('tasks.columns.maxPoints') }),
             cell: ({ row }) => row.getValue('maxPoints') ?? '0',
         },
         {
             id: 'actions',
             enableHiding: false,
             cell: ({ row }) =>
-                h(
-                    'div',
-                    { class: 'flex justify-end' },
-                    h(DataTableRowActions, { items: rowActions(row.original) }),
-                ),
+                h('div', { class: 'flex justify-end' }, h(DataTableRowActions, { items: rowActions(row.original) })),
         },
     ]
 }

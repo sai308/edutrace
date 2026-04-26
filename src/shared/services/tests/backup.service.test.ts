@@ -93,9 +93,7 @@ describe('importReports', () => {
     })
 
     it('throws when the meets key is missing', async () => {
-        await expect(backupService.importReports({ type: 'reports' })).rejects.toThrow(
-            'Invalid reports data',
-        )
+        await expect(backupService.importReports({ type: 'reports' })).rejects.toThrow('Invalid reports data')
     })
 
     it('clears existing meets before restoring the payload', async () => {
@@ -151,15 +149,7 @@ describe('exportData', () => {
 
     it('includes all top-level data keys', async () => {
         const result = await backupService.exportData()
-        for (const key of [
-            'meets',
-            'groups',
-            'tasks',
-            'marks',
-            'members',
-            'settings',
-            'timestamp',
-        ]) {
+        for (const key of ['meets', 'groups', 'tasks', 'marks', 'members', 'settings', 'timestamp']) {
             expect(result).toHaveProperty(key)
         }
     })
@@ -385,9 +375,7 @@ describe('importGroups', () => {
     })
 
     it('throws when the groups key is missing', async () => {
-        await expect(backupService.importGroups({ type: 'groups' })).rejects.toThrow(
-            'Invalid groups data',
-        )
+        await expect(backupService.importGroups({ type: 'groups' })).rejects.toThrow('Invalid groups data')
     })
 
     it('clears existing groups before restoring', async () => {
@@ -565,9 +553,7 @@ describe('importMembers', () => {
     })
 
     it('throws when the members key is missing', async () => {
-        await expect(backupService.importMembers({ type: 'members' })).rejects.toThrow(
-            'Invalid members data',
-        )
+        await expect(backupService.importMembers({ type: 'members' })).rejects.toThrow('Invalid members data')
     })
 
     it('clears existing members before restoring', async () => {
@@ -732,9 +718,7 @@ describe('importMarks', () => {
     })
 
     it('throws when marks key is missing', async () => {
-        await expect(backupService.importMarks({ members: [] })).rejects.toThrow(
-            'Invalid marks data',
-        )
+        await expect(backupService.importMarks({ members: [] })).rejects.toThrow('Invalid marks data')
     })
 
     it('clears existing marks before restoring', async () => {
@@ -882,7 +866,7 @@ describe('exportTasks', () => {
 
         expect(result.tasks).toHaveLength(2)
         expect(result.tasks.map((t: any) => t.normalizedName)).toEqual(
-            expect.arrayContaining(['exp-task-a', 'exp-task-b']),
+            expect.arrayContaining(['exp-task-a', 'exp-task-b'])
         )
     })
 })
@@ -895,9 +879,7 @@ describe('importTasks', () => {
     })
 
     it('throws when the tasks key is missing', async () => {
-        await expect(backupService.importTasks({ type: 'tasks' })).rejects.toThrow(
-            'Invalid tasks data',
-        )
+        await expect(backupService.importTasks({ type: 'tasks' })).rejects.toThrow('Invalid tasks data')
     })
 
     it('clears existing tasks before restoring', async () => {
@@ -920,9 +902,7 @@ describe('importTasks', () => {
 
         const stored = await db.getAll('tasks')
         expect(stored).toHaveLength(2)
-        expect(stored.map((t: any) => t.normalizedName)).toEqual(
-            expect.arrayContaining(['imp-task-a', 'imp-task-b']),
-        )
+        expect(stored.map((t: any) => t.normalizedName)).toEqual(expect.arrayContaining(['imp-task-a', 'imp-task-b']))
     })
 
     it('full round-trip: exported tasks are faithfully restored after import', async () => {
@@ -1041,9 +1021,7 @@ describe('exportSummary', () => {
 
 describe('importSummary', () => {
     it('throws on null input', async () => {
-        await expect(backupService.importSummary(null)).rejects.toThrow(
-            'Invalid summary data format',
-        )
+        await expect(backupService.importSummary(null)).rejects.toThrow('Invalid summary data format')
     })
 
     it('clears all three summary stores before restoring', async () => {
@@ -1256,15 +1234,11 @@ describe('exportDocumentSessions', () => {
 
 describe('importDocumentSessions', () => {
     it('throws when payload is null', async () => {
-        await expect(backupService.importDocumentSessions(null)).rejects.toThrow(
-            'Invalid sessions data',
-        )
+        await expect(backupService.importDocumentSessions(null)).rejects.toThrow('Invalid sessions data')
     })
 
     it('throws when sessions key is missing', async () => {
-        await expect(backupService.importDocumentSessions({ version: 1 })).rejects.toThrow(
-            'Invalid sessions data',
-        )
+        await expect(backupService.importDocumentSessions({ version: 1 })).rejects.toThrow('Invalid sessions data')
     })
 
     it('restores sessions from the payload', async () => {
@@ -1486,9 +1460,7 @@ describe('importPlans', () => {
     })
 
     it('throws when plans key is missing', async () => {
-        await expect(backupService.importPlans({ version: 1 })).rejects.toThrow(
-            'Invalid plans data',
-        )
+        await expect(backupService.importPlans({ version: 1 })).rejects.toThrow('Invalid plans data')
     })
 
     it('restores plans from the payload', async () => {

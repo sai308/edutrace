@@ -37,16 +37,14 @@ interface Technology {
 const technologies: Technology[] = [
     {
         name: 'Vue 3',
-        description:
-            'Progressive JavaScript framework — Composition API, reactivity, and SFC throughout',
+        description: 'Progressive JavaScript framework — Composition API, reactivity, and SFC throughout',
         link: 'https://vuejs.org/',
         iconColor: 'bg-[#42b883]/10',
         iconType: 'vue',
     },
     {
         name: 'TypeScript',
-        description:
-            'Strict mode with noUnusedLocals — every module, service, and component is fully typed',
+        description: 'Strict mode with noUnusedLocals — every module, service, and component is fully typed',
         link: 'https://www.typescriptlang.org/',
         iconColor: 'bg-[#3178c6]/10',
         iconType: 'component',
@@ -55,32 +53,28 @@ const technologies: Technology[] = [
     },
     {
         name: 'Vite',
-        description:
-            'Sub-second HMR during development; optimised production builds with code splitting',
+        description: 'Sub-second HMR during development; optimised production builds with code splitting',
         link: 'https://vitejs.dev/',
         iconColor: 'bg-[#646cff]/10',
         iconType: 'vite',
     },
     {
         name: 'Tailwind CSS v4',
-        description:
-            'Utility-first styling with the Vite plugin — no PostCSS config, CSS-native variables',
+        description: 'Utility-first styling with the Vite plugin — no PostCSS config, CSS-native variables',
         link: 'https://tailwindcss.com/',
         iconColor: 'bg-sky-400/10',
         iconType: 'tailwind',
     },
     {
         name: 'Reka UI',
-        description:
-            'Unstyled, accessible headless component primitives — the foundation of every UI element',
+        description: 'Unstyled, accessible headless component primitives — the foundation of every UI element',
         link: 'https://reka-ui.com/',
         iconColor: 'bg-primary/10',
         iconType: 'reka',
     },
     {
         name: 'TanStack Vue Table',
-        description:
-            'Headless table engine powering all data grids — sorting, filtering, column visibility',
+        description: 'Headless table engine powering all data grids — sorting, filtering, column visibility',
         link: 'https://tanstack.com/table',
         iconColor: 'bg-[#ef4444]/10',
         iconType: 'component',
@@ -107,8 +101,7 @@ const technologies: Technology[] = [
     },
     {
         name: 'Vue I18n',
-        description:
-            'Full UI in English and Ukrainian — every label, error, and tooltip is translated',
+        description: 'Full UI in English and Ukrainian — every label, error, and tooltip is translated',
         link: 'https://vue-i18n.intlify.dev/',
         iconColor: 'bg-[#42b883]/10',
         iconType: 'component',
@@ -117,8 +110,7 @@ const technologies: Technology[] = [
     },
     {
         name: 'VueUse',
-        description:
-            'Composition utility collection — virtual lists, storage, event hooks, and more',
+        description: 'Composition utility collection — virtual lists, storage, event hooks, and more',
         link: 'https://vueuse.org/',
         iconColor: 'bg-[#42b883]/10',
         iconType: 'component',
@@ -127,8 +119,7 @@ const technologies: Technology[] = [
     },
     {
         name: 'IDB',
-        description:
-            'Promise-based IndexedDB wrapper — all data stored locally, versioned schema migrations',
+        description: 'Promise-based IndexedDB wrapper — all data stored locally, versioned schema migrations',
         link: 'https://github.com/jakearchibald/idb',
         iconColor: 'bg-[#f59e0b]/10',
         iconType: 'component',
@@ -137,8 +128,7 @@ const technologies: Technology[] = [
     },
     {
         name: 'PapaParse',
-        description:
-            'CSV parser running in a Web Worker — processes Google Meet attendance reports',
+        description: 'CSV parser running in a Web Worker — processes Google Meet attendance reports',
         link: 'https://www.papaparse.com/',
         iconColor: 'bg-[#10b981]/10',
         iconType: 'svg',
@@ -146,8 +136,7 @@ const technologies: Technology[] = [
     },
     {
         name: 'Comlink',
-        description:
-            'Transparent Web Worker RPC — offloads CSV parsing and grade aggregation off the main thread',
+        description: 'Transparent Web Worker RPC — offloads CSV parsing and grade aggregation off the main thread',
         link: 'https://github.com/GoogleChromeLabs/comlink',
         iconColor: 'bg-[#f59e0b]/10',
         iconType: 'component',
@@ -156,8 +145,7 @@ const technologies: Technology[] = [
     },
     {
         name: 'docxtemplater',
-        description:
-            'Mustache-based .docx template engine — generates official grade record documents',
+        description: 'Mustache-based .docx template engine — generates official grade record documents',
         link: 'https://docxtemplater.com/',
         iconColor: 'bg-[#2b5797]/10',
         iconType: 'component',
@@ -166,8 +154,7 @@ const technologies: Technology[] = [
     },
     {
         name: 'vite-plugin-pwa',
-        description:
-            'Workbox-powered PWA — fully installable, precached assets, offline-ready out of the box',
+        description: 'Workbox-powered PWA — fully installable, precached assets, offline-ready out of the box',
         link: 'https://vite-pwa-org.netlify.app/',
         iconColor: 'bg-[#5bb974]/10',
         iconType: 'component',
@@ -284,11 +271,7 @@ const technologies: Technology[] = [
                                     :class="[tech.iconColor]"
                                 >
                                     <template v-if="tech.iconType === 'tailwind'">
-                                        <svg
-                                            viewBox="0 0 32 32"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="#000000"
-                                        >
+                                        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="#000000">
                                             <g id="SVGRepo_bgCarrier" stroke-width="0" />
                                             <g
                                                 id="SVGRepo_tracerCarrier"
@@ -335,11 +318,7 @@ const technologies: Technology[] = [
                                     </template>
 
                                     <template v-else-if="tech.iconType === 'vite'">
-                                        <svg
-                                            viewBox="0 0 32 32"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                        >
+                                        <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="none">
                                             <g id="SVGRepo_bgCarrier" stroke-width="0" />
                                             <g
                                                 id="SVGRepo_tracerCarrier"
@@ -387,11 +366,7 @@ const technologies: Technology[] = [
                                     </template>
 
                                     <template v-else-if="tech.iconType === 'reka'">
-                                        <svg
-                                            viewBox="0 0 256 256"
-                                            class="size-5"
-                                            style="color: var(--primary)"
-                                        >
+                                        <svg viewBox="0 0 256 256" class="size-5" style="color: var(--primary)">
                                             <rect width="256" height="256" fill="none" />
                                             <line
                                                 x1="208"
@@ -428,13 +403,7 @@ const technologies: Technology[] = [
                                                     stroke-linecap="round"
                                                     stroke-linejoin="round"
                                                 />
-                                                <circle
-                                                    v-if="tech.svgCircle"
-                                                    cx="12"
-                                                    cy="12"
-                                                    r="2"
-                                                    fill="#42b883"
-                                                />
+                                                <circle v-if="tech.svgCircle" cx="12" cy="12" r="2" fill="#42b883" />
                                             </template>
                                             <template v-if="tech.svgRect">
                                                 <rect
@@ -455,12 +424,7 @@ const technologies: Technology[] = [
                                         </svg>
                                     </template>
 
-                                    <component
-                                        :is="tech.icon"
-                                        v-else
-                                        class="size-5"
-                                        :class="[tech.iconClassName]"
-                                    />
+                                    <component :is="tech.icon" v-else class="size-5" :class="[tech.iconClassName]" />
                                 </div>
                                 <div>
                                     <h3 class="font-semibold text-sm sm:text-base">
@@ -520,16 +484,10 @@ const technologies: Technology[] = [
                         {{ t('about.openSource.description') }}
                     </p>
                     <Button variant="secondary" class="w-full font-semibold group" as-child>
-                        <a
-                            href="https://github.com/sai308/edutrace-local"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
+                        <a href="https://github.com/sai308/edutrace-local" target="_blank" rel="noopener noreferrer">
                             <Github class="mr-2 size-4" />
                             {{ t('about.openSource.button') }}
-                            <ExternalLink
-                                class="ml-1 size-3 opacity-50 group-hover:opacity-100 transition-opacity"
-                            />
+                            <ExternalLink class="ml-1 size-3 opacity-50 group-hover:opacity-100 transition-opacity" />
                         </a>
                     </Button>
                 </CardContent>
@@ -537,9 +495,7 @@ const technologies: Technology[] = [
         </div>
 
         <div class="text-center pt-8 space-y-4">
-            <p
-                class="text-sm text-muted-foreground font-medium flex items-center justify-center gap-1.5 pt-4"
-            >
+            <p class="text-sm text-muted-foreground font-medium flex items-center justify-center gap-1.5 pt-4">
                 {{ t('about.footer') }}
             </p>
         </div>

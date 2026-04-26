@@ -66,7 +66,7 @@ export function useQuerySync(stateMap: Record<string, Ref<any>>) {
                     else refVal.value = null
                 }
             })
-        },
+        }
     )
 
     // 3. State → route: update intent immediately (keeps watcher 2 correct),

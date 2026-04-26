@@ -8,13 +8,7 @@ import { computed, markRaw, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
     Stepper,
     StepperIndicator,
@@ -83,9 +77,7 @@ onMounted(() => initialize())
         class="h-full flex-1 flex flex-col space-y-4 p-4 md:p-6 pt-2 md:flex max-w-[1400px] mx-auto w-full min-h-0 animate-in fade-in slide-in-from-bottom-4 duration-500"
     >
         <!-- Zone 1: Page header — always visible -->
-        <div
-            class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b gap-4 shrink-0"
-        >
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b gap-4 shrink-0">
             <div>
                 <h1 class="text-2xl font-bold tracking-tight">
                     {{ $t('sessions.title') }}
@@ -100,11 +92,7 @@ onMounted(() => initialize())
                         <SelectValue :placeholder="$t('sessions.selectGroup')" />
                     </SelectTrigger>
                     <SelectContent>
-                        <SelectItem
-                            v-for="group in groups"
-                            :key="group.id"
-                            :value="group.id!.toString()"
-                        >
+                        <SelectItem v-for="group in groups" :key="group.id" :value="group.id!.toString()">
                             {{ group.name }}
                         </SelectItem>
                     </SelectContent>
@@ -140,11 +128,7 @@ onMounted(() => initialize())
 
                         <StepperTrigger as-child>
                             <Button
-                                :variant="
-                                    state === 'completed' || state === 'active'
-                                        ? 'default'
-                                        : 'outline'
-                                "
+                                :variant="state === 'completed' || state === 'active' ? 'default' : 'outline'"
                                 size="icon"
                                 class="z-10 rounded-full shrink-0 transition-all data-[state=active]:ring-2 data-[state=active]:ring-ring data-[state=active]:ring-offset-2 data-[state=active]:ring-offset-background"
                             >
@@ -155,9 +139,7 @@ onMounted(() => initialize())
                             </Button>
                         </StepperTrigger>
 
-                        <div
-                            class="md:mt-5 flex flex-col items-start md:items-center text-left md:text-center"
-                        >
+                        <div class="md:mt-5 flex flex-col items-start md:items-center text-left md:text-center">
                             <StepperTitle
                                 :class="[state === 'active' && 'text-primary']"
                                 class="text-sm font-semibold transition lg:text-base md:mt-4 whitespace-nowrap"
@@ -194,9 +176,7 @@ onMounted(() => initialize())
                     </template>
 
                     <template v-else-if="activeTab === SessionTypeEnum.FIRST_RETAKE">
-                        <Card
-                            v-if="!mainSession || mainSession.status !== SessionStatusEnum.CLOSED"
-                        >
+                        <Card v-if="!mainSession || mainSession.status !== SessionStatusEnum.CLOSED">
                             <CardContent class="pt-6 text-center text-muted-foreground">
                                 {{ $t('sessions.notAvailable.firstRetake') }}
                             </CardContent>
@@ -226,12 +206,7 @@ onMounted(() => initialize())
                     </template>
 
                     <template v-else-if="activeTab === SessionTypeEnum.SECOND_RETAKE">
-                        <Card
-                            v-if="
-                                !firstRetakeSession ||
-                                firstRetakeSession.status !== SessionStatusEnum.CLOSED
-                            "
-                        >
+                        <Card v-if="!firstRetakeSession || firstRetakeSession.status !== SessionStatusEnum.CLOSED">
                             <CardContent class="pt-6 text-center text-muted-foreground">
                                 {{ $t('sessions.notAvailable.secondRetake') }}
                             </CardContent>
@@ -246,10 +221,7 @@ onMounted(() => initialize())
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <Button
-                                    :disabled="isInitializing"
-                                    @click="handleCreateSecondRetake"
-                                >
+                                <Button :disabled="isInitializing" @click="handleCreateSecondRetake">
                                     {{ $t('sessions.actions.generateSecondRetake') }}
                                 </Button>
                             </CardContent>

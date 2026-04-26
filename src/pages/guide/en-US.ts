@@ -126,13 +126,11 @@ export const sections: GuideSection[] = [
                 items: [
                     {
                         title: 'Centralized History',
-                        description:
-                            'A complete history of all your uploaded attendance reports in one place.',
+                        description: 'A complete history of all your uploaded attendance reports in one place.',
                     },
                     {
                         title: 'Quick Insights',
-                        description:
-                            'Immediate visibility into participant counts and session dates.',
+                        description: 'Immediate visibility into participant counts and session dates.',
                     },
                     {
                         title: 'Organization',
@@ -160,8 +158,7 @@ export const sections: GuideSection[] = [
                     },
                     {
                         title: 'Search',
-                        description:
-                            'Use the search bar to quickly find specific meets by name, teacher, or ID.',
+                        description: 'Use the search bar to quickly find specific meets by name, teacher, or ID.',
                     },
                     {
                         title: 'Quick Stats',
@@ -194,13 +191,11 @@ export const sections: GuideSection[] = [
                     },
                     {
                         title: 'Performance Metrics',
-                        description:
-                            'Easily identify high-performing groups and those that may need attention.',
+                        description: 'Easily identify high-performing groups and those that may need attention.',
                     },
                     {
                         title: 'Efficient Navigation',
-                        description:
-                            'Quickly jump to detailed reports for specific meets directly from the dashboard.',
+                        description: 'Quickly jump to detailed reports for specific meets directly from the dashboard.',
                     },
                 ],
             },
@@ -223,8 +218,7 @@ export const sections: GuideSection[] = [
                     },
                     {
                         title: 'Search & Filter',
-                        description:
-                            'Use the search bar to quickly find groups by name or Meet ID.',
+                        description: 'Use the search bar to quickly find groups by name or Meet ID.',
                     },
                     {
                         title: 'Sort Data',
@@ -258,13 +252,11 @@ export const sections: GuideSection[] = [
                     },
                     {
                         title: 'Member Tracking',
-                        description:
-                            'See at a glance how many students are assigned to each group.',
+                        description: 'See at a glance how many students are assigned to each group.',
                     },
                     {
                         title: 'Teacher Assignment',
-                        description:
-                            'Associate teachers with groups for better record-keeping and filtering.',
+                        description: 'Associate teachers with groups for better record-keeping and filtering.',
                     },
                     {
                         title: 'Automatic Integration',
@@ -342,8 +334,7 @@ export const sections: GuideSection[] = [
                     },
                     {
                         title: 'Multi-Dimensional Tracking',
-                        description:
-                            'Track students across multiple groups and Meet IDs simultaneously.',
+                        description: 'Track students across multiple groups and Meet IDs simultaneously.',
                     },
                     {
                         title: 'Performance Insights',

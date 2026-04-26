@@ -8,14 +8,7 @@ import { NumberInput } from '@/components/ui/custom/number-input'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
-import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetFooter,
-    SheetHeader,
-    SheetTitle,
-} from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 
 // Re-exported so consumers can import SummarySettings from this component
 // without depending on the shared types path directly.
@@ -41,7 +34,7 @@ watch(
     () => props.open,
     (opened) => {
         if (opened) local.value = { ...props.settings }
-    },
+    }
 )
 
 function handleOpenUpdate(val: boolean) {
@@ -113,10 +106,7 @@ function reset() {
                                 >{{ t('summary.thresholds.attendance') }}</Label
                             >
                         </div>
-                        <p
-                            class="text-xs text-muted-foreground"
-                            :class="{ 'opacity-50': !local.attendanceEnabled }"
-                        >
+                        <p class="text-xs text-muted-foreground" :class="{ 'opacity-50': !local.attendanceEnabled }">
                             {{ t('summary.settings.attendanceHint') }}
                         </p>
                         <NumberInput

@@ -17,7 +17,7 @@ describe('meetsRepository', () => {
     describe('saveMeet', () => {
         it('throws if meetData has no meetId', async () => {
             await expect(meetsRepository.saveMeet({ id: '1' } as any)).rejects.toThrow(
-                'saveMeet: meetData must have a meetId',
+                'saveMeet: meetData must have a meetId'
             )
         })
 
@@ -146,9 +146,7 @@ describe('meetsRepository', () => {
                 filename: 'other.csv',
                 participants: [],
             } as any)
-            expect(await meetsRepository.isDuplicateFile('file.csv', 'm1', '2024-01-01')).toBe(
-                false,
-            )
+            expect(await meetsRepository.isDuplicateFile('file.csv', 'm1', '2024-01-01')).toBe(false)
         })
     })
 

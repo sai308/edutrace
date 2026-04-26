@@ -13,10 +13,7 @@ export class WorkerError extends Error {
 /** Rejects with WorkerError('WORKER_TIMEOUT') if the promise does not settle within ms. */
 export function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
     return new Promise<T>((resolve, reject) => {
-        const timer = setTimeout(
-            () => reject(new WorkerError('WORKER_TIMEOUT', `Worker timed out after ${ms}ms`)),
-            ms,
-        )
+        const timer = setTimeout(() => reject(new WorkerError('WORKER_TIMEOUT', `Worker timed out after ${ms}ms`)), ms)
         promise.then(
             (value) => {
                 clearTimeout(timer)
@@ -25,7 +22,7 @@ export function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
             (error) => {
                 clearTimeout(timer)
                 reject(error)
-            },
+            }
         )
     })
 }

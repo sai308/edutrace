@@ -60,15 +60,15 @@ describe('groupsRepository', () => {
 
     describe('saveGroup', () => {
         it('throws when name is missing', async () => {
-            await expect(
-                groupsRepository.saveGroup({ name: '', meetId: 'sg-001' } as any),
-            ).rejects.toThrow('saveGroup: group must have a name and meetId')
+            await expect(groupsRepository.saveGroup({ name: '', meetId: 'sg-001' } as any)).rejects.toThrow(
+                'saveGroup: group must have a name and meetId'
+            )
         })
 
         it('throws when meetId is missing', async () => {
-            await expect(
-                groupsRepository.saveGroup({ name: 'Group X', meetId: '' } as any),
-            ).rejects.toThrow('saveGroup: group must have a name and meetId')
+            await expect(groupsRepository.saveGroup({ name: 'Group X', meetId: '' } as any)).rejects.toThrow(
+                'saveGroup: group must have a name and meetId'
+            )
         })
 
         it('saves a new group with a service-assigned id and returns that id', async () => {
@@ -253,9 +253,7 @@ describe('groupsRepository', () => {
         })
 
         it('delegates participant sync to studentsRepository with correct group name', async () => {
-            const fakeMeets = [
-                { id: 'fm1', meetId: 'sync-m', participants: [{ name: 'Alice' }] },
-            ] as any[]
+            const fakeMeets = [{ id: 'fm1', meetId: 'sync-m', participants: [{ name: 'Alice' }] }] as any[]
             mockGetMeetsByMeetId.mockResolvedValue(fakeMeets)
 
             await groupsRepository.syncMembersFromMeets({

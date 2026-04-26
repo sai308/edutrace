@@ -33,11 +33,7 @@ async function copyMeetId(meetId: string) {
 </script>
 
 <template>
-    <Item
-        variant="outline"
-        size="sm"
-        class="group relative overflow-hidden transition-all hover:shadow-md"
-    >
+    <Item variant="outline" size="sm" class="group relative overflow-hidden transition-all hover:shadow-md">
         <ItemContent class="gap-3">
             <!-- Top Row: Info & Actions -->
             <div class="flex items-start justify-between gap-4">
@@ -88,34 +84,21 @@ async function copyMeetId(meetId: string) {
             <div class="flex items-center justify-between pt-1">
                 <!-- Compact Stats Row (Inline) -->
                 <div class="flex items-center gap-4 text-muted-foreground">
-                    <div
-                        class="flex items-center gap-1.5"
-                        :title="$t('analytics.card.tooltips.totalSessions')"
-                    >
+                    <div class="flex items-center gap-1.5" :title="$t('analytics.card.tooltips.totalSessions')">
                         <MonitorPlay :size="16" />
-                        <span class="text-xs font-medium text-foreground">{{
-                            stat.totalSessions
-                        }}</span>
+                        <span class="text-xs font-medium text-foreground">{{ stat.totalSessions }}</span>
                     </div>
-                    <div
-                        class="flex items-center gap-1.5"
-                        :title="$t('analytics.card.tooltips.avgDuration')"
-                    >
+                    <div class="flex items-center gap-1.5" :title="$t('analytics.card.tooltips.avgDuration')">
                         <Timer :size="16" />
                         <span class="text-xs font-medium text-foreground"
                             >~{{ stat.avgDuration.toFixed(0) }}{{ $t('duration.minutes') }}</span
                         >
                     </div>
-                    <div
-                        class="flex items-center gap-1.5"
-                        :title="$t('analytics.card.tooltips.participants')"
-                    >
+                    <div class="flex items-center gap-1.5" :title="$t('analytics.card.tooltips.participants')">
                         <Users :size="16" />
                         <span class="text-xs font-medium text-foreground">
                             {{ stat.activeParticipantsCount
-                            }}<span class="text-muted-foreground text-[10px]"
-                                >/{{ stat.uniqueParticipantsCount }}</span
-                            >
+                            }}<span class="text-muted-foreground text-[10px]">/{{ stat.uniqueParticipantsCount }}</span>
                         </span>
                     </div>
                 </div>

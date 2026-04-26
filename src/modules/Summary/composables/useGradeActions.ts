@@ -8,23 +8,16 @@ import { convertGradeTo100 } from '@/shared/utils/grades'
  * Determines the 100-point value and isAuto flag to persist for a student's grade.
  * Uses totalRaw directly for auto-assigned grades; converts via convertGradeTo100 for manual.
  */
-function resolveGradeStorageValue(
-    student: StudentSummaryData,
-    format: string,
-): { value: number; isAuto: boolean } {
+function resolveGradeStorageValue(student: StudentSummaryData, format: string): { value: number; isAuto: boolean } {
     const displayGrade = student.examGrade
     const rawTotal = student.totalRaw
     const displayTotal = student.total
 
     const cleanDisplay = String(displayGrade).replace('~', '').trim()
     const cleanTotal =
-        displayTotal !== null && displayTotal !== undefined
-            ? String(displayTotal).replace('~', '').trim()
-            : ''
+        displayTotal !== null && displayTotal !== undefined ? String(displayTotal).replace('~', '').trim() : ''
 
-    const isAuto =
-        student.examIsAuto ??
-        (cleanDisplay === cleanTotal && rawTotal !== null && rawTotal !== undefined)
+    const isAuto = student.examIsAuto ?? (cleanDisplay === cleanTotal && rawTotal !== null && rawTotal !== undefined)
 
     const value = isAuto ? Math.round(rawTotal ?? 0) : convertGradeTo100(displayGrade!, format)
 
@@ -63,12 +56,7 @@ export function useGradeActions(students: Ref<StudentSummaryData[]>, selectedFor
                 isManualDialogOpen.value = true
             } else if (action === 'save') {
                 const st = students.value.find((s) => s.id === student.id)
-                if (
-                    !st ||
-                    st.examGrade === null ||
-                    st.examGrade === undefined ||
-                    st.examGrade === ''
-                ) {
+                if (!st || st.examGrade === null || st.examGrade === undefined || st.examGrade === '') {
                     return
                 }
 
@@ -90,11 +78,7 @@ export function useGradeActions(students: Ref<StudentSummaryData[]>, selectedFor
 
     async function handleSaveAll() {
         const unsaved = students.value.filter(
-            (s) =>
-                s.examGrade !== null &&
-                s.examGrade !== undefined &&
-                s.examGrade !== '' &&
-                !s.completedAt,
+            (s) => s.examGrade !== null && s.examGrade !== undefined && s.examGrade !== '' && !s.completedAt
         )
 
         for (const student of unsaved) {
@@ -117,10 +101,7 @@ export function useGradeActions(students: Ref<StudentSummaryData[]>, selectedFor
         const student = actionTarget.value
         if (!student) return
 
-        const assessment = await summaryService.getFinalAssessmentByStudent(
-            student.id,
-            'examination',
-        )
+        const assessment = await summaryService.getFinalAssessmentByStudent(student.id, 'examination')
         if (assessment?.id) {
             await summaryService.deleteFinalAssessment(assessment.id)
         }

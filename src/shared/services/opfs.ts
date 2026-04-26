@@ -17,7 +17,7 @@ export interface FileMetadata {
  */
 async function getDirectoryHandle(
     path: string,
-    options: { create?: boolean } = {},
+    options: { create?: boolean } = {}
 ): Promise<FileSystemDirectoryHandle> {
     const root = await navigator.storage.getDirectory()
     if (!path || path === '.' || path === '/') {
@@ -44,7 +44,7 @@ export const opfs = {
     async saveFile(
         directoryPath: string,
         fileName: string,
-        content: Blob | File | ArrayBuffer | string,
+        content: Blob | File | ArrayBuffer | string
     ): Promise<void> {
         const dirHandle = await getDirectoryHandle(directoryPath, { create: true })
         const fileHandle = await dirHandle.getFileHandle(fileName, { create: true })

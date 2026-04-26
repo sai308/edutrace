@@ -5,16 +5,7 @@ import type { MarksFilters } from '../components/MarksFilterSheet.vue'
 import type { ActiveFilters, UIMark } from '../components/MarksList/columns'
 import type { MarkFormat } from '@/shared/composables/useMarkFormat'
 import { useStorage } from '@vueuse/core'
-import {
-    ChevronDown,
-    FileUp,
-    Filter,
-    GraduationCap,
-    Loader2,
-    PenLine,
-    Search,
-    Trash2,
-} from 'lucide-vue-next'
+import { ChevronDown, FileUp, Filter, GraduationCap, Loader2, PenLine, Search, Trash2 } from 'lucide-vue-next'
 import { computed, ref } from 'vue'
 import {
     AlertDialog,
@@ -28,12 +19,7 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import DataTablePagination from '@/shared/components/DataTablePagination.vue'
@@ -152,17 +138,11 @@ function applyFilters(filters: MarksFilters) {
 </script>
 
 <template>
-    <div
-        v-if="isLoading"
-        class="flex flex-col items-center justify-center min-h-[400px] text-muted-foreground"
-    >
+    <div v-if="isLoading" class="flex flex-col items-center justify-center min-h-[400px] text-muted-foreground">
         <Loader2 class="w-8 h-8 animate-spin mb-4 text-primary" />
         <p>{{ $t('loader.loading') }}</p>
     </div>
-    <div
-        v-else
-        class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500"
-    >
+    <div v-else class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <!-- Zone 1: Page header -->
         <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
             <div>
@@ -173,9 +153,7 @@ function applyFilters(filters: MarksFilters) {
                     <template v-if="marks.length > 0">
                         {{
                             $t('marks.subtitle', {
-                                count:
-                                    marksTableRef?.table?.getFilteredRowModel().rows.length ??
-                                    marks.length,
+                                count: marksTableRef?.table?.getFilteredRowModel().rows.length ?? marks.length,
                                 total: marks.length,
                             })
                         }}
@@ -190,36 +168,21 @@ function applyFilters(filters: MarksFilters) {
                 <!-- Group Selector -->
                 <DropdownMenu>
                     <DropdownMenuTrigger as-child>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            class="h-9 gap-1"
-                            :disabled="groups.length === 0"
-                        >
+                        <Button variant="outline" size="sm" class="h-9 gap-1" :disabled="groups.length === 0">
                             <span class="hidden sm:inline text-xs text-muted-foreground mr-1"
                                 >{{ $t('marks.table.group') }}:</span
                             >
-                            <span
-                                class="font-medium max-w-[100px] truncate"
-                                :title="filterGroup || undefined"
-                            >
+                            <span class="font-medium max-w-[100px] truncate" :title="filterGroup || undefined">
                                 {{ filterGroup || $t('marks.filterModal.allGroups') }}
                             </span>
                             <ChevronDown class="h-3 w-3 opacity-50" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                        align="end"
-                        class="w-[200px] max-h-[300px] overflow-y-auto"
-                    >
+                    <DropdownMenuContent align="end" class="w-[200px] max-h-[300px] overflow-y-auto">
                         <DropdownMenuItem @click="filterGroup = null">
                             {{ $t('marks.filterModal.allGroups') }}
                         </DropdownMenuItem>
-                        <DropdownMenuItem
-                            v-for="group in groups"
-                            :key="group.id"
-                            @click="filterGroup = group.name"
-                        >
+                        <DropdownMenuItem v-for="group in groups" :key="group.id" @click="filterGroup = group.name">
                             {{ group.name }}
                         </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -262,12 +225,7 @@ function applyFilters(filters: MarksFilters) {
                 </DropdownMenu>
                 <!-- Action buttons — only shown when data exists; empty state provides these CTAs when marks=0 -->
                 <div v-if="marks.length > 0" class="ml-auto flex items-center gap-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        class="gap-2"
-                        @click="showManualMarkDialog = true"
-                    >
+                    <Button variant="outline" size="sm" class="gap-2" @click="showManualMarkDialog = true">
                         <PenLine class="w-4 h-4" />
                         <span class="hidden sm:inline">{{ $t('marks.addMark') }}</span>
                     </Button>
@@ -298,9 +256,7 @@ function applyFilters(filters: MarksFilters) {
                     <div class="flex flex-col gap-2 sm:hidden">
                         <!-- Row 1: full-width search -->
                         <div class="relative">
-                            <Search
-                                class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
-                            />
+                            <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                                 v-model="searchQuery"
                                 :placeholder="$t('marks.searchPlaceholder')"
@@ -310,17 +266,13 @@ function applyFilters(filters: MarksFilters) {
                         <!-- Row 2: bulk | filters | columns (3-col grid) -->
                         <div class="grid grid-cols-3 gap-2">
                             <Button
-                                v-if="
-                                    bulkMode && table.getFilteredSelectedRowModel().rows.length > 0
-                                "
+                                v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
                                 variant="destructive"
                                 size="sm"
                                 class="h-9 gap-2 w-full"
                                 @click="
                                     confirmBulkDelete(
-                                        table
-                                            .getFilteredSelectedRowModel()
-                                            .rows.map((r: any) => r.original.id),
+                                        table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id)
                                     )
                                 "
                             >
@@ -335,9 +287,7 @@ function applyFilters(filters: MarksFilters) {
                                     class="cursor-pointer"
                                     @update:model-value="bulkMode = $event"
                                 />
-                                <span class="text-sm text-muted-foreground select-none">{{
-                                    $t('common.bulk')
-                                }}</span>
+                                <span class="text-sm text-muted-foreground select-none">{{ $t('common.bulk') }}</span>
                             </div>
                             <Button
                                 variant="outline"
@@ -347,13 +297,7 @@ function applyFilters(filters: MarksFilters) {
                                 @click="showFilterModal = true"
                             >
                                 <Filter class="w-3.5 h-3.5 shrink-0" />
-                                <span
-                                    v-if="
-                                        !(
-                                            bulkMode &&
-                                            table.getFilteredSelectedRowModel().rows.length > 0
-                                        )
-                                    "
+                                <span v-if="!(bulkMode && table.getFilteredSelectedRowModel().rows.length > 0)"
                                     >{{ $t('marks.filters') }}
                                 </span>
                                 <Badge
@@ -366,9 +310,7 @@ function applyFilters(filters: MarksFilters) {
                             </Button>
                             <DataTableViewOptions
                                 :table="table"
-                                :compact="
-                                    bulkMode && table.getFilteredSelectedRowModel().rows.length > 0
-                                "
+                                :compact="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
                                 button-class="w-full"
                             />
                         </div>
@@ -379,9 +321,7 @@ function applyFilters(filters: MarksFilters) {
                         <!-- Left: search → bulk switch → bulk delete -->
                         <div class="flex items-center gap-3 flex-1 min-w-0">
                             <div class="relative max-w-xs flex-1">
-                                <Search
-                                    class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
-                                />
+                                <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     v-model="searchQuery"
                                     :placeholder="$t('marks.searchPlaceholder')"
@@ -394,22 +334,16 @@ function applyFilters(filters: MarksFilters) {
                                     class="cursor-pointer"
                                     @update:model-value="bulkMode = $event"
                                 />
-                                <span class="text-sm text-muted-foreground select-none">{{
-                                    $t('common.bulk')
-                                }}</span>
+                                <span class="text-sm text-muted-foreground select-none">{{ $t('common.bulk') }}</span>
                             </div>
                             <Button
-                                v-if="
-                                    bulkMode && table.getFilteredSelectedRowModel().rows.length > 0
-                                "
+                                v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
                                 variant="destructive"
                                 size="sm"
                                 class="h-8 gap-2 shrink-0"
                                 @click="
                                     confirmBulkDelete(
-                                        table
-                                            .getFilteredSelectedRowModel()
-                                            .rows.map((r: any) => r.original.id),
+                                        table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id)
                                     )
                                 "
                             >
@@ -476,11 +410,7 @@ function applyFilters(filters: MarksFilters) {
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        {{
-                            isBulkDelete
-                                ? $t('marks.deleteModal.bulkTitle')
-                                : $t('marks.deleteModal.title')
-                        }}
+                        {{ isBulkDelete ? $t('marks.deleteModal.bulkTitle') : $t('marks.deleteModal.title') }}
                     </AlertDialogTitle>
                     <AlertDialogDescription>
                         {{
@@ -496,10 +426,7 @@ function applyFilters(filters: MarksFilters) {
                     <AlertDialogCancel @click="showDeleteModal = false">
                         {{ $t('common.cancel') }}
                     </AlertDialogCancel>
-                    <AlertDialogAction
-                        class="bg-destructive hover:bg-destructive/90 text-white"
-                        @click="handleDelete"
-                    >
+                    <AlertDialogAction class="bg-destructive hover:bg-destructive/90 text-white" @click="handleDelete">
                         {{ $t('marks.deleteModal.confirm') }}
                     </AlertDialogAction>
                 </AlertDialogFooter>

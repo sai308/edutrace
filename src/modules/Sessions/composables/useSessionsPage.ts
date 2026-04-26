@@ -25,7 +25,7 @@ export function useSessionsPage() {
     const activeTab = ref<string>(SessionTypeEnum.MAIN)
 
     const currentGroup = computed(
-        () => groups.value.find((g) => g.id!.toString() === selectedGroupId.value) ?? undefined,
+        () => groups.value.find((g) => g.id!.toString() === selectedGroupId.value) ?? undefined
     )
 
     /**
@@ -53,28 +53,20 @@ export function useSessionsPage() {
         }
         mainSession.value = main
 
-        let firstRetake =
-            allSessions.find((s) => s.sessionType === SessionTypeEnum.FIRST_RETAKE) ?? null
+        let firstRetake = allSessions.find((s) => s.sessionType === SessionTypeEnum.FIRST_RETAKE) ?? null
         if (firstRetake && firstRetake.status === SessionStatusEnum.OPEN && currentGroup.value) {
             try {
-                firstRetake = await sessionsService.syncRetakeSession(
-                    currentGroup.value,
-                    firstRetake.id,
-                )
+                firstRetake = await sessionsService.syncRetakeSession(currentGroup.value, firstRetake.id)
             } catch (e) {
                 logger.error('Failed to sync first retake session', e)
             }
         }
         firstRetakeSession.value = firstRetake
 
-        let secondRetake =
-            allSessions.find((s) => s.sessionType === SessionTypeEnum.SECOND_RETAKE) ?? null
+        let secondRetake = allSessions.find((s) => s.sessionType === SessionTypeEnum.SECOND_RETAKE) ?? null
         if (secondRetake && secondRetake.status === SessionStatusEnum.OPEN && currentGroup.value) {
             try {
-                secondRetake = await sessionsService.syncRetakeSession(
-                    currentGroup.value,
-                    secondRetake.id,
-                )
+                secondRetake = await sessionsService.syncRetakeSession(currentGroup.value, secondRetake.id)
             } catch (e) {
                 logger.error('Failed to sync second retake session', e)
             }
@@ -106,7 +98,7 @@ export function useSessionsPage() {
             firstRetakeSession.value = await sessionsService.initializeRetakeSession(
                 currentGroup.value,
                 mainSession.value.id,
-                SessionTypeEnum.FIRST_RETAKE,
+                SessionTypeEnum.FIRST_RETAKE
             )
             activeTab.value = SessionTypeEnum.FIRST_RETAKE
         } catch (e) {
@@ -123,7 +115,7 @@ export function useSessionsPage() {
             secondRetakeSession.value = await sessionsService.initializeRetakeSession(
                 currentGroup.value,
                 firstRetakeSession.value.id,
-                SessionTypeEnum.SECOND_RETAKE,
+                SessionTypeEnum.SECOND_RETAKE
             )
             activeTab.value = SessionTypeEnum.SECOND_RETAKE
         } catch (e) {

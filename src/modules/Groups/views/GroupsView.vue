@@ -131,9 +131,7 @@ function getGroupActions(group: EnrichedGroup): RowActionItem[] {
 </script>
 
 <template>
-    <div
-        class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500"
-    >
+    <div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <!-- Zone 1: Page header — always visible -->
         <div class="flex flex-row items-start sm:items-center justify-between gap-4">
             <div class="min-w-0">
@@ -144,9 +142,7 @@ function getGroupActions(group: EnrichedGroup): RowActionItem[] {
                     <template v-if="groups.length > 0">
                         {{
                             $t('groups.subtitle', {
-                                count:
-                                    groupsTableRef?.table?.getFilteredRowModel().rows.length ??
-                                    groups.length,
+                                count: groupsTableRef?.table?.getFilteredRowModel().rows.length ?? groups.length,
                                 total: groups.length,
                             })
                         }}
@@ -182,9 +178,7 @@ function getGroupActions(group: EnrichedGroup): RowActionItem[] {
                         <!-- Left: search → bulk switch → bulk delete -->
                         <div class="flex items-center gap-3 flex-1 min-w-0">
                             <div class="relative max-w-xs flex-1">
-                                <Search
-                                    class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
-                                />
+                                <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     v-model="searchQuery"
                                     :placeholder="$t('groups.searchPlaceholder')"
@@ -192,28 +186,19 @@ function getGroupActions(group: EnrichedGroup): RowActionItem[] {
                                 />
                             </div>
                             <div class="flex items-center gap-2 shrink-0">
-                                <Switch
-                                    :model-value="bulkMode"
-                                    @update:model-value="bulkMode = $event"
-                                />
-                                <span
-                                    class="text-sm text-muted-foreground hidden sm:inline select-none"
-                                >
+                                <Switch :model-value="bulkMode" @update:model-value="bulkMode = $event" />
+                                <span class="text-sm text-muted-foreground hidden sm:inline select-none">
                                     {{ $t('common.bulk') }}
                                 </span>
                             </div>
                             <Button
-                                v-if="
-                                    bulkMode && table.getFilteredSelectedRowModel().rows.length > 0
-                                "
+                                v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
                                 variant="destructive"
                                 size="sm"
                                 class="h-8 gap-2 shrink-0"
                                 @click="
                                     handleBulkDelete(
-                                        table
-                                            .getFilteredSelectedRowModel()
-                                            .rows.map((r: any) => r.original.id),
+                                        table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id)
                                     )
                                 "
                             >

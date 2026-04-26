@@ -1,25 +1,12 @@
 <script setup lang="ts">
 import type { DetailedStats } from '@Analytics/types/analytics'
 import type { RowSelectionState, SortingState, VisibilityState } from '@tanstack/vue-table'
-import {
-    FlexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getSortedRowModel,
-    useVueTable,
-} from '@tanstack/vue-table'
+import { FlexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table'
 import { useStorage } from '@vueuse/core'
 import { BarChart3 } from 'lucide-vue-next'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import DataTableEmptyState from '@/shared/components/DataTableEmptyState.vue'
 import DataTableViewOptions from '@/shared/components/DataTableViewOptions.vue'
 import { useFormatters } from '@/shared/composables/useFormatters'
@@ -73,7 +60,7 @@ const table = useVueTable({
 
 watch(
     () => props.searchQuery,
-    (q) => table.setGlobalFilter(q ?? ''),
+    (q) => table.setGlobalFilter(q ?? '')
 )
 
 defineExpose({ table })
@@ -101,9 +88,7 @@ defineExpose({ table })
                                 header.id === 'totalPercentage'
                                     ? 'text-center w-[80px] z-40 sticky right-0 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-l shadow-[-1px_0_0_0_hsl(var(--border)),-2px_0_4px_-1px_rgba(0,0,0,0.1)]'
                                     : '',
-                                !['select', 'name', 'totalPercentage'].includes(header.id)
-                                    ? 'text-center px-4'
-                                    : '',
+                                !['select', 'name', 'totalPercentage'].includes(header.id) ? 'text-center px-4' : '',
                             ]"
                         >
                             <FlexRender
@@ -137,21 +122,14 @@ defineExpose({ table })
                                         : '',
                                 ]"
                             >
-                                <FlexRender
-                                    :render="cell.column.columnDef.cell"
-                                    :props="cell.getContext()"
-                                />
+                                <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
                             </TableCell>
                         </TableRow>
                     </template>
                     <DataTableEmptyState
                         v-else
                         :colspan="columns.length"
-                        :title="
-                            searchQuery
-                                ? $t('analytics.details.table.noMatch')
-                                : $t('common.noData')
-                        "
+                        :title="searchQuery ? $t('analytics.details.table.noMatch') : $t('common.noData')"
                         :icon="BarChart3"
                     />
                 </TableBody>

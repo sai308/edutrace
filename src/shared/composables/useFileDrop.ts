@@ -66,9 +66,7 @@ export function useFileDrop(emit: (event: 'files-dropped', files: File[]) => voi
 
         const files = e.dataTransfer?.files
         if (files && files.length > 0) {
-            const validFiles = Array.from(files).filter((file) =>
-                file.name.toLowerCase().endsWith('.csv'),
-            )
+            const validFiles = Array.from(files).filter((file) => file.name.toLowerCase().endsWith('.csv'))
             if (validFiles.length > 0) {
                 emit('files-dropped', validFiles)
             }

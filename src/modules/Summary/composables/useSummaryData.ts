@@ -28,7 +28,7 @@ export function useSummaryData() {
         attendanceEnabled = true,
         gradeFormat = '5-scale',
         requiredTasks = 0,
-        assessmentType = 'examination',
+        assessmentType = 'examination'
     ) {
         if (!group) {
             students.value = []

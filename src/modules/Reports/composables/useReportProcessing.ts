@@ -14,10 +14,7 @@ export function useReportProcessing() {
     const showFilterModal = ref(false)
     const filterCallback = ref<(() => void) | null>(null)
 
-    async function handleFilesDropped(
-        files: File[],
-        onRefreshDashboard: () => void,
-    ): Promise<void> {
+    async function handleFilesDropped(files: File[], onRefreshDashboard: () => void): Promise<void> {
         pendingFiles.value = files
         filterCallback.value = onRefreshDashboard
         showFilterModal.value = true
@@ -32,12 +29,9 @@ export function useReportProcessing() {
         try {
             const stats = await reportsService.processFiles(pendingFiles.value, filterMode)
 
-            if (stats.saved > 0)
-                toast.success(t('reports.processing.saved', { count: stats.saved }))
-            if (stats.skipped > 0)
-                toast.info(t('reports.processing.skipped', { count: stats.skipped }))
-            if (stats.unrecognized > 0)
-                toast.info(t('csvFilter.skippedUnrecognized', { count: stats.unrecognized }))
+            if (stats.saved > 0) toast.success(t('reports.processing.saved', { count: stats.saved }))
+            if (stats.skipped > 0) toast.info(t('reports.processing.skipped', { count: stats.skipped }))
+            if (stats.unrecognized > 0) toast.info(t('csvFilter.skippedUnrecognized', { count: stats.unrecognized }))
 
             await loadMeets()
 

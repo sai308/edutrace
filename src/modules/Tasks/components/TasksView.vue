@@ -103,9 +103,7 @@ function getTaskActions(task: Task): RowActionItem[] {
 </script>
 
 <template>
-    <div
-        class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500"
-    >
+    <div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <!-- Zone 1: Page header — always visible -->
         <div class="flex flex-row items-start sm:items-center justify-between gap-4">
             <div class="min-w-0">
@@ -147,21 +145,13 @@ function getTaskActions(task: Task): RowActionItem[] {
                     <div class="flex flex-col gap-2 sm:hidden">
                         <!-- Row 1: full-width search -->
                         <div class="relative">
-                            <Search
-                                class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
-                            />
-                            <Input
-                                v-model="searchQuery"
-                                :placeholder="$t('tasks.search')"
-                                class="pl-8 h-9 w-full"
-                            />
+                            <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input v-model="searchQuery" :placeholder="$t('tasks.search')" class="pl-8 h-9 w-full" />
                         </div>
                         <!-- Row 2: bulk (left 50%) | columns (right 50%) -->
                         <div class="grid grid-cols-2 gap-2">
                             <Button
-                                v-if="
-                                    bulkMode && table.getFilteredSelectedRowModel().rows.length > 0
-                                "
+                                v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
                                 variant="destructive"
                                 size="sm"
                                 class="h-9 gap-2 w-full"
@@ -178,15 +168,11 @@ function getTaskActions(task: Task): RowActionItem[] {
                                     class="cursor-pointer"
                                     @update:model-value="bulkMode = $event"
                                 />
-                                <span class="text-sm text-muted-foreground select-none">{{
-                                    $t('common.bulk')
-                                }}</span>
+                                <span class="text-sm text-muted-foreground select-none">{{ $t('common.bulk') }}</span>
                             </div>
                             <DataTableViewOptions
                                 :table="table"
-                                :compact="
-                                    bulkMode && table.getFilteredSelectedRowModel().rows.length > 0
-                                "
+                                :compact="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
                                 button-class="w-full"
                             />
                         </div>
@@ -196,14 +182,8 @@ function getTaskActions(task: Task): RowActionItem[] {
                     <div class="hidden sm:flex items-center justify-between gap-3">
                         <div class="flex items-center gap-3 flex-1 min-w-0">
                             <div class="relative max-w-xs flex-1">
-                                <Search
-                                    class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
-                                />
-                                <Input
-                                    v-model="searchQuery"
-                                    :placeholder="$t('tasks.search')"
-                                    class="pl-8 h-9"
-                                />
+                                <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input v-model="searchQuery" :placeholder="$t('tasks.search')" class="pl-8 h-9" />
                             </div>
                             <div class="flex items-center gap-2 shrink-0">
                                 <Switch
@@ -211,14 +191,10 @@ function getTaskActions(task: Task): RowActionItem[] {
                                     class="cursor-pointer"
                                     @update:model-value="bulkMode = $event"
                                 />
-                                <span class="text-sm text-muted-foreground select-none">{{
-                                    $t('common.bulk')
-                                }}</span>
+                                <span class="text-sm text-muted-foreground select-none">{{ $t('common.bulk') }}</span>
                             </div>
                             <Button
-                                v-if="
-                                    bulkMode && table.getFilteredSelectedRowModel().rows.length > 0
-                                "
+                                v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
                                 variant="destructive"
                                 size="sm"
                                 class="h-8 gap-2 shrink-0"

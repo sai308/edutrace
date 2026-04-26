@@ -56,25 +56,25 @@ describe('plansRepository', () => {
 
         it('throws when id is empty', async () => {
             await expect(plansRepository.savePlan(makePlan({ id: '' }))).rejects.toThrow(
-                'plan must have a non-empty id',
+                'plan must have a non-empty id'
             )
         })
 
         it('throws when id is whitespace only', async () => {
             await expect(plansRepository.savePlan(makePlan({ id: '   ' }))).rejects.toThrow(
-                'plan must have a non-empty id',
+                'plan must have a non-empty id'
             )
         })
 
         it('throws when studentId is empty', async () => {
             await expect(plansRepository.savePlan(makePlan({ studentId: '' }))).rejects.toThrow(
-                'plan must have a non-empty studentId',
+                'plan must have a non-empty studentId'
             )
         })
 
         it('throws when iep is empty', async () => {
             await expect(plansRepository.savePlan(makePlan({ iep: '' }))).rejects.toThrow(
-                'plan must have a non-empty iep',
+                'plan must have a non-empty iep'
             )
         })
 
@@ -115,18 +115,14 @@ describe('plansRepository', () => {
         })
 
         it('does not return plans from other students', async () => {
-            await plansRepository.savePlan(
-                makePlan({ id: 'p-other', studentId: 'stu-other', iep: 'I1' }),
-            )
+            await plansRepository.savePlan(makePlan({ id: 'p-other', studentId: 'stu-other', iep: 'I1' }))
 
             const result = await plansRepository.getPlansByStudentId('stu-A')
             expect(result).toHaveLength(0)
         })
 
         it('returns a single plan when only one exists', async () => {
-            await plansRepository.savePlan(
-                makePlan({ id: 'single', studentId: 'stu-single', iep: 'I1', grade: 95 }),
-            )
+            await plansRepository.savePlan(makePlan({ id: 'single', studentId: 'stu-single', iep: 'I1', grade: 95 }))
 
             const result = await plansRepository.getPlansByStudentId('stu-single')
             expect(result).toHaveLength(1)
@@ -168,9 +164,7 @@ describe('plansRepository', () => {
 
         it('only removes the targeted plan', async () => {
             await plansRepository.savePlan(makePlan({ id: 'keep-me', studentId: 's1', iep: 'I1' }))
-            await plansRepository.savePlan(
-                makePlan({ id: 'delete-me', studentId: 's2', iep: 'I2' }),
-            )
+            await plansRepository.savePlan(makePlan({ id: 'delete-me', studentId: 's2', iep: 'I2' }))
 
             await plansRepository.delete('delete-me' as any)
 

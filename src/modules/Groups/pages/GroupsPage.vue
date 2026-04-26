@@ -4,8 +4,7 @@ import { onMounted } from 'vue'
 import { useGroups } from '../composables/useGroups'
 import GroupsView from '../views/GroupsView.vue'
 
-const { groups, memberCounts, allMeetIds, allTeachers, loadData, saveGroup, deleteGroup } =
-    useGroups()
+const { groups, memberCounts, allMeetIds, allTeachers, loadData, saveGroup, deleteGroup } = useGroups()
 
 onMounted(loadData)
 

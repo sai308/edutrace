@@ -116,14 +116,10 @@ export class AnalyticsService {
             meet.participants.forEach((p) => {
                 if (!p.name || ignoredSet.has(p.name)) return
                 const duration =
-                    typeof p.duration === 'number' && isFinite(p.duration) && p.duration >= 0
-                        ? p.duration
-                        : 0
+                    typeof p.duration === 'number' && isFinite(p.duration) && p.duration >= 0 ? p.duration : 0
 
                 const member = nameToMember.get(p.name)
-                const shouldCountParticipant = targetGroupMembers
-                    ? !!(member && targetGroupMembers.has(member))
-                    : true
+                const shouldCountParticipant = targetGroupMembers ? !!(member && targetGroupMembers.has(member)) : true
 
                 if (shouldCountParticipant) {
                     const uniqueId = member?.id || p.name
@@ -196,10 +192,7 @@ export class AnalyticsService {
      * Builds the full per-participant × per-date attendance matrix for a single meetId.
      * Merges multiple uploads on the same date; adds absent group members as zero rows.
      */
-    async getDetailedStats(
-        meetId: string,
-        teacherName: string | null = null,
-    ): Promise<DetailedStats> {
+    async getDetailedStats(meetId: string, teacherName: string | null = null): Promise<DetailedStats> {
         if (!meetId || typeof meetId !== 'string') {
             throw new Error('meetId must be a non-empty string')
         }
@@ -237,16 +230,11 @@ export class AnalyticsService {
             } else {
                 if (
                     meet.startTime &&
-                    (!sessionsByDate[date]!.startTime ||
-                        meet.startTime < sessionsByDate[date]!.startTime!)
+                    (!sessionsByDate[date]!.startTime || meet.startTime < sessionsByDate[date]!.startTime!)
                 ) {
                     sessionsByDate[date]!.startTime = meet.startTime
                 }
-                if (
-                    meet.endTime &&
-                    (!sessionsByDate[date]!.endTime ||
-                        meet.endTime > sessionsByDate[date]!.endTime!)
-                ) {
+                if (meet.endTime && (!sessionsByDate[date]!.endTime || meet.endTime > sessionsByDate[date]!.endTime!)) {
                     sessionsByDate[date]!.endTime = meet.endTime
                 }
             }
@@ -295,10 +283,7 @@ export class AnalyticsService {
                 row.totalPossible += max
             })
 
-            row.totalPercentage =
-                row.totalPossible > 0
-                    ? Math.round((row.totalDuration / row.totalPossible) * 100)
-                    : 0
+            row.totalPercentage = row.totalPossible > 0 ? Math.round((row.totalDuration / row.totalPossible) * 100) : 0
 
             return row
         })
@@ -312,7 +297,7 @@ export class AnalyticsService {
                     acc[meet.date] = meet.id
                     return acc
                 },
-                {} as Record<string, string>,
+                {} as Record<string, string>
             ),
         }
     }
@@ -335,9 +320,7 @@ export class AnalyticsService {
         const { nameToMember: memberGroupMap } = buildMemberLookups(allStudents)
 
         const date = meet.date
-        const participants = (meet.participants ?? []).filter(
-            (p) => p.name && !ignoredSet.has(p.name),
-        )
+        const participants = (meet.participants ?? []).filter((p) => p.name && !ignoredSet.has(p.name))
 
         let maxDuration = 0
         participants.forEach((p) => {
@@ -370,7 +353,7 @@ export class AnalyticsService {
                 date,
                 participants: participants.reduce(
                     (acc, p) => ({ ...acc, [p.name]: p.duration }),
-                    {} as Record<string, number>,
+                    {} as Record<string, number>
                 ),
                 maxDuration,
                 startTime: meet.startTime || '',

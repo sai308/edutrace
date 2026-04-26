@@ -3,13 +3,7 @@ import type { Module, StudentSummaryData } from '@Summary/types/summary'
 
 import type { ColumnFiltersState, SortingState } from '@tanstack/vue-table'
 import type { RowActionItem } from '@/shared/types/table'
-import {
-    FlexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getSortedRowModel,
-    useVueTable,
-} from '@tanstack/vue-table'
+import { FlexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table'
 import { ClipboardList } from 'lucide-vue-next'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -21,14 +15,7 @@ import {
     ContextMenuTrigger,
 } from '@/components/ui/context-menu'
 
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import DataTableEmptyState from '@/shared/components/DataTableEmptyState.vue'
 import { useFormatters } from '@/shared/composables/useFormatters'
 import { createSummaryColumns } from './columns'
@@ -57,9 +44,7 @@ const sorting = ref<SortingState>([])
 const columnFilters = ref<ColumnFiltersState>([])
 
 const ordinalMap = computed<Map<string, number>>(() => {
-    const sorted = [...props.students].sort((a, b) =>
-        a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
-    )
+    const sorted = [...props.students].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
     return new Map(sorted.map((s, i) => [s.id, i + 1]))
 })
 
@@ -70,8 +55,8 @@ const columns = computed(() =>
         props.rowActions ?? (() => []),
         ordinalMap.value,
         { formatDate, formatTime },
-        t,
-    ),
+        t
+    )
 )
 
 const table = useVueTable({
@@ -85,14 +70,11 @@ const table = useVueTable({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: (updaterOrValue) => {
-        sorting.value =
-            typeof updaterOrValue === 'function' ? updaterOrValue(sorting.value) : updaterOrValue
+        sorting.value = typeof updaterOrValue === 'function' ? updaterOrValue(sorting.value) : updaterOrValue
     },
     onColumnFiltersChange: (updaterOrValue) => {
         columnFilters.value =
-            typeof updaterOrValue === 'function'
-                ? updaterOrValue(columnFilters.value)
-                : updaterOrValue
+            typeof updaterOrValue === 'function' ? updaterOrValue(columnFilters.value) : updaterOrValue
     },
     state: {
         get sorting() {
@@ -110,7 +92,7 @@ watch(
     () => props.searchQuery,
     (q) => {
         table.getColumn('name')?.setFilterValue(q || undefined)
-    },
+    }
 )
 
 defineExpose({ table })
@@ -120,13 +102,9 @@ defineExpose({ table })
     <div>
         <slot name="toolbar" :table="table" />
 
-        <div
-            class="rounded-md border bg-card overflow-auto max-h-[calc(100svh-20rem)] custom-scrollbar"
-        >
+        <div class="rounded-md border bg-card overflow-auto max-h-[calc(100svh-20rem)] custom-scrollbar">
             <Table>
-                <TableHeader
-                    class="sticky top-0 z-30 bg-card shadow-[0_1px_0_0_hsl(var(--border))]"
-                >
+                <TableHeader class="sticky top-0 z-30 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
                     <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
                         <TableHead
                             v-for="header in headerGroup.headers"
@@ -165,10 +143,7 @@ defineExpose({ table })
                                                 : '',
                                         ]"
                                     >
-                                        <FlexRender
-                                            :render="cell.column.columnDef.cell"
-                                            :props="cell.getContext()"
-                                        />
+                                        <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
                                     </TableCell>
                                 </TableRow>
                             </ContextMenuTrigger>

@@ -86,14 +86,9 @@ function handleReset() {
                         :id="column.id"
                         :model-value="column.getIsVisible()"
                         class="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
-                        @update:model-value="
-                            (value: boolean | string) => column.toggleVisibility(!!value)
-                        "
+                        @update:model-value="(value: boolean | string) => column.toggleVisibility(!!value)"
                     />
-                    <Label
-                        :for="column.id"
-                        class="flex-1 cursor-pointer text-sm font-normal pointer-events-none"
-                    >
+                    <Label :for="column.id" class="flex-1 cursor-pointer text-sm font-normal pointer-events-none">
                         {{ column.columnDef.meta?.label ?? column.id }}
                     </Label>
                 </div>

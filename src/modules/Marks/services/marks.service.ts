@@ -1,12 +1,6 @@
 import type { Meet } from '@Analytics/types/analytics'
 import type { Group } from '@Groups/types/groups'
-import type {
-    FlatMark,
-    Mark,
-    MarksParsedData,
-    MarksProcessingStats,
-    SaveMarkResult,
-} from '../types/marks'
+import type { FlatMark, Mark, MarksParsedData, MarksProcessingStats, SaveMarkResult } from '../types/marks'
 import { meetsRepository } from '@Analytics/services/meets.repository'
 import { groupsRepository } from '@Groups/services/groups.repository'
 import { studentsRepository } from '@Students/services/students.repository'
@@ -45,7 +39,7 @@ export class MarksService {
             const text = await file.text()
             const parsedData: MarksParsedData = await withTimeout(
                 this.parser.parseMarksCSV(text, file.name, groupName),
-                PARSER_TIMEOUT_MS,
+                PARSER_TIMEOUT_MS
             )
 
             // 1.5. Normalize Group Names
@@ -58,10 +52,7 @@ export class MarksService {
             }
 
             // 2. Reconcile
-            const { students, tasks, marks } = await this.marksReconciler.reconcile(
-                parsedData,
-                parsedData.groupName,
-            )
+            const { students, tasks, marks } = await this.marksReconciler.reconcile(parsedData, parsedData.groupName)
 
             // 3. Bulk Persist
             if (students.length > 0) {
@@ -139,11 +130,9 @@ export class MarksService {
             const text = await file.text()
             const parsed: MarksParsedData = await withTimeout(
                 this.parser.parseMarksCSV(text, file.name, ''),
-                PARSER_TIMEOUT_MS,
+                PARSER_TIMEOUT_MS
             )
-            const studentNames = new Set(
-                parsed.studentsData.map((s) => s.student.name.toLowerCase().trim()),
-            )
+            const studentNames = new Set(parsed.studentsData.map((s) => s.student.name.toLowerCase().trim()))
             if (studentNames.size === 0) return []
 
             const meetIdScores = new Map<string, number>()
@@ -152,9 +141,7 @@ export class MarksService {
             const allMeets = await meetsRepository.getAllMeets()
             for (const meet of allMeets) {
                 if (!meet.meetId || !Array.isArray(meet.participants)) continue
-                const matchCount = meet.participants.filter((p) =>
-                    studentNames.has(p.name.toLowerCase().trim()),
-                ).length
+                const matchCount = meet.participants.filter((p) => studentNames.has(p.name.toLowerCase().trim())).length
                 if (matchCount > 0) {
                     meetIdScores.set(meet.meetId, (meetIdScores.get(meet.meetId) ?? 0) + matchCount)
                 }
@@ -165,12 +152,9 @@ export class MarksService {
                 studentsRepository.getAllMembers({ includeHidden: true }),
                 groupsRepository.getAll(),
             ])
-            const groupMeetIdMap = new Map(
-                allGroups.filter((g) => g.meetId).map((g) => [g.name, g.meetId]),
-            )
+            const groupMeetIdMap = new Map(allGroups.filter((g) => g.meetId).map((g) => [g.name, g.meetId]))
             for (const member of allMembers) {
-                if (!member.groupName || !studentNames.has(member.name.toLowerCase().trim()))
-                    continue
+                if (!member.groupName || !studentNames.has(member.name.toLowerCase().trim())) continue
                 const meetId = groupMeetIdMap.get(member.groupName)
                 if (meetId) {
                     meetIdScores.set(meetId, (meetIdScores.get(meetId) ?? 0) + 1)

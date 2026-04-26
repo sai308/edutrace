@@ -57,15 +57,8 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuRadioGroup
-                            :model-value="locale"
-                            @update:model-value="setLocale"
-                        >
-                            <DropdownMenuRadioItem
-                                v-for="l in LOCALES"
-                                :key="l.code"
-                                :value="l.code"
-                            >
+                        <DropdownMenuRadioGroup :model-value="locale" @update:model-value="setLocale">
+                            <DropdownMenuRadioItem v-for="l in LOCALES" :key="l.code" :value="l.code">
                                 {{ l.label }}
                             </DropdownMenuRadioItem>
                         </DropdownMenuRadioGroup>

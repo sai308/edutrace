@@ -1,33 +1,13 @@
 <script setup lang="ts">
 import { usePlans } from '@Plans/composables/usePlans'
-import {
-    Calendar,
-    ChevronDown,
-    Clock,
-    FileText,
-    GraduationCap,
-    Layers,
-    UserX,
-} from 'lucide-vue-next'
+import { Calendar, ChevronDown, Clock, FileText, GraduationCap, Layers, UserX } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Switch } from '@/components/ui/switch'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import EmptyState from '@/shared/components/EmptyState.vue'
 import { useFormatters } from '@/shared/composables/useFormatters'
 import { getECTSColorClass, toECTS } from '@/shared/utils/grades'
@@ -43,9 +23,7 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
         class="h-full flex-1 flex flex-col space-y-4 p-4 md:p-6 pt-2 md:flex max-w-[1400px] mx-auto w-full min-h-0 animate-in fade-in slide-in-from-bottom-4 duration-500"
     >
         <!-- Zone 1: Page header — always visible -->
-        <div
-            class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b gap-4 shrink-0"
-        >
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b gap-4 shrink-0">
             <div>
                 <h1 class="text-2xl font-bold tracking-tight">
                     {{ t('plans.title') }}
@@ -57,11 +35,7 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
             <div v-if="students.length > 0" class="w-full sm:w-auto flex justify-center">
                 <DropdownMenu>
                     <DropdownMenuTrigger as-child>
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            class="h-9 gap-1 w-full sm:w-[200px] mx-auto sm:mx-0"
-                        >
+                        <Button variant="outline" size="sm" class="h-9 gap-1 w-full sm:w-[200px] mx-auto sm:mx-0">
                             <span class="text-xs text-muted-foreground mr-1 whitespace-nowrap"
                                 >{{ t('marks.table.group') }}:</span
                             >
@@ -71,10 +45,7 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
                             <ChevronDown class="h-3 w-3 opacity-50 shrink-0" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                        align="end"
-                        class="w-full sm:w-[200px] max-h-[300px] overflow-y-auto"
-                    >
+                    <DropdownMenuContent align="end" class="w-full sm:w-[200px] max-h-[300px] overflow-y-auto">
                         <DropdownMenuItem @click="filterGroup = null">
                             {{ t('marks.filterModal.allGroups') }}
                         </DropdownMenuItem>
@@ -137,45 +108,31 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
                 >
                     <div class="flex flex-col items-center">
                         <span class="font-bold text-green-600 dark:text-green-400">A</span
-                        ><span :class="stats.A === 0 ? 'opacity-30' : 'font-medium'">{{
-                            stats.A
-                        }}</span>
+                        ><span :class="stats.A === 0 ? 'opacity-30' : 'font-medium'">{{ stats.A }}</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <span class="font-semibold text-emerald-500 dark:text-emerald-400">B</span
-                        ><span :class="stats.B === 0 ? 'opacity-30' : 'font-medium'">{{
-                            stats.B
-                        }}</span>
+                        ><span :class="stats.B === 0 ? 'opacity-30' : 'font-medium'">{{ stats.B }}</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <span class="font-semibold text-yellow-600 dark:text-yellow-500">C</span
-                        ><span :class="stats.C === 0 ? 'opacity-30' : 'font-medium'">{{
-                            stats.C
-                        }}</span>
+                        ><span :class="stats.C === 0 ? 'opacity-30' : 'font-medium'">{{ stats.C }}</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <span class="font-medium text-orange-500 dark:text-orange-400">D</span
-                        ><span :class="stats.D === 0 ? 'opacity-30' : 'font-medium'">{{
-                            stats.D
-                        }}</span>
+                        ><span :class="stats.D === 0 ? 'opacity-30' : 'font-medium'">{{ stats.D }}</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <span class="font-medium text-orange-600 dark:text-orange-500">E</span
-                        ><span :class="stats.E === 0 ? 'opacity-30' : 'font-medium'">{{
-                            stats.E
-                        }}</span>
+                        ><span :class="stats.E === 0 ? 'opacity-30' : 'font-medium'">{{ stats.E }}</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <span class="font-bold text-red-500 dark:text-red-400">FX</span
-                        ><span :class="stats.FX === 0 ? 'opacity-30' : 'font-medium'">{{
-                            stats.FX
-                        }}</span>
+                        ><span :class="stats.FX === 0 ? 'opacity-30' : 'font-medium'">{{ stats.FX }}</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <span class="font-bold text-red-600 dark:text-red-500">F</span
-                        ><span :class="stats.F === 0 ? 'opacity-30' : 'font-medium'">{{
-                            stats.F
-                        }}</span>
+                        ><span :class="stats.F === 0 ? 'opacity-30' : 'font-medium'">{{ stats.F }}</span>
                     </div>
 
                     <div class="w-px h-6 bg-border mx-1" />
@@ -184,17 +141,13 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
                         <span class="text-muted-foreground flex items-center gap-1">
                             <UserX class="w-3 h-3 opacity-60" /> {{ t('plans.table.noGrade') }}
                         </span>
-                        <span :class="stats.absent === 0 ? 'opacity-30' : 'font-medium'">{{
-                            stats.absent
-                        }}</span>
+                        <span :class="stats.absent === 0 ? 'opacity-30' : 'font-medium'">{{ stats.absent }}</span>
                     </div>
                 </div>
             </div>
 
             <div class="flex-1 min-h-0 w-full flex flex-col space-y-4">
-                <div
-                    class="rounded-md border bg-card flex-1 min-h-0 overflow-hidden relative [&>div]:h-full"
-                >
+                <div class="rounded-md border bg-card flex-1 min-h-0 overflow-hidden relative [&>div]:h-full">
                     <Table class="min-w-[800px] lg:min-w-[1000px]">
                         <TableHeader class="sticky top-0 z-40 bg-background shadow-sm">
                             <TableRow>
@@ -225,14 +178,10 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
                                 <TableCell
                                     class="font-medium sticky left-0 z-20 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)] max-w-[120px] sm:max-w-[300px] border-b"
                                 >
-                                    <span class="hidden sm:block truncate">{{
-                                        item.student.name
+                                    <span class="hidden sm:block truncate">{{ item.student.name }}</span>
+                                    <span class="block sm:hidden truncate" :title="item.student.name">{{
+                                        item.student.name.split(' ')[0] || ''
                                     }}</span>
-                                    <span
-                                        class="block sm:hidden truncate"
-                                        :title="item.student.name"
-                                        >{{ item.student.name.split(' ')[0] || '' }}</span
-                                    >
                                 </TableCell>
                                 <TableCell class="border-b">
                                     <Badge variant="outline">
@@ -241,10 +190,7 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
                                 </TableCell>
                                 <TableCell class="border-b">
                                     <div
-                                        v-if="
-                                            item.plan?.grade !== null &&
-                                            item.plan?.grade !== undefined
-                                        "
+                                        v-if="item.plan?.grade !== null && item.plan?.grade !== undefined"
                                         class="flex items-center gap-2"
                                     >
                                         <span class="font-medium">{{ item.plan.grade }}</span>
@@ -264,9 +210,7 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
                                             <Calendar class="w-3.5 h-3.5 text-muted-foreground" />
                                             <span>{{ formatDate(item.plan.dateApplied) }}</span>
                                         </div>
-                                        <div
-                                            class="flex items-center gap-1 text-[10px] text-muted-foreground"
-                                        >
+                                        <div class="flex items-center gap-1 text-[10px] text-muted-foreground">
                                             <Clock class="w-3 h-3" />
                                             <span>{{ formatTime(item.plan.dateApplied) }}</span>
                                             <span class="ml-1 opacity-60">·</span>
@@ -287,7 +231,7 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
                                                     item.student.iep!,
                                                     val,
                                                     item.hasPlan,
-                                                    item.plan,
+                                                    item.plan
                                                 )
                                         "
                                     />
@@ -298,9 +242,7 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
                                             <Calendar class="w-3.5 h-3.5 text-muted-foreground" />
                                             <span>{{ formatDate(item.plan.syncedAt) }}</span>
                                         </div>
-                                        <div
-                                            class="flex items-center gap-1 text-[10px] text-muted-foreground"
-                                        >
+                                        <div class="flex items-center gap-1 text-[10px] text-muted-foreground">
                                             <Clock class="w-3 h-3" />
                                             <span>{{ formatTime(item.plan.syncedAt) }}</span>
                                         </div>
@@ -309,10 +251,7 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
                                 </TableCell>
                             </TableRow>
                             <TableRow v-if="studentPlans.length === 0">
-                                <TableCell
-                                    colspan="6"
-                                    class="text-center py-8 text-muted-foreground"
-                                >
+                                <TableCell colspan="6" class="text-center py-8 text-muted-foreground">
                                     {{ t('plans.table.noStudents') }}
                                 </TableCell>
                             </TableRow>

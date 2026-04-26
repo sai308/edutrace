@@ -15,9 +15,7 @@ export function extractModuleNames(students: StudentSummaryData[]): string[] {
 }
 
 function sortByName(students: StudentSummaryData[]): StudentSummaryData[] {
-    return [...students].sort((a, b) =>
-        a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
-    )
+    return [...students].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
 }
 
 function cellValue(v: string | number | null | undefined): string {
@@ -82,8 +80,7 @@ function rPr({ bold, size = 20, underline }: RProps = {}): string {
     const b = bold ? '<w:b/><w:bCs/>' : ''
     const u = underline ? '<w:u w:val="single"/>' : ''
     const sz = `<w:sz w:val="${size}"/><w:szCs w:val="${size}"/>`
-    const fn =
-        '<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>'
+    const fn = '<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>'
     return `<w:rPr>${fn}${b}${u}${sz}</w:rPr>`
 }
 
@@ -155,22 +152,13 @@ function buildDocumentXml(students: StudentSummaryData[], groupName: string): st
     const moduleNames = extractModuleNames(sorted)
     const date = new Date().toLocaleDateString()
 
-    const nameColWidth =
-        moduleNames.length === 0 ? PAGE_WIDTH - NUM_COL - TOTAL_COL - EXAM_COL : NAME_COL
+    const nameColWidth = moduleNames.length === 0 ? PAGE_WIDTH - NUM_COL - TOTAL_COL - EXAM_COL : NAME_COL
     const moduleColWidth =
         moduleNames.length > 0
-            ? Math.floor(
-                  (PAGE_WIDTH - NUM_COL - nameColWidth - TOTAL_COL - EXAM_COL) / moduleNames.length,
-              )
+            ? Math.floor((PAGE_WIDTH - NUM_COL - nameColWidth - TOTAL_COL - EXAM_COL) / moduleNames.length)
             : 0
 
-    const gridCols = [
-        NUM_COL,
-        nameColWidth,
-        ...moduleNames.map(() => moduleColWidth),
-        TOTAL_COL,
-        EXAM_COL,
-    ]
+    const gridCols = [NUM_COL, nameColWidth, ...moduleNames.map(() => moduleColWidth), TOTAL_COL, EXAM_COL]
 
     const DATA_SIZE = 18 // 9 pt — compact rows
 
@@ -182,9 +170,7 @@ function buildDocumentXml(students: StudentSummaryData[], groupName: string): st
             center: true,
             size: DATA_SIZE,
         }),
-        ...moduleNames.map((m) =>
-            tc(m, { w: moduleColWidth, bold: true, center: true, size: DATA_SIZE }),
-        ),
+        ...moduleNames.map((m) => tc(m, { w: moduleColWidth, bold: true, center: true, size: DATA_SIZE })),
         tc(t('control.settings.summaryExport.colTotal'), {
             w: TOTAL_COL,
             bold: true,
@@ -208,11 +194,11 @@ function buildDocumentXml(students: StudentSummaryData[], groupName: string): st
                     w: moduleColWidth,
                     center: true,
                     size: DATA_SIZE,
-                }),
+                })
             ),
             tc(cellValue(s.total), { w: TOTAL_COL, center: true, size: DATA_SIZE }),
             tc(cellValue(s.examGrade), { w: EXAM_COL, center: true, size: DATA_SIZE }),
-        ]),
+        ])
     )
 
     const sectPr = `<w:sectPr>
@@ -222,11 +208,7 @@ function buildDocumentXml(students: StudentSummaryData[], groupName: string): st
     </w:sectPr>`
 
     const parts = [
-        para(
-            t('control.settings.summaryExport.docTitle'),
-            { bold: true, size: 28 },
-            { center: true },
-        ),
+        para(t('control.settings.summaryExport.docTitle'), { bold: true, size: 28 }, { center: true }),
         para(groupName, { size: 24 }, { center: true }),
         para(date, { size: 20 }, { center: true }),
         emptyPara(),

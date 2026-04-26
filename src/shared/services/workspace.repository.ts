@@ -181,7 +181,7 @@ export class WorkspaceRepository {
             try {
                 db = await openDB<IDBCustomSchema>(ws.dbName, DB_VERSION)
                 const storeEntries = await Promise.all(
-                    MAINTENANCE_STORES.map(async (name) => [name, await db!.getAll(name)]),
+                    MAINTENANCE_STORES.map(async (name) => [name, await db!.getAll(name)])
                 )
 
                 exportData.workspaces.push({
@@ -235,9 +235,7 @@ export class WorkspaceRepository {
                 for (const storeName of MAINTENANCE_STORES) {
                     const items = wsData.data[storeName]
                     if (items && Array.isArray(items)) {
-                        items.forEach((item) =>
-                            importPromises.push(tx.objectStore(storeName).put(item)),
-                        )
+                        items.forEach((item) => importPromises.push(tx.objectStore(storeName).put(item)))
                     }
                 }
 
@@ -263,9 +261,7 @@ export class WorkspaceRepository {
                 // but usually size means byte size.
                 // Since it's for stats, let's try to get estimate.
                 db = await openDB<IDBCustomSchema>(ws.dbName, DB_VERSION)
-                const storeEntries = await Promise.all(
-                    MAINTENANCE_STORES.map(async (name) => await db!.getAll(name)),
-                )
+                const storeEntries = await Promise.all(MAINTENANCE_STORES.map(async (name) => await db!.getAll(name)))
 
                 size = storeEntries.reduce((acc, items) => {
                     try {

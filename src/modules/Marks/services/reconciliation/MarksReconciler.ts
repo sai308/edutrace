@@ -31,7 +31,7 @@ export class MarksReconciler {
 
         const resolvedIdentities = await this.identityReconciler.resolveIdentities(
             rawStudents as any,
-            allExistingMembers,
+            allExistingMembers
         )
 
         // Ensure resolvedIdentities match Member interface (IdentityReconciler returns ReconciledStudent)
@@ -40,7 +40,7 @@ export class MarksReconciler {
                 ({
                     ...ri,
                     role: ri.role || 'student',
-                }) as Member,
+                }) as Member
         )
 
         // Step B: Reconcile Tasks (globally, no group coupling)

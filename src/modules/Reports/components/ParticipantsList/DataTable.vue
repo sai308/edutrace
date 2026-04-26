@@ -1,26 +1,13 @@
 <script setup lang="ts">
 import type { Participant } from '@Analytics/types/analytics'
 import type { SortingState, VisibilityState } from '@tanstack/vue-table'
-import {
-    FlexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getSortedRowModel,
-    useVueTable,
-} from '@tanstack/vue-table'
+import { FlexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table'
 import { useStorage } from '@vueuse/core'
 import { Users } from 'lucide-vue-next'
 import { ref } from 'vue'
 
 import { useI18n } from 'vue-i18n'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import DataTableEmptyState from '@/shared/components/DataTableEmptyState.vue'
 import DataTableViewOptions from '@/shared/components/DataTableViewOptions.vue'
 
@@ -88,11 +75,7 @@ const table = useVueTable({
             <Table class="min-w-[500px]">
                 <TableHeader>
                     <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
-                        <TableHead
-                            v-for="header in headerGroup.headers"
-                            :key="header.id"
-                            class="min-w-[100px]"
-                        >
+                        <TableHead v-for="header in headerGroup.headers" :key="header.id" class="min-w-[100px]">
                             <FlexRender
                                 v-if="!header.isPlaceholder"
                                 :render="header.column.columnDef.header"
@@ -109,24 +92,12 @@ const table = useVueTable({
                             :data-state="row.getIsSelected() ? 'selected' : undefined"
                             class="hover:bg-muted/50 transition-colors"
                         >
-                            <TableCell
-                                v-for="cell in row.getVisibleCells()"
-                                :key="cell.id"
-                                class="p-3"
-                            >
-                                <FlexRender
-                                    :render="cell.column.columnDef.cell"
-                                    :props="cell.getContext()"
-                                />
+                            <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id" class="p-3">
+                                <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
                             </TableCell>
                         </TableRow>
                     </template>
-                    <DataTableEmptyState
-                        v-else
-                        :colspan="columns.length"
-                        :title="$t('common.noData')"
-                        :icon="Users"
-                    />
+                    <DataTableEmptyState v-else :colspan="columns.length" :title="$t('common.noData')" :icon="Users" />
                 </TableBody>
             </Table>
         </div>

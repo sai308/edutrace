@@ -51,7 +51,7 @@ watch(
                 }
             }
         }
-    },
+    }
 )
 
 function handleSave() {
@@ -79,21 +79,13 @@ function handleClose() {
                     {{ task ? $t('tasks.dialog.editTitle') : $t('tasks.dialog.addTitle') }}
                 </DialogTitle>
                 <DialogDescription>
-                    {{
-                        task
-                            ? $t('tasks.dialog.editDescription')
-                            : $t('tasks.dialog.addDescription')
-                    }}
+                    {{ task ? $t('tasks.dialog.editDescription') : $t('tasks.dialog.addDescription') }}
                 </DialogDescription>
             </DialogHeader>
             <div class="grid gap-4 py-4">
                 <div class="grid gap-2">
                     <Label for="name">{{ $t('tasks.dialog.nameLabel') }}</Label>
-                    <Input
-                        id="name"
-                        v-model="formData.name"
-                        :placeholder="$t('tasks.dialog.namePlaceholder')"
-                    />
+                    <Input id="name" v-model="formData.name" :placeholder="$t('tasks.dialog.namePlaceholder')" />
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="grid gap-2">

@@ -15,13 +15,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import i18n from '@/i18n'
 import { settingsRepository } from '@/shared/services/settings.repository'
 import { SessionTypeEnum } from '../../models/session.model'
@@ -124,7 +118,7 @@ watch(
         if (!practicalTeacherTouched.value) {
             form.value.practicalTeacher = newVal ?? ''
         }
-    },
+    }
 )
 
 function addExaminer() {
@@ -147,9 +141,7 @@ function handleClose() {
 function filteredSuggestions(index: number) {
     const text = form.value.examiners[index] || ''
     if (!text) return teacherSuggestions.value.slice(0, 8)
-    return teacherSuggestions.value
-        .filter((t) => t.toLowerCase().includes(text.toLowerCase()))
-        .slice(0, 8)
+    return teacherSuggestions.value.filter((t) => t.toLowerCase().includes(text.toLowerCase())).slice(0, 8)
 }
 const showSuggestions = ref<boolean[]>([false])
 function selectSuggestion(index: number, name: string) {
@@ -176,9 +168,7 @@ const showPracticalSuggestions = ref(false)
 const filteredPracticalSuggestions = computed(() => {
     const text = form.value.practicalTeacher || ''
     if (!text) return teacherSuggestions.value.slice(0, 8)
-    return teacherSuggestions.value
-        .filter((t) => t.toLowerCase().includes(text.toLowerCase()))
-        .slice(0, 8)
+    return teacherSuggestions.value.filter((t) => t.toLowerCase().includes(text.toLowerCase())).slice(0, 8)
 })
 function selectPracticalSuggestion(name: string) {
     form.value.practicalTeacher = name
@@ -212,11 +202,7 @@ const sessionTypeLabel = computed(() => {
         <DialogContent class="sm:max-w-[560px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
                 <DialogTitle>
-                    {{
-                        isDownloadMode
-                            ? $t('sessions.document.dialogTitle')
-                            : $t('sessions.printDialog.title')
-                    }}
+                    {{ isDownloadMode ? $t('sessions.document.dialogTitle') : $t('sessions.printDialog.title') }}
                 </DialogTitle>
                 <DialogDescription>
                     {{
@@ -232,9 +218,7 @@ const sessionTypeLabel = computed(() => {
                 <!-- Row: Record number + Date -->
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-1.5">
-                        <Label for="record-number">{{
-                            $t('sessions.printDialog.recordNumber')
-                        }}</Label>
+                        <Label for="record-number">{{ $t('sessions.printDialog.recordNumber') }}</Label>
                         <Input
                             id="record-number"
                             v-model="form.recordNumber"
@@ -316,11 +300,7 @@ const sessionTypeLabel = computed(() => {
                         </Button>
                     </div>
 
-                    <div
-                        v-for="(_, index) in form.examiners"
-                        :key="index"
-                        class="relative flex items-center gap-2"
-                    >
+                    <div v-for="(_, index) in form.examiners" :key="index" class="relative flex items-center gap-2">
                         <div class="relative flex-1">
                             <Input
                                 v-model="form.examiners[index]"
@@ -341,9 +321,7 @@ const sessionTypeLabel = computed(() => {
                             />
                             <!-- Autocomplete dropdown -->
                             <div
-                                v-if="
-                                    showSuggestions[index] && filteredSuggestions(index).length > 0
-                                "
+                                v-if="showSuggestions[index] && filteredSuggestions(index).length > 0"
                                 class="absolute z-50 top-full left-0 right-0 mt-1 bg-popover border rounded-md shadow-md max-h-40 overflow-y-auto"
                             >
                                 <button
@@ -370,9 +348,7 @@ const sessionTypeLabel = computed(() => {
 
                 <!-- Practical teacher -->
                 <div class="space-y-1.5">
-                    <Label for="practical-teacher">{{
-                        $t('sessions.printDialog.practicalTeacher')
-                    }}</Label>
+                    <Label for="practical-teacher">{{ $t('sessions.printDialog.practicalTeacher') }}</Label>
                     <div class="relative">
                         <Input
                             id="practical-teacher"
@@ -386,9 +362,7 @@ const sessionTypeLabel = computed(() => {
                             @blur="hidePracticalSuggestions()"
                         />
                         <div
-                            v-if="
-                                showPracticalSuggestions && filteredPracticalSuggestions.length > 0
-                            "
+                            v-if="showPracticalSuggestions && filteredPracticalSuggestions.length > 0"
                             class="absolute z-50 top-full left-0 right-0 mt-1 bg-popover border rounded-md shadow-md max-h-40 overflow-y-auto"
                         >
                             <button
@@ -410,11 +384,7 @@ const sessionTypeLabel = computed(() => {
                 </Button>
                 <Button :disabled="!form.subject || !form.examiners[0]" @click="handleConfirm">
                     <Printer v-if="!isDownloadMode" class="w-4 h-4 mr-2" />
-                    {{
-                        isDownloadMode
-                            ? $t('sessions.document.generateButton')
-                            : $t('sessions.actions.print')
-                    }}
+                    {{ isDownloadMode ? $t('sessions.document.generateButton') : $t('sessions.actions.print') }}
                 </Button>
             </DialogFooter>
         </DialogContent>

@@ -143,8 +143,7 @@ describe('useMembers', () => {
         })
 
         it('executeSoftDelete should call hideMember and reload', async () => {
-            const { executeSoftDelete, memberToDelete, isDeleteDialogOpen, loadMembers } =
-                useMembers()
+            const { executeSoftDelete, memberToDelete, isDeleteDialogOpen, loadMembers } = useMembers()
             await loadMembers()
             memberToDelete.value = makeMembers()[0]!
             isDeleteDialogOpen.value = true
@@ -188,8 +187,7 @@ describe('useMembers', () => {
         })
 
         it('executeHardDelete should call deleteMembers and reload', async () => {
-            const { executeHardDelete, memberToDelete, isHardDeleteDialogOpen, loadMembers } =
-                useMembers()
+            const { executeHardDelete, memberToDelete, isHardDeleteDialogOpen, loadMembers } = useMembers()
             await loadMembers()
             memberToDelete.value = makeMembers()[0]!
             isHardDeleteDialogOpen.value = true

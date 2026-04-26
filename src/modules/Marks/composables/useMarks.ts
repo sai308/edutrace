@@ -52,8 +52,10 @@ export function useMarks() {
         isProcessing.value = true
         activeWorkerTasks.value++
         try {
-            const { newMarksCount, skippedMarksCount, updatedMarksCount } =
-                await marksService.processFile(file, groupName)
+            const { newMarksCount, skippedMarksCount, updatedMarksCount } = await marksService.processFile(
+                file,
+                groupName
+            )
 
             if (newMarksCount > 0) {
                 toast.success(`Imported ${newMarksCount} marks.`)
@@ -96,11 +98,10 @@ export function useMarks() {
             const newSynced = await marksService.toggleSynced(mark)
             mark.synced = newSynced
             if (!silent) {
-                toast.success(
-                    newSynced ? t('marks.markedAsSynced') : t('marks.markedAsUnsynced'),
-                    2000,
-                    { label: t('common.undo'), fn: () => toggleSynced(mark, true) },
-                )
+                toast.success(newSynced ? t('marks.markedAsSynced') : t('marks.markedAsUnsynced'), 2000, {
+                    label: t('common.undo'),
+                    fn: () => toggleSynced(mark, true),
+                })
             }
         } catch (e) {
             logger.error('Error toggling sync:', e)
@@ -122,12 +123,7 @@ export function useMarks() {
         }
     }
 
-    async function saveManualMark(data: {
-        groupName: string
-        studentId: string
-        taskId: string
-        score: number
-    }) {
+    async function saveManualMark(data: { groupName: string; studentId: string; taskId: string; score: number }) {
         try {
             const result = await marksService.saveManualMark(data)
             if (result.skipped) {

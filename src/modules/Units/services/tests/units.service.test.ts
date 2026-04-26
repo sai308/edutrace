@@ -141,7 +141,7 @@ describe('saveUnit', () => {
                 taskIds: ['t1'],
                 testTaskId: 't1',
                 taskCoef: 2,
-            }),
+            })
         )
     })
 

@@ -64,9 +64,7 @@ describe('useMarksFileQueue', () => {
             const q = makeQueue()
             q.handleFilesDropped([makeFile('KN31_marks.csv')])
             await nextTick()
-            expect(onProcessFile).toHaveBeenCalledWith(
-                expect.objectContaining({ groupName: 'KN-31' }),
-            )
+            expect(onProcessFile).toHaveBeenCalledWith(expect.objectContaining({ groupName: 'KN-31' }))
         })
 
         it('calls onQueueComplete after processing all known-group files', async () => {
@@ -111,11 +109,7 @@ describe('useMarksFileQueue', () => {
         it('processes known files and skips unknown ones in same batch', async () => {
             const q = makeQueue()
             q.importMode.value = 'known-only'
-            q.handleFilesDropped([
-                makeFile('KN-31_a.csv'),
-                makeFile('GHOST_b.csv'),
-                makeFile('CS101_c.csv'),
-            ])
+            q.handleFilesDropped([makeFile('KN-31_a.csv'), makeFile('GHOST_b.csv'), makeFile('CS101_c.csv')])
             await nextTick()
             expect(onProcessFile).toHaveBeenCalledTimes(2)
             expect(q.showGroupModal.value).toBe(false)
@@ -222,9 +216,7 @@ describe('useMarksFileQueue', () => {
 
         it('allows retry after error (user corrects and submits again)', async () => {
             const err = Object.assign(new Error('Duplicate'), { name: 'ConstraintError' })
-            onCreateGroup
-                .mockRejectedValueOnce(err)
-                .mockResolvedValueOnce(makeGroup('NEWGRP', 'ng1'))
+            onCreateGroup.mockRejectedValueOnce(err).mockResolvedValueOnce(makeGroup('NEWGRP', 'ng1'))
 
             const q = makeQueue()
             q.importMode.value = 'create-on-fly'
@@ -245,9 +237,7 @@ describe('useMarksFileQueue', () => {
         it('continues queue after processFile throws (does not abort queue)', async () => {
             const newGroup = makeGroup('NEWGRP', 'ng1')
             onCreateGroup.mockResolvedValue(newGroup)
-            onProcessFile
-                .mockRejectedValueOnce(new Error('CSV parse error'))
-                .mockResolvedValueOnce(undefined)
+            onProcessFile.mockRejectedValueOnce(new Error('CSV parse error')).mockResolvedValueOnce(undefined)
 
             const q = makeQueue()
             q.importMode.value = 'create-on-fly'
@@ -284,11 +274,7 @@ describe('useMarksFileQueue', () => {
         it('skips ALL subsequent files with the same group prefix', async () => {
             const q = makeQueue()
             q.importMode.value = 'create-on-fly'
-            q.handleFilesDropped([
-                makeFile('GHOST_a.csv'),
-                makeFile('GHOST_b.csv'),
-                makeFile('GHOST_c.csv'),
-            ])
+            q.handleFilesDropped([makeFile('GHOST_a.csv'), makeFile('GHOST_b.csv'), makeFile('GHOST_c.csv')])
             await nextTick()
             await q.handleConfirmCreate()
             expect(q.showGroupModal.value).toBe(true)
@@ -305,20 +291,14 @@ describe('useMarksFileQueue', () => {
         it('skips only the target prefix — other groups still processed', async () => {
             const q = makeQueue()
             q.importMode.value = 'create-on-fly'
-            q.handleFilesDropped([
-                makeFile('GHOST_a.csv'),
-                makeFile('GHOST_b.csv'),
-                makeFile('KN-31_c.csv'),
-            ])
+            q.handleFilesDropped([makeFile('GHOST_a.csv'), makeFile('GHOST_b.csv'), makeFile('KN-31_c.csv')])
             await nextTick()
             // Modal open for GHOST
             q.handleSkipGroup()
             await nextTick()
 
             expect(onProcessFile).toHaveBeenCalledTimes(1)
-            expect(onProcessFile).toHaveBeenCalledWith(
-                expect.objectContaining({ groupName: 'KN-31' }),
-            )
+            expect(onProcessFile).toHaveBeenCalledWith(expect.objectContaining({ groupName: 'KN-31' }))
         })
     })
 
@@ -335,9 +315,7 @@ describe('useMarksFileQueue', () => {
             await nextTick()
 
             expect(q.showGroupModal.value).toBe(false)
-            expect(onProcessFile).toHaveBeenCalledWith(
-                expect.objectContaining({ groupName: 'KN-31' }),
-            )
+            expect(onProcessFile).toHaveBeenCalledWith(expect.objectContaining({ groupName: 'KN-31' }))
         })
     })
 

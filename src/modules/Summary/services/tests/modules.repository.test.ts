@@ -7,11 +7,7 @@ describe('modulesRepository', () => {
         vi.clearAllMocks()
     })
 
-    const makeModule = (
-        id: number,
-        groupName: string,
-        overrides: Partial<Module> = {},
-    ): Module => ({
+    const makeModule = (id: number, groupName: string, overrides: Partial<Module> = {}): Module => ({
         id,
         groupId: groupName,
         groupName,

@@ -3,17 +3,7 @@ import type { ProfileMeet, ProfileTask } from '@Students/composables/useStudentP
 import type { StudentDashboardStats, StudentFormData } from '@Students/types/students'
 import type { RowActionItem } from '@/shared/types/table'
 import { useDebounceFn } from '@vueuse/core'
-import {
-    FileUp,
-    GraduationCap,
-    Loader2,
-    Pencil,
-    Search,
-    Trash2,
-    User,
-    Users,
-    X,
-} from 'lucide-vue-next'
+import { FileUp, GraduationCap, Loader2, Pencil, Search, Trash2, User, Users, X } from 'lucide-vue-next'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
@@ -57,9 +47,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-    'save-student': [
-        payload: { formData: StudentFormData; originalStudent: StudentDashboardStats | null },
-    ]
+    'save-student': [payload: { formData: StudentFormData; originalStudent: StudentDashboardStats | null }]
     'delete-student': [id: string]
     'bulk-delete-students': [ids: string[]]
     refresh: []
@@ -152,9 +140,7 @@ async function handleSaveStudent({
     originalStudent: StudentDashboardStats | null
 }) {
     if (formData.iep?.trim() && originalStudent) {
-        const isDuplicate = props.students.some(
-            (s) => s.iep === formData.iep.trim() && s.id !== originalStudent.id,
-        )
+        const isDuplicate = props.students.some((s) => s.iep === formData.iep.trim() && s.id !== originalStudent.id)
         if (isDuplicate) return
     }
     emit('save-student', { formData, originalStudent })
@@ -196,22 +182,16 @@ watch(
             selectedGroup.value = allGroupNames[0] ?? null
         }
     },
-    { immediate: false },
+    { immediate: false }
 )
 </script>
 
 <template>
-    <div
-        v-if="isLoading"
-        class="flex flex-col items-center justify-center min-h-[400px] text-muted-foreground"
-    >
+    <div v-if="isLoading" class="flex flex-col items-center justify-center min-h-[400px] text-muted-foreground">
         <Loader2 class="w-8 h-8 animate-spin mb-4 text-primary" />
         <p>{{ $t('loader.loading') }}</p>
     </div>
-    <div
-        v-else
-        class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500"
-    >
+    <div v-else class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <!-- Zone 1: Page header — always visible when not loading -->
         <div class="flex flex-col sm:flex-row sm:items-start gap-4">
             <div>
@@ -260,9 +240,7 @@ watch(
                         <!-- Left: search → bulk switch → bulk delete -->
                         <div class="flex items-center gap-3 flex-1 min-w-0">
                             <div class="relative max-w-xs flex-1">
-                                <Search
-                                    class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
-                                />
+                                <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     :model-value="searchInput"
                                     :placeholder="$t('students.searchPlaceholder')"
@@ -276,20 +254,13 @@ watch(
                                 />
                             </div>
                             <div class="flex items-center gap-2 shrink-0">
-                                <Switch
-                                    :model-value="bulkMode"
-                                    @update:model-value="bulkMode = $event"
-                                />
-                                <span
-                                    class="text-sm text-muted-foreground hidden sm:inline select-none"
-                                >
+                                <Switch :model-value="bulkMode" @update:model-value="bulkMode = $event" />
+                                <span class="text-sm text-muted-foreground hidden sm:inline select-none">
                                     {{ $t('common.bulk') }}
                                 </span>
                             </div>
                             <Button
-                                v-if="
-                                    bulkMode && table.getFilteredSelectedRowModel().rows.length > 0
-                                "
+                                v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
                                 variant="destructive"
                                 size="sm"
                                 class="h-8 gap-2 shrink-0"
@@ -350,11 +321,7 @@ watch(
             <AlertDialogContent>
                 <AlertDialogHeader>
                     <AlertDialogTitle>
-                        {{
-                            isBulkDelete
-                                ? $t('students.deleteModal.bulkTitle')
-                                : $t('students.deleteModal.title')
-                        }}
+                        {{ isBulkDelete ? $t('students.deleteModal.bulkTitle') : $t('students.deleteModal.title') }}
                     </AlertDialogTitle>
                     <AlertDialogDescription>
                         {{

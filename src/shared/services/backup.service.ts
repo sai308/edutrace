@@ -167,16 +167,13 @@ export async function importData(jsonData: any): Promise<void> {
     if (jsonData.groups.length > 0) {
         const txGroups = db.transaction('groups', 'readwrite')
         const storeGroups = txGroups.objectStore('groups')
-        await Promise.all(
-            jsonData.groups.map((group: any) => storeGroups.put(enrichGroupWithCourse(group))),
-        )
+        await Promise.all(jsonData.groups.map((group: any) => storeGroups.put(enrichGroupWithCourse(group))))
         await txGroups.done
     }
 
     // 3. Restore Settings
     if (jsonData.settings) {
-        const { durationLimit, defaultTeacher, ignoredUsers, teachers, examSettings } =
-            jsonData.settings
+        const { durationLimit, defaultTeacher, ignoredUsers, teachers, examSettings } = jsonData.settings
         if (durationLimit !== undefined) {
             await (settingsRepository as any).saveDurationLimit(durationLimit)
         }
@@ -184,9 +181,7 @@ export async function importData(jsonData: any): Promise<void> {
             await (settingsRepository as any).saveDefaultTeacher(defaultTeacher || null)
         }
         if (Object.hasOwn(jsonData.settings, 'ignoredUsers')) {
-            await (settingsRepository as any).saveIgnoredUsers(
-                Array.isArray(ignoredUsers) ? ignoredUsers : [],
-            )
+            await (settingsRepository as any).saveIgnoredUsers(Array.isArray(ignoredUsers) ? ignoredUsers : [])
         }
         if (Object.hasOwn(jsonData.settings, 'teachers')) {
             await (settingsRepository as any).saveTeachers(Array.isArray(teachers) ? teachers : [])
@@ -195,9 +190,7 @@ export async function importData(jsonData: any): Promise<void> {
             await (settingsRepository as any).saveExamSettings(examSettings || {})
         }
         if (Object.hasOwn(jsonData.settings, 'printSettings')) {
-            await (settingsRepository as any).savePrintSettings(
-                jsonData.settings.printSettings || {},
-            )
+            await (settingsRepository as any).savePrintSettings(jsonData.settings.printSettings || {})
         }
     }
 
@@ -240,7 +233,7 @@ export async function importData(jsonData: any): Promise<void> {
             jsonData.marks.map((mark: any) => {
                 const newTaskId = taskIdMapping.get(mark.taskId) || mark.taskId
                 return storeMarks.put({ ...mark, taskId: newTaskId as string })
-            }),
+            })
         )
 
         await txMarks.done
@@ -250,9 +243,7 @@ export async function importData(jsonData: any): Promise<void> {
     if (jsonData.finalAssessments && jsonData.finalAssessments.length > 0) {
         const txFinalAssessments = db.transaction('finalAssessments', 'readwrite')
         const storeFinalAssessments = txFinalAssessments.objectStore('finalAssessments')
-        await Promise.all(
-            jsonData.finalAssessments.map((item: any) => storeFinalAssessments.put(item)),
-        )
+        await Promise.all(jsonData.finalAssessments.map((item: any) => storeFinalAssessments.put(item)))
         await txFinalAssessments.done
     }
 
@@ -260,9 +251,7 @@ export async function importData(jsonData: any): Promise<void> {
     if (jsonData.modules && jsonData.modules.length > 0) {
         const txModules = db.transaction('modules', 'readwrite')
         const storeModules = txModules.objectStore('modules')
-        const modulesPromises = (jsonData.modules || []).map((module: any) =>
-            storeModules.put(module),
-        )
+        const modulesPromises = (jsonData.modules || []).map((module: any) => storeModules.put(module))
         await Promise.all(modulesPromises)
         await txModules.done
 
@@ -474,7 +463,7 @@ export async function importMarks(jsonData: any): Promise<void> {
                 jsonData.marks.map((mark: any) => {
                     const newTaskId = taskIdMapping.get(mark.taskId) || mark.taskId
                     return storeMarks.put({ ...mark, taskId: newTaskId as string })
-                }),
+                })
             )
             await txMarks.done
         }

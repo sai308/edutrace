@@ -27,14 +27,7 @@ import {
     ContextMenuSeparator,
     ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import DataTableEmptyState from '@/shared/components/DataTableEmptyState.vue'
 import DataTablePagination from '@/shared/components/DataTablePagination.vue'
 import DataTableViewOptions from '@/shared/components/DataTableViewOptions.vue'
@@ -69,15 +62,11 @@ const tableData = computed(() => props.students.filter((s) => !props.teachers.ha
 const ordinalMap = computed<Map<string, number>>(() => {
     if (!props.groupFilter) return new Map()
     const inGroup = tableData.value.filter((s) => s.groups.includes(props.groupFilter!))
-    const sorted = [...inGroup].sort((a, b) =>
-        a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }),
-    )
+    const sorted = [...inGroup].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
     return new Map(sorted.map((s, i) => [s.id, i + 1]))
 })
 
-const columns = computed(() =>
-    createColumns(props.rowActions ?? (() => []), emit, t, getScoreColor, ordinalMap.value),
-)
+const columns = computed(() => createColumns(props.rowActions ?? (() => []), emit, t, getScoreColor, ordinalMap.value))
 
 const sorting = ref<SortingState>([{ id: 'name', desc: false }])
 const columnVisibility = useStorage<VisibilityState>('edutrace-students-columns', {
@@ -137,7 +126,7 @@ watch(
         table.setColumnVisibility((prev) => ({ ...prev, select: !!enabled }))
         if (!enabled) table.toggleAllRowsSelected(false)
     },
-    { immediate: true },
+    { immediate: true }
 )
 
 watch(
@@ -145,7 +134,7 @@ watch(
     (group) => {
         table.setColumnVisibility((prev) => ({ ...prev, ordinal: !!group }))
     },
-    { immediate: true },
+    { immediate: true }
 )
 
 defineExpose({ table })
@@ -158,13 +147,9 @@ defineExpose({ table })
             <DataTableViewOptions :table="table" />
         </div>
 
-        <div
-            class="rounded-md border bg-card overflow-auto max-h-[calc(100svh-20rem)] custom-scrollbar"
-        >
+        <div class="rounded-md border bg-card overflow-auto max-h-[calc(100svh-20rem)] custom-scrollbar">
             <Table class="min-w-[900px]">
-                <TableHeader
-                    class="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]"
-                >
+                <TableHeader class="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
                     <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
                         <TableHead
                             v-for="header in headerGroup.headers"
@@ -205,10 +190,7 @@ defineExpose({ table })
                                                 : ''
                                         "
                                     >
-                                        <FlexRender
-                                            :render="cell.column.columnDef.cell"
-                                            :props="cell.getContext()"
-                                        />
+                                        <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
                                     </TableCell>
                                 </TableRow>
                             </ContextMenuTrigger>

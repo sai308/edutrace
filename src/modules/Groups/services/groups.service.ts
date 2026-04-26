@@ -34,7 +34,7 @@ interface IGroupsWorker {
         members: Member[],
         teacherList: string[],
         allTasks: Task[],
-        allMarks: Mark[],
+        allMarks: Mark[]
     ) => Promise<GroupsData & { teacherSet: Set<string> }>
 }
 

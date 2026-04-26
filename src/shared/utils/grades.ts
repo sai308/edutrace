@@ -29,11 +29,7 @@ export function toECTS(percent: number): string {
  * Pass the already-translated `formOfControl` value to distinguish exam vs credit.
  * `t` is the active i18n translation function.
  */
-export function toNationalGrade(
-    grade: number | null,
-    formOfControl: string,
-    t: (key: string) => string,
-): string {
+export function toNationalGrade(grade: number | null, formOfControl: string, t: (key: string) => string): string {
     if (grade === null) return t('sessions.grades.absentTooltip')
     const isExam = formOfControl === t('sessions.printDialog.forms.exam')
     if (grade >= 90) return isExam ? t('sessions.grades.excellent') : t('sessions.grades.passed')
@@ -54,9 +50,7 @@ export type MarkFormat = '5-scale' | 'ects' | '100-scale'
 /**
  * Creates a formatter function based on the format name.
  */
-export function createMarkFormatter(
-    format: MarkFormat | string,
-): (percent: number) => string | number {
+export function createMarkFormatter(format: MarkFormat | string): (percent: number) => string | number {
     return (percent: number) => {
         if (!format || format === '5-scale') return to5Scale(percent)
         if (format === 'ects') return toECTS(percent)

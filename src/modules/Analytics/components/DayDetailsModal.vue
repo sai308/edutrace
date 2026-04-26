@@ -9,14 +9,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { useFormatters } from '@/shared/composables/useFormatters'
 
 interface ModalParticipant {
@@ -78,10 +71,7 @@ const open = computed({
                     </TableHeader>
                     <TableBody>
                         <TableRow v-if="participants.length === 0">
-                            <TableCell
-                                colspan="3"
-                                class="px-6 py-8 text-center text-muted-foreground"
-                            >
+                            <TableCell colspan="3" class="px-6 py-8 text-center text-muted-foreground">
                                 {{ $t('reports.details.dayDetails.noParticipants') }}
                             </TableCell>
                         </TableRow>
@@ -91,9 +81,7 @@ const open = computed({
                             class="group hover:bg-muted/30 transition-colors"
                         >
                             <TableCell class="px-6 font-medium whitespace-nowrap overflow-hidden">
-                                <span class="hidden sm:inline truncate max-w-[200px]">{{
-                                    p.name
-                                }}</span>
+                                <span class="hidden sm:inline truncate max-w-[200px]">{{ p.name }}</span>
                                 <span class="sm:hidden truncate max-w-[120px]" :title="p.name">
                                     {{ formatSurname(p.name) }}
                                 </span>

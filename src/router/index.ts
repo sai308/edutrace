@@ -31,9 +31,7 @@ const router = createRouter({
                     component: () => import('@/modules/Analytics/pages/AnalyticsPage.vue'),
                     meta: {
                         title: 'nav.analytics',
-                        breadcrumbs: [
-                            { title: 'nav.navGroups.attendance', path: '/attendance/analytics' },
-                        ],
+                        breadcrumbs: [{ title: 'nav.navGroups.attendance', path: '/attendance/analytics' }],
                     },
                 },
                 {
@@ -55,9 +53,7 @@ const router = createRouter({
                     component: () => import('@/modules/Reports/pages/ReportsPage.vue'),
                     meta: {
                         title: 'nav.reports',
-                        breadcrumbs: [
-                            { title: 'nav.navGroups.attendance', path: '/attendance/analytics' },
-                        ],
+                        breadcrumbs: [{ title: 'nav.navGroups.attendance', path: '/attendance/analytics' }],
                     },
                 },
                 {
@@ -66,9 +62,7 @@ const router = createRouter({
                     component: () => import('@/modules/Settings/pages/ReportsSettingsPage.vue'),
                     meta: {
                         title: 'nav.settings',
-                        breadcrumbs: [
-                            { title: 'nav.navGroups.attendance', path: '/attendance/analytics' },
-                        ],
+                        breadcrumbs: [{ title: 'nav.navGroups.attendance', path: '/attendance/analytics' }],
                     },
                 },
                 {
@@ -104,8 +98,7 @@ const router = createRouter({
                 {
                     path: 'org/settings',
                     name: 'OrganizationSettings',
-                    component: () =>
-                        import('@/modules/Settings/pages/OrganizationSettingsPage.vue'),
+                    component: () => import('@/modules/Settings/pages/OrganizationSettingsPage.vue'),
                     meta: {
                         title: 'settings.title',
                         breadcrumbs: [{ title: 'nav.navGroups.organization', path: '/org/groups' }],
@@ -144,9 +137,7 @@ const router = createRouter({
                     component: () => import('@/modules/Summary/pages/SummariesPage.vue'),
                     meta: {
                         title: 'nav.summaries', // This key will need to be added to i18n
-                        breadcrumbs: [
-                            { title: 'nav.navGroups.control', path: '/control/summaries' },
-                        ],
+                        breadcrumbs: [{ title: 'nav.navGroups.control', path: '/control/summaries' }],
                     },
                 },
                 {
@@ -164,9 +155,7 @@ const router = createRouter({
                     component: () => import('@/modules/Sessions/pages/SessionsPage.vue'),
                     meta: {
                         title: 'nav.session',
-                        breadcrumbs: [
-                            { title: 'nav.navGroups.documents', path: '/documents/session' },
-                        ],
+                        breadcrumbs: [{ title: 'nav.navGroups.documents', path: '/documents/session' }],
                     },
                 },
                 {
@@ -175,9 +164,7 @@ const router = createRouter({
                     component: () => import('@/modules/Plans/pages/PlansPage.vue'),
                     meta: {
                         title: 'nav.individual',
-                        breadcrumbs: [
-                            { title: 'nav.navGroups.documents', path: '/documents/session' },
-                        ],
+                        breadcrumbs: [{ title: 'nav.navGroups.documents', path: '/documents/session' }],
                     },
                 },
                 {
@@ -186,9 +173,7 @@ const router = createRouter({
                     component: () => import('@/modules/Settings/pages/DocumentsSettingsPage.vue'),
                     meta: {
                         title: 'nav.settings',
-                        breadcrumbs: [
-                            { title: 'nav.navGroups.documents', path: '/documents/session' },
-                        ],
+                        breadcrumbs: [{ title: 'nav.navGroups.documents', path: '/documents/session' }],
                     },
                 },
                 {

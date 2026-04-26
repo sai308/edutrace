@@ -15,7 +15,7 @@ vi.mock('@/i18n', () => ({
 function makeStudent(
     name: string,
     moduleGrades: Record<string, string | number | null> = {},
-    overrides: Partial<StudentSummaryData> = {},
+    overrides: Partial<StudentSummaryData> = {}
 ): StudentSummaryData {
     return {
         id: `id-${name}`,
@@ -74,18 +74,12 @@ describe('extractModuleNames', () => {
     })
 
     it('returns keys from the first student that has grades', () => {
-        const students = [
-            makeStudent('Alice', {}),
-            makeStudent('Bob', { 'Module 1': 4, 'Module 2': 5 }),
-        ]
+        const students = [makeStudent('Alice', {}), makeStudent('Bob', { 'Module 1': 4, 'Module 2': 5 })]
         expect(extractModuleNames(students)).toEqual(['Module 1', 'Module 2'])
     })
 
     it('returns keys from the first student even if later students have more', () => {
-        const students = [
-            makeStudent('Alice', { 'Mod A': 3 }),
-            makeStudent('Bob', { 'Mod A': 4, 'Mod B': 5 }),
-        ]
+        const students = [makeStudent('Alice', { 'Mod A': 3 }), makeStudent('Bob', { 'Mod A': 4, 'Mod B': 5 })]
         expect(extractModuleNames(students)).toEqual(['Mod A'])
     })
 })
@@ -149,11 +143,7 @@ describe('exportSummaryCsv', () => {
     })
 
     it('sorts students alphabetically by name', async () => {
-        const students = [
-            makeStudent('Zelda', { M: 5 }),
-            makeStudent('Alice', { M: 4 }),
-            makeStudent('Bob', { M: 3 }),
-        ]
+        const students = [makeStudent('Zelda', { M: 5 }), makeStudent('Alice', { M: 4 }), makeStudent('Bob', { M: 3 })]
         const blob = exportSummaryCsv(students, 'G1')
         const text = await readBlob(blob)
         const alicePos = text.indexOf('Alice')
@@ -207,9 +197,7 @@ describe('exportSummaryDocx', () => {
 
     it('returns the correct DOCX MIME type', () => {
         const result = exportSummaryDocx([], 'Group 1')
-        expect(result.type).toBe(
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        )
+        expect(result.type).toBe('application/vnd.openxmlformats-officedocument.wordprocessingml.document')
     })
 
     it('returns a non-empty Blob', () => {
@@ -221,7 +209,7 @@ describe('exportSummaryDocx', () => {
         const empty = exportSummaryDocx([], 'G1')
         const withStudents = exportSummaryDocx(
             [makeStudent('Alice', { 'Mod 1': 4 }), makeStudent('Bob', { 'Mod 1': 5 })],
-            'G1',
+            'G1'
         )
         expect(withStudents.size).toBeGreaterThan(empty.size)
     })

@@ -15,8 +15,7 @@ async function toggleTheme(event: MouseEvent) {
     if (transitioning) return
 
     const isAppearanceTransition =
-        'startViewTransition' in document &&
-        !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        'startViewTransition' in document && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
     if (!isAppearanceTransition) {
         spinning.value = true
@@ -54,11 +53,8 @@ async function toggleTheme(event: MouseEvent) {
                 duration: 400,
                 easing: 'ease-in-out',
                 fill: 'forwards',
-                pseudoElement:
-                    mode.value === 'dark'
-                        ? '::view-transition-old(root)'
-                        : '::view-transition-new(root)',
-            },
+                pseudoElement: mode.value === 'dark' ? '::view-transition-old(root)' : '::view-transition-new(root)',
+            }
         )
     })
 

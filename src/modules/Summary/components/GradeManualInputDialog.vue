@@ -44,7 +44,7 @@ watch(
         if (isOpen) {
             gradeInput.value = props.currentGrade ?? ''
         }
-    },
+    }
 )
 
 /** Strip the partial marker (~) and return just the numeric/letter value */
@@ -85,9 +85,7 @@ function handleKeydown(event: KeyboardEvent) {
 
             <div class="space-y-3 py-2">
                 <div class="flex items-center gap-2">
-                    <Label for="manual-grade-input" class="shrink-0 text-sm">{{
-                        t('summary.modal.grade')
-                    }}</Label>
+                    <Label for="manual-grade-input" class="shrink-0 text-sm">{{ t('summary.modal.grade') }}</Label>
                     <Input
                         id="manual-grade-input"
                         v-model="gradeInput"
@@ -98,11 +96,7 @@ function handleKeydown(event: KeyboardEvent) {
                     />
                     <!-- Auto-grade hint button — only shown when a partial total exists -->
                     <Button
-                        v-if="
-                            hintGrade !== null &&
-                            hintGrade !== undefined &&
-                            String(hintGrade).trim() !== ''
-                        "
+                        v-if="hintGrade !== null && hintGrade !== undefined && String(hintGrade).trim() !== ''"
                         variant="outline"
                         size="sm"
                         class="shrink-0 gap-1.5 text-xs"

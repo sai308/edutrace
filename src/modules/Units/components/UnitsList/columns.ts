@@ -6,18 +6,14 @@ import { h } from 'vue'
 import { Checkbox } from '@/components/ui/checkbox'
 import DataTableRowActions from '@/shared/components/DataTableRowActions.vue'
 
-export function createColumns(
-    rowActions: (unit: Unit) => RowActionItem[],
-    t: ComposerTranslation,
-): ColumnDef<Unit>[] {
+export function createColumns(rowActions: (unit: Unit) => RowActionItem[], t: ComposerTranslation): ColumnDef<Unit>[] {
     return [
         {
             id: 'select',
             header: ({ table }) =>
                 h(Checkbox, {
                     modelValue:
-                        table.getIsAllPageRowsSelected() ||
-                        (table.getIsSomePageRowsSelected() && 'indeterminate'),
+                        table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
                     'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
                         table.toggleAllPageRowsSelected(!!value),
                     ariaLabel: t('common.selectAll'),
@@ -26,8 +22,7 @@ export function createColumns(
                 h(Checkbox, {
                     modelValue: row.getIsSelected(),
                     disabled: !row.getCanSelect(),
-                    'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
-                        row.toggleSelected(!!value),
+                    'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
                     ariaLabel: t('common.selectRow'),
                 }),
             enableSorting: false,
@@ -73,11 +68,7 @@ export function createColumns(
             id: 'actions',
             enableHiding: false,
             cell: ({ row }) =>
-                h(
-                    'div',
-                    { class: 'flex justify-end' },
-                    h(DataTableRowActions, { items: rowActions(row.original) }),
-                ),
+                h('div', { class: 'flex justify-end' }, h(DataTableRowActions, { items: rowActions(row.original) })),
         },
     ]
 }

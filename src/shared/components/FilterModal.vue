@@ -24,7 +24,7 @@ const props = withDefaults(
     {
         allUsers: () => [],
         mode: 'teachers',
-    },
+    }
 )
 
 const emit = defineEmits<{
@@ -52,7 +52,7 @@ watch(
     () => props.open,
     (isOpen) => {
         if (isOpen) loadData()
-    },
+    }
 )
 
 watch(
@@ -62,7 +62,7 @@ watch(
         await settingsRepository.saveTeachers(list)
         emit('update:items', list)
     },
-    { deep: true },
+    { deep: true }
 )
 
 const sortedSelected = computed(() => {
@@ -73,9 +73,7 @@ const sortedSelected = computed(() => {
 })
 
 const sortedAvailable = computed(() => {
-    const available = (props.allUsers ?? items.value)
-        .filter((u) => !selectedItems.value.has(u))
-        .sort()
+    const available = (props.allUsers ?? items.value).filter((u) => !selectedItems.value.has(u)).sort()
     if (!searchQuery.value) return available
     const q = searchQuery.value.toLowerCase()
     return available.filter((u) => u.toLowerCase().includes(q))
@@ -157,9 +155,7 @@ function clearAll() {
                 <div class="px-6 py-4 space-y-4">
                     <!-- Selected -->
                     <div v-if="sortedSelected.length > 0">
-                        <h4
-                            class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2"
-                        >
+                        <h4 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
                             {{ $t('settings.general.teachers.modal.selected') }}
                         </h4>
                         <div class="space-y-1">
@@ -186,18 +182,14 @@ function clearAll() {
                                         <polyline points="20 6 9 17 4 12" />
                                     </svg>
                                 </div>
-                                <span class="text-sm truncate font-medium" :title="user">{{
-                                    user
-                                }}</span>
+                                <span class="text-sm truncate font-medium" :title="user">{{ user }}</span>
                             </div>
                         </div>
                     </div>
 
                     <!-- Available -->
                     <div v-if="sortedAvailable.length > 0">
-                        <h4
-                            class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2"
-                        >
+                        <h4 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
                             {{ $t('settings.general.teachers.modal.available') }}
                         </h4>
                         <div class="space-y-1">
@@ -207,9 +199,7 @@ function clearAll() {
                                 class="flex items-center gap-2 p-2 rounded-md hover:bg-muted/50 transition-colors cursor-pointer select-none"
                                 @click="toggleUser(user)"
                             >
-                                <div
-                                    class="w-4 h-4 rounded border border-muted-foreground shrink-0"
-                                />
+                                <div class="w-4 h-4 rounded border border-muted-foreground shrink-0" />
                                 <span class="text-sm truncate" :title="user">{{ user }}</span>
                             </div>
                         </div>
@@ -225,9 +215,7 @@ function clearAll() {
                 </div>
             </ScrollArea>
 
-            <DialogFooter
-                class="px-6 py-4 border-t shrink-0 flex-row items-center justify-between gap-2"
-            >
+            <DialogFooter class="px-6 py-4 border-t shrink-0 flex-row items-center justify-between gap-2">
                 <span class="text-sm text-muted-foreground">
                     {{
                         mode === 'teachers'

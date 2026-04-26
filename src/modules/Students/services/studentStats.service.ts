@@ -61,8 +61,7 @@ class StudentStatsService {
             groupName ? tasksRepository.getAllTasks() : tasksRepository.getAllTasks(),
         ]
 
-        const [allMeets, groupMap, teacherList, marks, durationLimitMinutes, tasks] =
-            await Promise.all(promises)
+        const [allMeets, groupMap, teacherList, marks, durationLimitMinutes, tasks] = await Promise.all(promises)
 
         const durationLimitSeconds = durationLimitMinutes > 0 ? durationLimitMinutes * 60 : Infinity
         const teachersSet = new Set(teacherList)
@@ -200,24 +199,18 @@ class StudentStatsService {
                     const meetDuration = meetDurations[meet.id]
                     if (!meetDuration || meetDuration <= 0) return
 
-                    const participant = (meet.participants || []).find((p) =>
-                        studentNames.has(p.name),
-                    )
+                    const participant = (meet.participants || []).find((p) => studentNames.has(p.name))
                     const studentDuration = participant ? participant.duration : 0
 
                     student.possibleDuration += meetDuration
                     student.attendedDuration += studentDuration
                     student.totalSessions += 1
-                    student.attendancePercentages.push(
-                        Math.min((studentDuration / meetDuration) * 100, 100),
-                    )
+                    student.attendancePercentages.push(Math.min((studentDuration / meetDuration) * 100, 100))
                 })
             })
 
             student.totalAttendancePercent =
-                student.possibleDuration > 0
-                    ? (student.attendedDuration / student.possibleDuration) * 100
-                    : 0
+                student.possibleDuration > 0 ? (student.attendedDuration / student.possibleDuration) * 100 : 0
 
             student.averageAttendancePercent =
                 student.attendancePercentages.length > 0
@@ -255,8 +248,7 @@ class StudentStatsService {
             const completedTaskIds = new Set(studentMarks.map((mark) => mark.taskId))
             student.completedTasks = completedTaskIds.size
 
-            student.completionPercent =
-                student.totalTasks > 0 ? (student.completedTasks / student.totalTasks) * 100 : 0
+            student.completionPercent = student.totalTasks > 0 ? (student.completedTasks / student.totalTasks) * 100 : 0
         })
 
         // Convert Sets to sorted arrays for the final result

@@ -31,8 +31,8 @@ export default defineConfig({
         ...(isNotBuild
             ? [
                 // basicSSL(),   // self-signed HTTPS for local phone testing
-                qrcode(), // prints QR code in terminal — scan from phone
-            ]
+                    qrcode(), // prints QR code in terminal — scan from phone
+                ]
             : []),
         VitePWA({
             registerType: 'prompt',

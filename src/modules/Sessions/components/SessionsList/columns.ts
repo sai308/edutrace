@@ -18,7 +18,7 @@ interface Formatters {
 export function createColumns(
     t: ComposerTranslation,
     { formatDate, formatTime, formatSurname }: Formatters,
-    ordinalMap: Map<string, number>,
+    ordinalMap: Map<string, number>
 ): ColumnDef<SessionEntry>[] {
     return [
         {
@@ -26,18 +26,15 @@ export function createColumns(
             header: ({ table }) =>
                 h(Checkbox, {
                     modelValue:
-                        table.getIsAllPageRowsSelected() ||
-                        (table.getIsSomePageRowsSelected() && 'indeterminate'),
-                    'onUpdate:modelValue': (v: boolean | 'indeterminate') =>
-                        table.toggleAllPageRowsSelected(!!v),
+                        table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
+                    'onUpdate:modelValue': (v: boolean | 'indeterminate') => table.toggleAllPageRowsSelected(!!v),
                     ariaLabel: t('common.selectAll'),
                     class: 'translate-y-[2px]',
                 }),
             cell: ({ row }) =>
                 h(Checkbox, {
                     modelValue: row.getIsSelected(),
-                    'onUpdate:modelValue': (v: boolean | 'indeterminate') =>
-                        row.toggleSelected(!!v),
+                    'onUpdate:modelValue': (v: boolean | 'indeterminate') => row.toggleSelected(!!v),
                     ariaLabel: t('common.selectRow'),
                     class: 'translate-y-[2px]',
                 }),
@@ -54,7 +51,7 @@ export function createColumns(
                 return h(
                     'div',
                     { class: 'text-center tabular-nums text-muted-foreground text-xs font-mono' },
-                    n != null ? String(n) : '',
+                    n != null ? String(n) : ''
                 )
             },
         },
@@ -62,31 +59,21 @@ export function createColumns(
             id: 'student',
             accessorFn: (row) => row.studentSnapshot.fullName,
             meta: { label: t('sessions.table.student') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('sessions.table.student') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('sessions.table.student') }),
             cell: ({ row }) => {
                 const fullName = row.original.studentSnapshot.fullName
                 const isAbsent = row.original.grade === null
-                return h(
-                    'div',
-                    { class: ['font-medium', isAbsent ? 'opacity-60 text-muted-foreground' : ''] },
-                    [
-                        h('span', { class: 'hidden sm:block truncate' }, fullName),
-                        h(
-                            'span',
-                            { class: 'block sm:hidden truncate', title: fullName },
-                            formatSurname(fullName),
-                        ),
-                    ],
-                )
+                return h('div', { class: ['font-medium', isAbsent ? 'opacity-60 text-muted-foreground' : ''] }, [
+                    h('span', { class: 'hidden sm:block truncate' }, fullName),
+                    h('span', { class: 'block sm:hidden truncate', title: fullName }, formatSurname(fullName)),
+                ])
             },
         },
         {
             id: 'gradeType',
             accessorFn: (row) => row.gradeType,
             meta: { label: t('sessions.table.gradeType') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('sessions.table.gradeType') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('sessions.table.gradeType') }),
             cell: ({ row }) => {
                 const { grade, gradeType } = row.original
                 const tooltip =
@@ -109,7 +96,7 @@ export function createColumns(
                             : gradeType === GradeTypeEnum.AUTO
                               ? h(Wand2, { class: 'w-4 h-4 text-purple-500' })
                               : h(PenTool, { class: 'w-4 h-4 text-emerald-600' }),
-                    ],
+                    ]
                 )
             },
         },
@@ -117,20 +104,16 @@ export function createColumns(
             id: 'nationalScale',
             accessorFn: (row) => row.grade,
             meta: { label: t('sessions.table.nationalScale') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('sessions.table.nationalScale') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('sessions.table.nationalScale') }),
             cell: ({ row }) => {
                 const grade = row.original.grade
                 const label = toNationalScale(grade, t)
                 return h(
                     'span',
                     {
-                        class: [
-                            'font-medium',
-                            grade === null ? 'italic font-normal text-muted-foreground' : '',
-                        ],
+                        class: ['font-medium', grade === null ? 'italic font-normal text-muted-foreground' : ''],
                     },
-                    label,
+                    label
                 )
             },
         },
@@ -138,25 +121,19 @@ export function createColumns(
             id: 'score',
             accessorFn: (row) => row.grade,
             meta: { label: t('sessions.table.score') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('sessions.table.score') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('sessions.table.score') }),
             cell: ({ row }) => {
                 const grade = row.original.grade
                 return grade !== null
                     ? h('span', String(grade))
-                    : h(
-                          'span',
-                          { class: 'text-muted-foreground italic' },
-                          t('sessions.grades.noGrade'),
-                      )
+                    : h('span', { class: 'text-muted-foreground italic' }, t('sessions.grades.noGrade'))
             },
         },
         {
             id: 'ectsScale',
             accessorFn: (row) => row.grade,
             meta: { label: t('sessions.table.ectsScale') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('sessions.table.ectsScale') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('sessions.table.ectsScale') }),
             cell: ({ row }) => {
                 const grade = row.original.grade
                 if (grade === null) return null
@@ -164,12 +141,9 @@ export function createColumns(
                 return h(
                     'span',
                     {
-                        class: [
-                            'font-mono bg-muted px-2 py-1 rounded text-sm',
-                            getECTSColorClass(ects),
-                        ],
+                        class: ['font-mono bg-muted px-2 py-1 rounded text-sm', getECTSColorClass(ects)],
                     },
-                    ects,
+                    ects
                 )
             },
         },
@@ -177,8 +151,7 @@ export function createColumns(
             id: 'lastUpdate',
             accessorFn: (row) => row.updatedAt,
             meta: { label: t('sessions.table.lastUpdate') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('sessions.table.lastUpdate') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('sessions.table.lastUpdate') }),
             cell: ({ row }) => {
                 const updatedAt = row.original.updatedAt
                 return h('div', { class: 'flex flex-col items-end gap-1' }, [
@@ -186,11 +159,10 @@ export function createColumns(
                         h(Calendar, { class: 'w-3 h-3' }),
                         h('span', formatDate(updatedAt)),
                     ]),
-                    h(
-                        'div',
-                        { class: 'flex items-center gap-1 text-[10px] text-muted-foreground/80' },
-                        [h(Clock, { class: 'w-3 h-3' }), h('span', formatTime(updatedAt))],
-                    ),
+                    h('div', { class: 'flex items-center gap-1 text-[10px] text-muted-foreground/80' }, [
+                        h(Clock, { class: 'w-3 h-3' }),
+                        h('span', formatTime(updatedAt)),
+                    ]),
                 ])
             },
         },

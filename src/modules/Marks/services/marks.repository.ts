@@ -13,9 +13,7 @@ class MarksRepository extends BaseRepository<'marks'> {
         if (!mark.groupName) throw new Error('Mark.groupName is required')
     }
 
-    async saveMark(
-        mark: Partial<Mark> & { taskId: string; studentId: string },
-    ): Promise<SaveMarkResult> {
+    async saveMark(mark: Partial<Mark> & { taskId: string; studentId: string }): Promise<SaveMarkResult> {
         this._validateMark(mark)
         const db = await this.getDb()
         const tx = db.transaction(this.storeName, 'readwrite')
@@ -64,8 +62,7 @@ class MarksRepository extends BaseRepository<'marks'> {
 
         for (const mark of marks) {
             this._validateMark(mark)
-            const existing =
-                mark.id != null ? await store.get(mark.id as unknown as number) : undefined
+            const existing = mark.id != null ? await store.get(mark.id as unknown as number) : undefined
 
             if (existing) {
                 if (existing.synced) {
@@ -182,9 +179,7 @@ class MarksRepository extends BaseRepository<'marks'> {
         const tasksStore = tx.objectStore('tasks')
         // taskId is stored as string in Mark but the tasks store key is number in the schema;
         // cast through unknown to avoid idb type error while preserving runtime behaviour.
-        const taskResults = await Promise.all(
-            uniqueTaskIds.map((id) => tasksStore.get(id as unknown as number)),
-        )
+        const taskResults = await Promise.all(uniqueTaskIds.map((id) => tasksStore.get(id as unknown as number)))
         const taskMap = new Map<string, Task>()
         taskResults.forEach((t: Task | undefined) => {
             if (t) taskMap.set(t.id.toString(), t)

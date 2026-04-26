@@ -36,12 +36,7 @@ export function useWorkspaceModals() {
         showDeleteConfirm.value = true
     }
 
-    const handleCreate = async (data: {
-        name: string
-        icon: string
-        color?: string
-        copySettings?: boolean
-    }) => {
+    const handleCreate = async (data: { name: string; icon: string; color?: string; copySettings?: boolean }) => {
         try {
             const options: any = { icon: data.icon, color: data.color }
             if (data.copySettings) {
@@ -54,15 +49,11 @@ export function useWorkspaceModals() {
                     examSettings: await settingsRepository.getExamSettings(),
                 })
                 options.saveSettings = async (settings: any) => {
-                    if (settings.durationLimit)
-                        await settingsRepository.saveDurationLimit(settings.durationLimit)
-                    if (settings.defaultTeacher)
-                        await settingsRepository.saveDefaultTeacher(settings.defaultTeacher)
-                    if (settings.ignoredUsers)
-                        await settingsRepository.saveIgnoredUsers(settings.ignoredUsers)
+                    if (settings.durationLimit) await settingsRepository.saveDurationLimit(settings.durationLimit)
+                    if (settings.defaultTeacher) await settingsRepository.saveDefaultTeacher(settings.defaultTeacher)
+                    if (settings.ignoredUsers) await settingsRepository.saveIgnoredUsers(settings.ignoredUsers)
                     if (settings.teachers) await settingsRepository.saveTeachers(settings.teachers)
-                    if (settings.examSettings)
-                        await settingsRepository.saveExamSettings(settings.examSettings)
+                    if (settings.examSettings) await settingsRepository.saveExamSettings(settings.examSettings)
                 }
             }
             await workspaceRepository.createWorkspace(data.name, options)

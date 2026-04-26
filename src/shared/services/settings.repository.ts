@@ -1,10 +1,4 @@
-import type {
-    ExamSettings,
-    PrintSettings,
-    SettingKey,
-    SettingsMap,
-    SummaryThresholds,
-} from '@/shared/types/Settings'
+import type { ExamSettings, PrintSettings, SettingKey, SettingsMap, SummaryThresholds } from '@/shared/types/Settings'
 import { logger } from '@/shared/lib/logger'
 import { local as storage } from '@/shared/services/StorageService'
 
@@ -28,10 +22,7 @@ class SettingsRepository {
     /**
      * Internal getter with type-specific coercion logic
      */
-    private _getSetting<K extends SettingKey>(
-        key: K,
-        defaultValue: SettingsMap[K],
-    ): SettingsMap[K] {
+    private _getSetting<K extends SettingKey>(key: K, defaultValue: SettingsMap[K]): SettingsMap[K] {
         const wsKey = this._getWorkspaceKey(key)
 
         // We tell storage.get that it might return the expected type, or a string (legacy/storage behavior)

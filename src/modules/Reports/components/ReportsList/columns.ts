@@ -16,7 +16,7 @@ interface Formatters {
 export function createColumns(
     rowActions: (meet: Meet) => RowActionItem[],
     t: ComposerTranslation,
-    formatters: Formatters,
+    formatters: Formatters
 ): ColumnDef<Meet>[] {
     return [
         {
@@ -26,8 +26,7 @@ export function createColumns(
             header: ({ table }) =>
                 h(Checkbox, {
                     modelValue:
-                        table.getIsAllPageRowsSelected() ||
-                        (table.getIsSomePageRowsSelected() && 'indeterminate'),
+                        table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
                     'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
                         table.toggleAllPageRowsSelected(!!value),
                     ariaLabel: t('common.selectAll'),
@@ -36,24 +35,20 @@ export function createColumns(
                 h(Checkbox, {
                     modelValue: row.getIsSelected(),
                     disabled: !row.getCanSelect(),
-                    'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
-                        row.toggleSelected(!!value),
+                    'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
                     ariaLabel: t('common.selectRow'),
                 }),
         },
         {
             accessorKey: 'groupName',
             meta: { label: t('reports.table.group') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('reports.table.group') }),
-            cell: ({ row }) =>
-                row.getValue('groupName') || h('span', { class: 'text-muted-foreground' }, '-'),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('reports.table.group') }),
+            cell: ({ row }) => row.getValue('groupName') || h('span', { class: 'text-muted-foreground' }, '-'),
         },
         {
             accessorKey: 'meetId',
             meta: { label: t('reports.table.meetId') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('reports.table.meetId') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('reports.table.meetId') }),
             cell: ({ row }) =>
                 h('div', { class: 'flex items-center gap-2 font-mono text-xs' }, [
                     h(LinkIcon, { class: 'h-3 w-3 text-muted-foreground shrink-0' }),
@@ -63,8 +58,7 @@ export function createColumns(
         {
             accessorKey: 'date',
             meta: { label: t('reports.table.date') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('reports.table.date') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('reports.table.date') }),
             cell: ({ row }) =>
                 h('div', { class: 'flex items-center gap-1 text-xs text-muted-foreground' }, [
                     h(Calendar, { class: 'w-3 h-3 shrink-0' }),
@@ -75,16 +69,13 @@ export function createColumns(
             id: 'participants',
             accessorFn: (row) => row.participants?.length ?? 0,
             meta: { label: t('reports.table.participants') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('reports.table.participants') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('reports.table.participants') }),
         },
         {
             id: 'duration',
-            accessorFn: (row) =>
-                row.participants?.length ? Math.max(...row.participants.map((p) => p.duration)) : 0,
+            accessorFn: (row) => (row.participants?.length ? Math.max(...row.participants.map((p) => p.duration)) : 0),
             meta: { label: t('reports.table.duration') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('reports.table.duration') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('reports.table.duration') }),
             cell: ({ row }) => {
                 const seconds = row.getValue('duration') as number
                 const hVal = Math.floor(seconds / 3600)
@@ -99,8 +90,7 @@ export function createColumns(
         {
             accessorKey: 'uploadedAt',
             meta: { label: t('reports.table.uploadedAt') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('reports.table.uploadedAt') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('reports.table.uploadedAt') }),
             cell: ({ row }) => {
                 const isoStr = row.getValue('uploadedAt') as string
                 if (!isoStr) return h('span', { class: 'text-muted-foreground' }, '-')
@@ -122,11 +112,7 @@ export function createColumns(
             id: 'actions',
             enableHiding: false,
             cell: ({ row }) =>
-                h(
-                    'div',
-                    { class: 'flex justify-end' },
-                    h(DataTableRowActions, { items: rowActions(row.original) }),
-                ),
+                h('div', { class: 'flex justify-end' }, h(DataTableRowActions, { items: rowActions(row.original) })),
         },
     ]
 }

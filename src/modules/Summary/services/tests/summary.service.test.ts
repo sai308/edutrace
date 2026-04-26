@@ -70,12 +70,8 @@ describe('summaryService', () => {
 
     it('should load data and delegate processing to worker', async () => {
         // Setup Mocks
-        const mockStudents = [
-            { id: 's1', name: 'Alice', role: 'student', groupName: 'G1' },
-        ] as Member[]
-        const mockTasks = [
-            { id: 't1', normalizedName: 'task1', name: 'Task1' },
-        ] as unknown as Task[]
+        const mockStudents = [{ id: 's1', name: 'Alice', role: 'student', groupName: 'G1' }] as Member[]
+        const mockTasks = [{ id: 't1', normalizedName: 'task1', name: 'Task1' }] as unknown as Task[]
         const mockMarks = [{ id: 'm1', studentId: 's1', taskId: 't1', score: 10 }] as Mark[]
         const mockMeets = [{ id: 'meet1', meetId: 'm1' }] as Meet[]
         const mockGroupsMap = { m1: mockGroup }
@@ -90,9 +86,7 @@ describe('summaryService', () => {
         ;(meetsRepository.getMeetsByMeetId as any).mockResolvedValue(mockMeets)
         ;(groupsRepository.getGroupMap as any).mockResolvedValue(mockGroupsMap)
         ;(settingsRepository as any).getDurationLimit = vi.fn().mockResolvedValue(mockDurationLimit)
-        ;(finalAssessmentsRepository.getAllFinalAssessments as any).mockResolvedValue(
-            mockAssessments,
-        )
+        ;(finalAssessmentsRepository.getAllFinalAssessments as any).mockResolvedValue(mockAssessments)
 
         // Reset and configure the mock for this specific test
         mockCalculateSummary.mockClear()
@@ -250,16 +244,14 @@ describe('summaryService', () => {
 
     describe('saveModule', () => {
         it('throws "Not implemented. Define Units instead."', async () => {
-            await expect(summaryService.saveModule({} as any)).rejects.toThrow(
-                'Not implemented. Define Units instead.',
-            )
+            await expect(summaryService.saveModule({} as any)).rejects.toThrow('Not implemented. Define Units instead.')
         })
     })
 
     describe('deleteModule', () => {
         it('throws "Not implemented. Delete Units instead."', async () => {
             await expect(summaryService.deleteModule('any-id')).rejects.toThrow(
-                'Not implemented. Delete Units instead.',
+                'Not implemented. Delete Units instead.'
             )
         })
     })
@@ -319,9 +311,7 @@ describe('summaryService', () => {
 
     describe('getMembersByGroup', () => {
         it('delegates to studentsRepository.getMembersByGroup', async () => {
-            const mockMembers = [
-                { id: 's1', name: 'Alice', role: 'student', groupName: 'G1' },
-            ] as Member[]
+            const mockMembers = [{ id: 's1', name: 'Alice', role: 'student', groupName: 'G1' }] as Member[]
             ;(studentsRepository.getMembersByGroup as any).mockResolvedValue(mockMembers)
 
             const result = await summaryService.getMembersByGroup('G1')
@@ -333,12 +323,8 @@ describe('summaryService', () => {
 
     describe('getAllFinalAssessments', () => {
         it('delegates to finalAssessmentsRepository.getAllFinalAssessments', async () => {
-            const mockAssessments: FinalAssessment[] = [
-                { id: 1, studentId: 's1', assessmentType: 'exam', value: 90 },
-            ]
-            ;(finalAssessmentsRepository.getAllFinalAssessments as any).mockResolvedValue(
-                mockAssessments,
-            )
+            const mockAssessments: FinalAssessment[] = [{ id: 1, studentId: 's1', assessmentType: 'exam', value: 90 }]
+            ;(finalAssessmentsRepository.getAllFinalAssessments as any).mockResolvedValue(mockAssessments)
 
             const result = await summaryService.getAllFinalAssessments()
 
@@ -364,16 +350,11 @@ describe('summaryService', () => {
 
     describe('getFinalAssessmentByStudent', () => {
         it('delegates to finalAssessmentsRepository.getFinalAssessmentByStudent', async () => {
-            ;(finalAssessmentsRepository.getFinalAssessmentByStudent as any).mockResolvedValue(
-                undefined,
-            )
+            ;(finalAssessmentsRepository.getFinalAssessmentByStudent as any).mockResolvedValue(undefined)
 
             await summaryService.getFinalAssessmentByStudent('s1', 'exam')
 
-            expect(finalAssessmentsRepository.getFinalAssessmentByStudent).toHaveBeenCalledWith(
-                's1',
-                'exam',
-            )
+            expect(finalAssessmentsRepository.getFinalAssessmentByStudent).toHaveBeenCalledWith('s1', 'exam')
         })
     })
 

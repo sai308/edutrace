@@ -91,7 +91,7 @@ describe('sessionsService', () => {
                     sessionType: SessionTypeEnum.MAIN,
                     status: SessionStatusEnum.OPEN,
                     groupId: 'g1',
-                }),
+                })
             )
             expect(result.entries).toHaveLength(1)
             expect(result.entries[0]!.grade).toBe(85)
@@ -132,9 +132,9 @@ describe('sessionsService', () => {
         })
 
         it('throws when group has no id', async () => {
-            await expect(
-                service.initializeMainSession({ ...group, id: undefined } as any),
-            ).rejects.toThrow('Group ID is required')
+            await expect(service.initializeMainSession({ ...group, id: undefined } as any)).rejects.toThrow(
+                'Group ID is required'
+            )
         })
     })
 
@@ -208,9 +208,7 @@ describe('sessionsService', () => {
         it('throws when session is not found', async () => {
             ;(sessionRepository.getById as any).mockResolvedValue(undefined)
 
-            await expect(service.syncMainSession(group, 'missing')).rejects.toThrow(
-                'Session not found',
-            )
+            await expect(service.syncMainSession(group, 'missing')).rejects.toThrow('Session not found')
         })
     })
 
@@ -221,11 +219,7 @@ describe('sessionsService', () => {
             const existing = makeSession({ sessionType: SessionTypeEnum.FIRST_RETAKE })
             ;(sessionRepository.getGroupSession as any).mockResolvedValue(existing)
 
-            const result = await service.initializeRetakeSession(
-                group,
-                'prev-id',
-                SessionTypeEnum.FIRST_RETAKE,
-            )
+            const result = await service.initializeRetakeSession(group, 'prev-id', SessionTypeEnum.FIRST_RETAKE)
 
             expect(result).toBe(existing)
             expect(sessionRepository.create).not.toHaveBeenCalled()
@@ -243,11 +237,7 @@ describe('sessionsService', () => {
             })
             ;(sessionRepository.getById as any).mockResolvedValue(prevSession)
 
-            const result = await service.initializeRetakeSession(
-                group,
-                'prev-id',
-                SessionTypeEnum.FIRST_RETAKE,
-            )
+            const result = await service.initializeRetakeSession(group, 'prev-id', SessionTypeEnum.FIRST_RETAKE)
 
             const ids = result.entries.map((e) => e.studentId)
             expect(ids).toContain('fail-1')
@@ -263,11 +253,7 @@ describe('sessionsService', () => {
             })
             ;(sessionRepository.getById as any).mockResolvedValue(prevSession)
 
-            const result = await service.initializeRetakeSession(
-                group,
-                'prev-id',
-                SessionTypeEnum.FIRST_RETAKE,
-            )
+            const result = await service.initializeRetakeSession(group, 'prev-id', SessionTypeEnum.FIRST_RETAKE)
 
             expect(result.entries[0]!.grade).toBeNull()
             expect(result.entries[0]!.gradeType).toBe(GradeTypeEnum.MANUAL)
@@ -275,12 +261,10 @@ describe('sessionsService', () => {
 
         it('throws when previous session is not closed', async () => {
             ;(sessionRepository.getGroupSession as any).mockResolvedValue(undefined)
-            ;(sessionRepository.getById as any).mockResolvedValue(
-                makeSession({ status: SessionStatusEnum.OPEN }),
-            )
+            ;(sessionRepository.getById as any).mockResolvedValue(makeSession({ status: SessionStatusEnum.OPEN }))
 
             await expect(
-                service.initializeRetakeSession(group, 'prev-id', SessionTypeEnum.FIRST_RETAKE),
+                service.initializeRetakeSession(group, 'prev-id', SessionTypeEnum.FIRST_RETAKE)
             ).rejects.toThrow('Previous session is not closed')
         })
 
@@ -289,7 +273,7 @@ describe('sessionsService', () => {
             ;(sessionRepository.getById as any).mockResolvedValue(undefined)
 
             await expect(
-                service.initializeRetakeSession(group, 'missing', SessionTypeEnum.FIRST_RETAKE),
+                service.initializeRetakeSession(group, 'missing', SessionTypeEnum.FIRST_RETAKE)
             ).rejects.toThrow('Previous session not found')
         })
 
@@ -298,8 +282,8 @@ describe('sessionsService', () => {
                 service.initializeRetakeSession(
                     { ...group, id: undefined } as any,
                     'prev-id',
-                    SessionTypeEnum.FIRST_RETAKE,
-                ),
+                    SessionTypeEnum.FIRST_RETAKE
+                )
             ).rejects.toThrow('Group ID is required')
         })
     })
@@ -324,10 +308,7 @@ describe('sessionsService', () => {
             })
             ;(sessionRepository.getById as any).mockResolvedValue(retake)
             ;(summaryService.loadExamData as any).mockResolvedValue({
-                students: [
-                    makeStudent({ id: 's1', examGradeRaw: 55 }),
-                    makeStudent({ id: 's-new', examGradeRaw: 70 }),
-                ],
+                students: [makeStudent({ id: 's1', examGradeRaw: 55 }), makeStudent({ id: 's-new', examGradeRaw: 70 })],
             })
 
             const result = await service.syncRetakeSession(group, 'session-1')
@@ -364,7 +345,7 @@ describe('sessionsService', () => {
             expect(result.status).toBe(SessionStatusEnum.CLOSED)
             expect(result.closedAt).toBeDefined()
             expect(sessionRepository.put).toHaveBeenCalledWith(
-                expect.objectContaining({ status: SessionStatusEnum.CLOSED }),
+                expect.objectContaining({ status: SessionStatusEnum.CLOSED })
             )
         })
 
@@ -379,9 +360,7 @@ describe('sessionsService', () => {
     describe('updateGrade', () => {
         it('updates the grade and sets gradeType to MANUAL', async () => {
             const session = makeSession({
-                entries: [
-                    makeEntry({ studentId: 's1', grade: null, gradeType: GradeTypeEnum.AUTO }),
-                ],
+                entries: [makeEntry({ studentId: 's1', grade: null, gradeType: GradeTypeEnum.AUTO })],
             })
             ;(sessionRepository.getById as any).mockResolvedValue(session)
 
@@ -393,26 +372,20 @@ describe('sessionsService', () => {
         })
 
         it('throws when session is closed', async () => {
-            ;(sessionRepository.getById as any).mockResolvedValue(
-                makeSession({ status: SessionStatusEnum.CLOSED }),
-            )
-            await expect(service.updateGrade('session-1', 's1', 90)).rejects.toThrow(
-                'Cannot edit a closed session',
-            )
+            ;(sessionRepository.getById as any).mockResolvedValue(makeSession({ status: SessionStatusEnum.CLOSED }))
+            await expect(service.updateGrade('session-1', 's1', 90)).rejects.toThrow('Cannot edit a closed session')
         })
 
         it('throws when student is not in the session', async () => {
             ;(sessionRepository.getById as any).mockResolvedValue(makeSession({ entries: [] }))
             await expect(service.updateGrade('session-1', 'unknown', 50)).rejects.toThrow(
-                'Student not found in session',
+                'Student not found in session'
             )
         })
 
         it('throws when session is not found', async () => {
             ;(sessionRepository.getById as any).mockResolvedValue(undefined)
-            await expect(service.updateGrade('missing', 's1', 70)).rejects.toThrow(
-                'Session not found',
-            )
+            await expect(service.updateGrade('missing', 's1', 70)).rejects.toThrow('Session not found')
         })
     })
 })

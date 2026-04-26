@@ -28,7 +28,7 @@ watch(
             currentMonth.value = newDate
         }
     },
-    { immediate: true },
+    { immediate: true }
 )
 
 const calendarDays = computed(() => {
@@ -101,9 +101,7 @@ const calendarDays = computed(() => {
                             <!-- Session Info -->
                             <div v-if="day.isSessionDay" class="flex flex-col gap-1.5 text-center">
                                 <!-- Session Badge -->
-                                <div
-                                    class="bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded"
-                                >
+                                <div class="bg-primary/10 text-primary text-xs font-medium px-2 py-1 rounded">
                                     {{ $t('reports.session.badge') }}
                                 </div>
 

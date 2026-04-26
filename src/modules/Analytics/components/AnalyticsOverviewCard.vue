@@ -29,7 +29,7 @@ useIntersectionObserver(sentinel, ([entry]) => {
 })
 
 const sessionAttendees = computed<number>(() =>
-    props.session?.participants ? Object.keys(props.session.participants).length : 0,
+    props.session?.participants ? Object.keys(props.session.participants).length : 0
 )
 
 const sortedParticipants = computed<[string, number][]>(() => {
@@ -74,9 +74,7 @@ function navigateToReportDetails(): void {
                         :title="$t('analytics.details.overview.seeDetails')"
                         @click="navigateToReportDetails"
                     >
-                        <Eye
-                            class="w-4 h-4 text-muted-foreground hover:text-primary transition-colors"
-                        />
+                        <Eye class="w-4 h-4 text-muted-foreground hover:text-primary transition-colors" />
                     </Button>
                 </div>
             </div>
@@ -85,10 +83,7 @@ function navigateToReportDetails(): void {
                 class="flex items-center gap-2 text-xs text-muted-foreground mt-1"
             >
                 <Clock class="w-3 h-3" />
-                <span
-                    >{{ formatTime(session.startTime) }} -
-                    {{ formatTime(session.endTime ?? '') }}</span
-                >
+                <span>{{ formatTime(session.startTime) }} - {{ formatTime(session.endTime ?? '') }}</span>
                 <span class="ml-auto flex items-center gap-1">
                     <Clock class="w-3 h-3" />
                     {{ formatDuration(session.maxDuration) }}
@@ -126,9 +121,7 @@ function navigateToReportDetails(): void {
                 v-if="!isBottomVisible"
                 class="absolute -bottom-2 left-0 right-0 flex justify-center pointer-events-none z-10"
             >
-                <div
-                    class="bg-background/80 backdrop-blur-sm rounded-full p-0.5 shadow-sm border animate-bounce"
-                >
+                <div class="bg-background/80 backdrop-blur-sm rounded-full p-0.5 shadow-sm border animate-bounce">
                     <ChevronDown class="w-4 h-4 text-primary" />
                 </div>
             </div>

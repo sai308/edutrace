@@ -36,17 +36,12 @@ function seedWorkspaces(entries: WorkspaceSeed[]) {
     localStorage.setItem('edutrace_current_workspace', entries[0]!.id)
     localStorage.setItem(
         'edutrace_workspaces',
-        JSON.stringify(entries.map((e) => ({ ...e, createdAt: new Date().toISOString() }))),
+        JSON.stringify(entries.map((e) => ({ ...e, createdAt: new Date().toISOString() })))
     )
 }
 
 /** Initialize an IDB at the given dbName using the full current schema. */
-async function initDb(
-    id: string,
-    name: string,
-    dbName: string,
-    extra: WorkspaceSeed = { id, name, dbName },
-) {
+async function initDb(id: string, name: string, dbName: string, extra: WorkspaceSeed = { id, name, dbName }) {
     seedWorkspaces([{ ...extra, id, name, dbName }])
     await databaseService.resetConnection()
     const db = await databaseService.getDb()
@@ -165,9 +160,7 @@ describe('updateWorkspace', () => {
     })
 
     it('throws when the workspace does not exist', async () => {
-        await expect(workspaceRepository.updateWorkspace('ghost', { name: 'X' })).rejects.toThrow(
-            'Workspace not found',
-        )
+        await expect(workspaceRepository.updateWorkspace('ghost', { name: 'X' })).rejects.toThrow('Workspace not found')
     })
 
     it('preserves ID and dbName even when those fields are passed', async () => {
@@ -187,9 +180,7 @@ describe('updateWorkspace', () => {
 
 describe('deleteWorkspace', () => {
     it('refuses to delete the default workspace', async () => {
-        await expect(workspaceRepository.deleteWorkspace('default')).rejects.toThrow(
-            'Cannot delete default workspace',
-        )
+        await expect(workspaceRepository.deleteWorkspace('default')).rejects.toThrow('Cannot delete default workspace')
     })
 
     it('removes the workspace from the list', async () => {
@@ -326,9 +317,7 @@ describe('exportWorkspaces', () => {
 
         const result = await workspaceRepository.exportWorkspaces(['ws-m1', 'ws-m2'])
         expect(result.workspaces).toHaveLength(2)
-        expect(result.workspaces.map((w) => w.id)).toEqual(
-            expect.arrayContaining(['ws-m1', 'ws-m2']),
-        )
+        expect(result.workspaces.map((w) => w.id)).toEqual(expect.arrayContaining(['ws-m1', 'ws-m2']))
 
         const ws1Groups = result.workspaces.find((w) => w.id === 'ws-m1')!.data.groups as any[]
         const ws2Groups = result.workspaces.find((w) => w.id === 'ws-m2')!.data.groups as any[]
@@ -569,8 +558,6 @@ describe('deleteWorkspacesData', () => {
     })
 
     it('silently skips workspace IDs not in the list', async () => {
-        await expect(
-            workspaceRepository.deleteWorkspacesData(['nonexistent-ws-id']),
-        ).resolves.not.toThrow()
+        await expect(workspaceRepository.deleteWorkspacesData(['nonexistent-ws-id'])).resolves.not.toThrow()
     })
 })

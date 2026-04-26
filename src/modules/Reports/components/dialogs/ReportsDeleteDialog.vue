@@ -63,7 +63,7 @@ async function handleConfirm() {
                                   {
                                       count: props.meetIds.length,
                                   },
-                                  `${props.meetIds.length} reports will be deleted.`,
+                                  `${props.meetIds.length} reports will be deleted.`
                               )
                             : t('reports.deleteModal.message_single')
                     }}

@@ -19,13 +19,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 export interface ManualMarkData {
     groupName: string
@@ -80,7 +74,7 @@ const isValid = computed(
         !!selectedStudent.value &&
         !!selectedTask.value &&
         score.value >= 0 &&
-        score.value <= maxScore.value,
+        score.value <= maxScore.value
 )
 
 // Load tasks on open; reset form
@@ -96,7 +90,7 @@ watch(
         studentSearch.value = ''
         taskSearch.value = ''
         students.value = []
-    },
+    }
 )
 
 // Load students when group changes
@@ -160,10 +154,7 @@ function handleSave() {
             <div class="grid gap-5 py-2">
                 <!-- Group -->
                 <div class="grid gap-2">
-                    <Label
-                        >{{ t('marks.manual.group') }}
-                        <span class="text-destructive ml-0.5">*</span></Label
-                    >
+                    <Label>{{ t('marks.manual.group') }} <span class="text-destructive ml-0.5">*</span></Label>
                     <Select v-model="selectedGroupName">
                         <SelectTrigger>
                             <SelectValue :placeholder="t('marks.manual.selectGroup')" />
@@ -186,9 +177,7 @@ function handleSave() {
                         <Input
                             v-model="studentSearch"
                             :placeholder="
-                                selectedGroupName
-                                    ? t('marks.manual.searchStudent')
-                                    : t('marks.manual.selectGroupFirst')
+                                selectedGroupName ? t('marks.manual.searchStudent') : t('marks.manual.selectGroupFirst')
                             "
                             :disabled="!selectedGroupName"
                             @focus="showStudentList = true"
@@ -223,20 +212,14 @@ function handleSave() {
                             </div>
                         </div>
                     </div>
-                    <p
-                        v-if="selectedGroupName && students.length === 0"
-                        class="text-xs text-muted-foreground"
-                    >
+                    <p v-if="selectedGroupName && students.length === 0" class="text-xs text-muted-foreground">
                         {{ t('marks.manual.noStudents') }}
                     </p>
                 </div>
 
                 <!-- Task -->
                 <div class="grid gap-2 relative">
-                    <Label
-                        >{{ t('marks.manual.task') }}
-                        <span class="text-destructive ml-0.5">*</span></Label
-                    >
+                    <Label>{{ t('marks.manual.task') }} <span class="text-destructive ml-0.5">*</span></Label>
                     <div class="relative">
                         <Input
                             v-model="taskSearch"
@@ -270,9 +253,7 @@ function handleSave() {
                                 @click="selectTask(task)"
                             >
                                 <span class="truncate">{{ task.name }}</span>
-                                <span class="text-xs text-muted-foreground ml-2 shrink-0"
-                                    >/ {{ task.maxPoints }}</span
-                                >
+                                <span class="text-xs text-muted-foreground ml-2 shrink-0">/ {{ task.maxPoints }}</span>
                             </div>
                         </div>
                     </div>

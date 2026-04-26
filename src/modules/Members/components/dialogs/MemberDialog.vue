@@ -15,14 +15,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 
 const props = withDefaults(defineProps<Props>(), {
@@ -81,7 +74,7 @@ watch(
         } else {
             formData.value = { name: '', email: '', groupName: '', role: 'student', iep: '' }
         }
-    },
+    }
 )
 
 watch(
@@ -92,14 +85,12 @@ watch(
             formData.value.iep = ''
             errors.value.groupName = ''
         }
-    },
+    }
 )
 
 // ── Computed ───────────────────────────────────────────────────────────────────
 
-const isGroupDisabled = computed(
-    () => formData.value.role === 'teacher' || formData.value.role === 'assistant',
-)
+const isGroupDisabled = computed(() => formData.value.role === 'teacher' || formData.value.role === 'assistant')
 
 const filteredGroups = computed<string[]>(() => {
     const query = formData.value.groupName?.toLowerCase() ?? ''
@@ -155,11 +146,7 @@ function handleOpenChange(val: boolean): void {
                     {{ member ? $t('members.dialog.edit') : $t('members.dialog.add') }}
                 </DialogTitle>
                 <DialogDescription>
-                    {{
-                        member
-                            ? $t('members.dialog.editDescription')
-                            : $t('members.dialog.addDescription')
-                    }}
+                    {{ member ? $t('members.dialog.editDescription') : $t('members.dialog.addDescription') }}
                 </DialogDescription>
             </DialogHeader>
 
@@ -177,9 +164,7 @@ function handleOpenChange(val: boolean): void {
                         autofocus
                         :class="{ 'border-destructive': errors.name }"
                     />
-                    <span v-if="errors.name" class="text-[0.8rem] text-destructive">{{
-                        errors.name
-                    }}</span>
+                    <span v-if="errors.name" class="text-[0.8rem] text-destructive">{{ errors.name }}</span>
                 </div>
 
                 <!-- Email -->
@@ -248,9 +233,7 @@ function handleOpenChange(val: boolean): void {
                             <ChevronDown class="w-4 h-4" />
                         </Button>
                     </div>
-                    <span v-if="errors.groupName" class="text-[0.8rem] text-destructive">{{
-                        errors.groupName
-                    }}</span>
+                    <span v-if="errors.groupName" class="text-[0.8rem] text-destructive">{{ errors.groupName }}</span>
 
                     <!-- Suggestions Dropdown -->
                     <div

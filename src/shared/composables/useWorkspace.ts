@@ -6,7 +6,7 @@ import { workspaceRepository } from '@/shared/services/workspace.repository'
 export const workspaces = ref<Workspace[]>([])
 export const currentWorkspaceId = ref('')
 export const activeWorkspace = computed(
-    () => workspaces.value.find((ws) => ws.id === currentWorkspaceId.value) || workspaces.value[0],
+    () => workspaces.value.find((ws) => ws.id === currentWorkspaceId.value) || workspaces.value[0]
 )
 
 export function loadWorkspaces() {

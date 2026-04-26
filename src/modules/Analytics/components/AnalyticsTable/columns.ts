@@ -20,7 +20,7 @@ function getPercentageClass(pct: number): string {
 export function createColumns(
     t: ComposerTranslation,
     dates: string[],
-    { formatDate }: Formatters,
+    { formatDate }: Formatters
 ): ColumnDef<DetailedMatrixRow>[] {
     const dateColumns: ColumnDef<DetailedMatrixRow>[] = dates.map((date) => ({
         id: date,
@@ -34,18 +34,14 @@ export function createColumns(
             }),
         cell: ({ row }) => {
             const cell = row.original[date]
-            if (!cell)
-                return h('div', { class: 'text-center text-muted-foreground opacity-30' }, '-')
+            if (!cell) return h('div', { class: 'text-center text-muted-foreground opacity-30' }, '-')
             return h('div', { class: 'flex items-center justify-center' }, [
                 h(
                     'div',
                     {
-                        class: [
-                            'px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium inline-block',
-                            cell.status,
-                        ],
+                        class: ['px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium inline-block', cell.status],
                     },
-                    `${cell.percentage}%`,
+                    `${cell.percentage}%`
                 ),
             ])
         },
@@ -58,18 +54,15 @@ export function createColumns(
             header: ({ table }) =>
                 h(Checkbox, {
                     modelValue:
-                        table.getIsAllPageRowsSelected() ||
-                        (table.getIsSomePageRowsSelected() && 'indeterminate'),
-                    'onUpdate:modelValue': (v: boolean | 'indeterminate') =>
-                        table.toggleAllPageRowsSelected(!!v),
+                        table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
+                    'onUpdate:modelValue': (v: boolean | 'indeterminate') => table.toggleAllPageRowsSelected(!!v),
                     ariaLabel: t('common.selectAll'),
                     class: 'translate-y-[2px]',
                 }),
             cell: ({ row }) =>
                 h(Checkbox, {
                     modelValue: row.getIsSelected(),
-                    'onUpdate:modelValue': (v: boolean | 'indeterminate') =>
-                        row.toggleSelected(!!v),
+                    'onUpdate:modelValue': (v: boolean | 'indeterminate') => row.toggleSelected(!!v),
                     ariaLabel: t('common.selectRow'),
                     class: 'translate-y-[2px]',
                 }),
@@ -80,17 +73,12 @@ export function createColumns(
             id: 'name',
             accessorKey: 'name',
             meta: { label: t('analytics.details.table.student') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('analytics.details.table.student') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('analytics.details.table.student') }),
             cell: ({ row }) => {
                 const name = row.original.name
                 return h('div', { class: 'font-medium text-xs sm:text-sm' }, [
                     h('span', { class: 'hidden sm:inline-block truncate max-w-[180px]' }, name),
-                    h(
-                        'span',
-                        { class: 'inline-block sm:hidden truncate max-w-[120px]', title: name },
-                        name,
-                    ),
+                    h('span', { class: 'inline-block sm:hidden truncate max-w-[120px]', title: name }, name),
                 ])
             },
         },
@@ -98,8 +86,7 @@ export function createColumns(
         {
             id: 'totalPercentage',
             accessorKey: 'totalPercentage',
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('analytics.details.table.total') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('analytics.details.table.total') }),
             cell: ({ row }) => {
                 const pct = row.original.totalPercentage
                 return h('div', { class: 'flex items-center justify-center' }, [
@@ -111,7 +98,7 @@ export function createColumns(
                                 getPercentageClass(pct),
                             ],
                         },
-                        `${pct}%`,
+                        `${pct}%`
                     ),
                 ])
             },

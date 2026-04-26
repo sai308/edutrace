@@ -43,14 +43,7 @@ function onFileSelect(event: Event) {
         @dragover="onDragOver"
         @drop="onDrop"
     >
-        <input
-            ref="fileInput"
-            type="file"
-            multiple
-            accept=".csv"
-            class="hidden"
-            @change="onFileSelect"
-        />
+        <input ref="fileInput" type="file" multiple accept=".csv" class="hidden" @change="onFileSelect" />
 
         <div
             class="flex flex-col items-center gap-4 transition-transform duration-200 pointer-events-none"
@@ -58,11 +51,7 @@ function onFileSelect(event: Event) {
         >
             <div
                 class="p-4 rounded-full transition-colors duration-200"
-                :class="[
-                    isOver && isInvalidDrag
-                        ? 'bg-destructive/10 text-destructive'
-                        : 'bg-primary/10 text-primary',
-                ]"
+                :class="[isOver && isInvalidDrag ? 'bg-destructive/10 text-destructive' : 'bg-primary/10 text-primary']"
             >
                 <Loader2 v-if="isProcessing" class="w-8 h-8 animate-spin" />
                 <AlertCircle v-else-if="isOver && isInvalidDrag" class="w-8 h-8" />
@@ -70,17 +59,10 @@ function onFileSelect(event: Event) {
             </div>
 
             <div class="space-y-1">
-                <h3
-                    class="font-semibold text-lg"
-                    :class="{ 'text-destructive': isOver && isInvalidDrag }"
-                >
+                <h3 class="font-semibold text-lg" :class="{ 'text-destructive': isOver && isInvalidDrag }">
                     <span v-if="isProcessing">{{ $t('dropZone.processing') }}</span>
-                    <span v-else-if="isOver && isInvalidDrag">{{
-                        $t('dropZone.invalidType')
-                    }}</span>
-                    <span v-else>{{
-                        prompt === 'Drop CSV files here' ? $t('dropZone.prompt') : prompt
-                    }}</span>
+                    <span v-else-if="isOver && isInvalidDrag">{{ $t('dropZone.invalidType') }}</span>
+                    <span v-else>{{ prompt === 'Drop CSV files here' ? $t('dropZone.prompt') : prompt }}</span>
                 </h3>
                 <p class="text-sm text-muted-foreground">
                     {{ $t('dropZone.hint') }}

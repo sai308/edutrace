@@ -21,10 +21,7 @@ export class IdentityReconciler {
     /**
      * Matches raw student data to existing members.
      */
-    async resolveIdentities(
-        rawStudents: RawStudent[],
-        existingMembers: Member[],
-    ): Promise<ReconciledStudent[]> {
+    async resolveIdentities(rawStudents: RawStudent[], existingMembers: Member[]): Promise<ReconciledStudent[]> {
         // Create lookup maps
         const emailMap = new Map<string, Member>()
         const nameMap = new Map<string, Member>()

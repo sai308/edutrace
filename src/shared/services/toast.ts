@@ -20,12 +20,7 @@ const toasts: Ref<Toast[]> = ref([])
 let idCounter = 0
 
 export const toast = {
-    add(
-        message: string,
-        type: ToastType = 'info',
-        duration: number = 3000,
-        action?: ToastAction,
-    ): number {
+    add(message: string, type: ToastType = 'info', duration: number = 3000, action?: ToastAction): number {
         const id = idCounter++
         toasts.value.push({ id, message, type, action })
         if (duration > 0) {

@@ -44,7 +44,7 @@ const filteredStats = computed<EnrichedStat[]>(() => {
         (stat) =>
             stat.meetId.toLowerCase().includes(query) ||
             stat.displayName.toLowerCase().includes(query) ||
-            (stat.teacherName && stat.teacherName.toLowerCase().includes(query)),
+            (stat.teacherName && stat.teacherName.toLowerCase().includes(query))
     )
 })
 
@@ -105,9 +105,7 @@ defineExpose({ refresh: () => emit('refresh') })
 </script>
 
 <template>
-    <div
-        class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500"
-    >
+    <div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <!-- Zone 1: Page header — always visible -->
         <div>
             <h1 class="text-2xl font-bold tracking-tight">
@@ -122,11 +120,7 @@ defineExpose({ refresh: () => emit('refresh') })
             <!-- Search Row -->
             <div class="relative w-full">
                 <Search class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                    v-model="searchQuery"
-                    :placeholder="$t('analytics.searchPlaceholder')"
-                    class="pl-8"
-                />
+                <Input v-model="searchQuery" :placeholder="$t('analytics.searchPlaceholder')" class="pl-8" />
             </div>
 
             <div v-if="loading" class="flex items-center justify-center h-64">
@@ -156,11 +150,7 @@ defineExpose({ refresh: () => emit('refresh') })
                         <h3 class="text-lg font-semibold text-muted-foreground">
                             {{ $t(`analytics.sections.${section.key}`) }}
                         </h3>
-                        <Badge
-                            v-if="isSectionCollapsed(section.id) && !searchQuery"
-                            variant="secondary"
-                            class="ml-2"
-                        >
+                        <Badge v-if="isSectionCollapsed(section.id) && !searchQuery" variant="secondary" class="ml-2">
                             {{ section.items.length }}
                         </Badge>
                         <div class="flex-1 ml-4 h-px bg-border self-center" />

@@ -41,12 +41,7 @@ import {
 // Components
 import { Button } from '@/components/ui/button'
 
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import EmptyState from '@/shared/components/EmptyState.vue'
 import { useQuerySync } from '@/shared/composables/useQuerySync'
@@ -88,19 +83,13 @@ const settingsForm = ref<SummaryThresholds>({ ...DEFAULT_SETTINGS })
 const unsavedCount = computed(
     () =>
         students.value.filter(
-            (s) =>
-                s.examGrade !== null &&
-                s.examGrade !== undefined &&
-                s.examGrade !== '' &&
-                !s.completedAt,
-        ).length,
+            (s) => s.examGrade !== null && s.examGrade !== undefined && s.examGrade !== '' && !s.completedAt
+        ).length
 )
 
 const isProfileOpen = ref(false)
 const selectedStudent = ref<StudentSummaryData | null>(null)
-const profileStudent = computed(
-    () => selectedStudent.value as unknown as StudentDashboardStats | null,
-)
+const profileStudent = computed(() => selectedStudent.value as unknown as StudentDashboardStats | null)
 const showSettingsSheet = ref(false)
 
 // ── Leave guard ──────────────────────────────────────────────────────────────
@@ -174,7 +163,7 @@ watch(
             await handleReload()
         }
     },
-    { immediate: false },
+    { immediate: false }
 )
 
 onMounted(() => {
@@ -190,7 +179,7 @@ async function handleReload() {
             settingsForm.value.attendanceThreshold,
             settingsForm.value.attendanceEnabled,
             selectedFormat.value,
-            settingsForm.value.requiredTasks,
+            settingsForm.value.requiredTasks
         )
     }
 }
@@ -243,9 +232,7 @@ function getGradeActions(student: StudentSummaryData): RowActionItem[] {
 </script>
 
 <template>
-    <div
-        class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500"
-    >
+    <div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <!-- ── Zone 1: Page header ── -->
         <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <div>
@@ -253,11 +240,7 @@ function getGradeActions(student: StudentSummaryData): RowActionItem[] {
                     {{ $t('summary.title') }}
                 </h1>
                 <p class="text-sm text-muted-foreground mt-0.5">
-                    {{
-                        selectedGroup
-                            ? $t('summary.records', { count: students.length })
-                            : $t('summary.description')
-                    }}
+                    {{ selectedGroup ? $t('summary.records', { count: students.length }) : $t('summary.description') }}
                 </p>
             </div>
 
@@ -275,23 +258,14 @@ function getGradeActions(student: StudentSummaryData): RowActionItem[] {
                             <span class="hidden sm:inline text-xs text-muted-foreground mr-1">{{
                                 $t('summary.groupLabel')
                             }}</span>
-                            <span
-                                class="font-medium max-w-[100px] truncate"
-                                :title="selectedGroup?.name"
-                                >{{ selectedGroup?.name || $t('summary.selectGroup') }}</span
-                            >
+                            <span class="font-medium max-w-[100px] truncate" :title="selectedGroup?.name">{{
+                                selectedGroup?.name || $t('summary.selectGroup')
+                            }}</span>
                             <ChevronDown class="h-3 w-3 opacity-50 shrink-0" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                        align="end"
-                        class="w-[200px] max-h-[300px] overflow-y-auto"
-                    >
-                        <DropdownMenuItem
-                            v-for="group in groups"
-                            :key="group.id"
-                            @click="selectedGroup = group"
-                        >
+                    <DropdownMenuContent align="end" class="w-[200px] max-h-[300px] overflow-y-auto">
+                        <DropdownMenuItem v-for="group in groups" :key="group.id" @click="selectedGroup = group">
                             {{ group.name }}
                         </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -364,10 +338,7 @@ function getGradeActions(student: StudentSummaryData): RowActionItem[] {
         <!-- ── Content area ── -->
 
         <!-- Loading -->
-        <div
-            v-if="isLoading"
-            class="flex flex-col items-center justify-center min-h-[400px] text-muted-foreground"
-        >
+        <div v-if="isLoading" class="flex flex-col items-center justify-center min-h-[400px] text-muted-foreground">
             <Loader2 class="w-8 h-8 animate-spin mb-4 text-primary" />
             <p>{{ $t('summary.loading') }}</p>
         </div>
@@ -467,10 +438,7 @@ function getGradeActions(student: StudentSummaryData): RowActionItem[] {
                     <AlertDialogCancel @click="cancelLeave">
                         {{ $t('summary.leaveDialog.cancel') }}
                     </AlertDialogCancel>
-                    <AlertDialogAction
-                        class="bg-destructive hover:bg-destructive/90 text-white"
-                        @click="confirmLeave"
-                    >
+                    <AlertDialogAction class="bg-destructive hover:bg-destructive/90 text-white" @click="confirmLeave">
                         {{ $t('summary.leaveDialog.confirm') }}
                     </AlertDialogAction>
                 </AlertDialogFooter>

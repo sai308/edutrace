@@ -1,10 +1,5 @@
 import type { Group } from '@Groups/types/groups'
-import type {
-    GradeType,
-    SessionEntry,
-    SessionReport,
-    SessionType,
-} from '@Sessions/models/session.model'
+import type { GradeType, SessionEntry, SessionReport, SessionType } from '@Sessions/models/session.model'
 import type { StudentSummaryData } from '@Summary/types/summary'
 import { GradeTypeEnum, SessionStatusEnum, SessionTypeEnum } from '@Sessions/models/session.model'
 import { sessionRepository } from '@Sessions/services/sessions.repository'
@@ -19,10 +14,7 @@ export class SessionsService {
      * isAuto defaults to true unless explicitly set to false.
      */
     private resolveGradeFromStudent(
-        student: Pick<
-            StudentSummaryData,
-            'examGradeRaw' | 'totalRaw' | 'examIsAuto' | 'completedAt'
-        >,
+        student: Pick<StudentSummaryData, 'examGradeRaw' | 'totalRaw' | 'examIsAuto' | 'completedAt'>
     ): {
         grade: number | null
         gradeType: GradeType
@@ -52,10 +44,7 @@ export class SessionsService {
     async initializeMainSession(group: Group): Promise<SessionReport> {
         if (!group.id) throw new Error('Group ID is required')
 
-        const existing = await sessionRepository.getGroupSession(
-            group.id as string,
-            SessionTypeEnum.MAIN,
-        )
+        const existing = await sessionRepository.getGroupSession(group.id as string, SessionTypeEnum.MAIN)
         if (existing) return existing
 
         const examData = await summaryService.loadExamData(group, {
@@ -110,15 +99,8 @@ export class SessionsService {
             if (entry.grade === null || entry.gradeType === GradeTypeEnum.AUTO) {
                 const studentData = examData.students.find((s) => s.id === entry.studentId)
                 if (studentData) {
-                    const {
-                        grade: newVal,
-                        gradeType,
-                        updatedAt,
-                    } = this.resolveGradeFromStudent(studentData)
-                    if (
-                        (newVal != null && entry.grade !== newVal) ||
-                        entry.gradeType !== gradeType
-                    ) {
+                    const { grade: newVal, gradeType, updatedAt } = this.resolveGradeFromStudent(studentData)
+                    if ((newVal != null && entry.grade !== newVal) || entry.gradeType !== gradeType) {
                         entry.grade = newVal
                         entry.gradeType = gradeType
                         entry.updatedAt = updatedAt
@@ -158,11 +140,7 @@ export class SessionsService {
      * Initializes a Retake Session based on the previous session's results.
      * Only students who did not pass (grade < 60) or have no grade are carried over.
      */
-    async initializeRetakeSession(
-        group: Group,
-        previousSessionId: string,
-        type: SessionType,
-    ): Promise<SessionReport> {
+    async initializeRetakeSession(group: Group, previousSessionId: string, type: SessionType): Promise<SessionReport> {
         if (!group.id) throw new Error('Group ID is required')
 
         const existing = await sessionRepository.getGroupSession(group.id as string, type)
@@ -170,8 +148,7 @@ export class SessionsService {
 
         const prevSession = await sessionRepository.getById(previousSessionId)
         if (!prevSession) throw new Error('Previous session not found')
-        if (prevSession.status !== SessionStatusEnum.CLOSED)
-            throw new Error('Previous session is not closed')
+        if (prevSession.status !== SessionStatusEnum.CLOSED) throw new Error('Previous session is not closed')
 
         const PASS_THRESHOLD = 60
 
@@ -218,15 +195,8 @@ export class SessionsService {
             if (entry.grade === null || entry.gradeType === GradeTypeEnum.AUTO) {
                 const studentData = examData.students.find((s) => s.id === entry.studentId)
                 if (studentData) {
-                    const {
-                        grade: newVal,
-                        gradeType,
-                        updatedAt,
-                    } = this.resolveGradeFromStudent(studentData)
-                    if (
-                        (newVal != null && entry.grade !== newVal) ||
-                        entry.gradeType !== gradeType
-                    ) {
+                    const { grade: newVal, gradeType, updatedAt } = this.resolveGradeFromStudent(studentData)
+                    if ((newVal != null && entry.grade !== newVal) || entry.gradeType !== gradeType) {
                         entry.grade = newVal
                         entry.gradeType = gradeType
                         entry.updatedAt = updatedAt

@@ -80,7 +80,7 @@ watch(
             showMeetIdSuggestions.value = false
             showTeacherSuggestions.value = false
         }
-    },
+    }
 )
 
 // Auto-suggest course from name when course is not yet set
@@ -90,7 +90,7 @@ watch(
         if (newName && !formData.value.course) {
             formData.value.course = suggestCourseFromName(newName)
         }
-    },
+    }
 )
 
 const filteredSuggested = computed(() => {
@@ -102,14 +102,10 @@ const filteredSuggested = computed(() => {
 const filteredMeetIds = computed(() => {
     const suggestedSet = new Set(props.suggestedMeetIds ?? [])
     const query = formData.value.meetId.toLowerCase()
-    return props.allMeetIds.filter(
-        (id) => !suggestedSet.has(id) && id.toLowerCase().includes(query),
-    )
+    return props.allMeetIds.filter((id) => !suggestedSet.has(id) && id.toLowerCase().includes(query))
 })
 
-const hasAnyMeetIds = computed(
-    () => (props.allMeetIds?.length ?? 0) > 0 || (props.suggestedMeetIds?.length ?? 0) > 0,
-)
+const hasAnyMeetIds = computed(() => (props.allMeetIds?.length ?? 0) > 0 || (props.suggestedMeetIds?.length ?? 0) > 0)
 
 const meetIdInvalid = computed(() => {
     const id = (formData.value.meetId ?? '').trim()
@@ -213,8 +209,7 @@ function handleOpenChange(val: boolean): void {
                             v-model="formData.meetId"
                             :placeholder="$t('groups.modal.meetIdPlaceholder')"
                             :class="{
-                                'border-destructive focus-visible:ring-destructive/30':
-                                    meetIdInvalid,
+                                'border-destructive focus-visible:ring-destructive/30': meetIdInvalid,
                             }"
                             @focus="showMeetIdSuggestions = true"
                             @blur="handleBlur('meetId')"
@@ -239,17 +234,12 @@ function handleOpenChange(val: boolean): void {
                     </p>
 
                     <div
-                        v-if="
-                            showMeetIdSuggestions &&
-                            (filteredSuggested.length > 0 || filteredMeetIds.length > 0)
-                        "
+                        v-if="showMeetIdSuggestions && (filteredSuggested.length > 0 || filteredMeetIds.length > 0)"
                         class="absolute top-[calc(100%+4px)] z-50 w-full min-w-[8rem] overflow-hidden rounded-md border bg-popover text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95"
                     >
                         <div class="p-1 max-h-60 overflow-y-auto">
                             <template v-if="filteredSuggested.length > 0">
-                                <div
-                                    class="px-2 py-1 text-xs font-medium text-muted-foreground select-none"
-                                >
+                                <div class="px-2 py-1 text-xs font-medium text-muted-foreground select-none">
                                     {{ $t('groups.modal.meetIdSuggested') }}
                                 </div>
                                 <div
@@ -261,10 +251,7 @@ function handleOpenChange(val: boolean): void {
                                 >
                                     {{ id }}
                                 </div>
-                                <div
-                                    v-if="filteredMeetIds.length > 0"
-                                    class="my-1 border-t border-border"
-                                />
+                                <div v-if="filteredMeetIds.length > 0" class="my-1 border-t border-border" />
                             </template>
                             <div
                                 v-for="id in filteredMeetIds"
@@ -324,20 +311,11 @@ function handleOpenChange(val: boolean): void {
             </div>
 
             <p v-if="error" class="text-sm text-destructive -mt-2">
-                {{
-                    error === 'duplicate'
-                        ? $t('groups.modal.errorDuplicate')
-                        : $t('groups.modal.errorGeneric')
-                }}
+                {{ error === 'duplicate' ? $t('groups.modal.errorDuplicate') : $t('groups.modal.errorGeneric') }}
             </p>
 
             <DialogFooter>
-                <Button
-                    v-if="showSkip"
-                    variant="ghost"
-                    class="w-full sm:w-auto sm:mr-auto"
-                    @click="emit('skip')"
-                >
+                <Button v-if="showSkip" variant="ghost" class="w-full sm:w-auto sm:mr-auto" @click="emit('skip')">
                     {{ $t('groups.modal.skip') }}
                 </Button>
                 <Button variant="outline" @click="handleOpenChange(false)">

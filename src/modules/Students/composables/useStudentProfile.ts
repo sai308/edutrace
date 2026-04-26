@@ -27,7 +27,7 @@ export function useStudentProfile(
     meets: () => ProfileMeet[],
     groupsMap: () => Record<string, { name?: string }>,
     tasks: () => ProfileTask[],
-    allStudents: () => Array<{ id: string | number; iep?: string }>,
+    allStudents: () => Array<{ id: string | number; iep?: string }>
 ) {
     const { t } = useI18n()
     const { formatDuration, formatTime } = useFormatters()
@@ -68,7 +68,7 @@ export function useStudentProfile(
         (s) => {
             if (s) resetForm()
         },
-        { immediate: true },
+        { immediate: true }
     )
 
     function handleSave(emit: (event: 'update:open' | 'save', ...args: unknown[]) => void) {
@@ -88,10 +88,7 @@ export function useStudentProfile(
         const durations = meet.participants.map((p) => p.duration).sort((a, b) => a - b)
         if (durations.length === 0) return 0
         const mid = Math.floor(durations.length / 2)
-        const median =
-            durations.length % 2 !== 0
-                ? durations[mid]!
-                : (durations[mid - 1]! + durations[mid]!) / 2
+        const median = durations.length % 2 !== 0 ? durations[mid]! : (durations[mid - 1]! + durations[mid]!) / 2
         const valid = durations.filter((d) => d <= median * 2)
         return valid.length === 0 ? 0 : Math.max(...valid)
     }
@@ -117,7 +114,7 @@ export function useStudentProfile(
             .map((meet) => {
                 const s = student()!
                 const participant = meet.participants.find(
-                    (p) => p.name === s.name || (s.aliases ?? []).includes(p.name),
+                    (p) => p.name === s.name || (s.aliases ?? []).includes(p.name)
                 )
                 return {
                     date: new Date(meet.date).getTime(),
@@ -168,7 +165,7 @@ export function useStudentProfile(
         return studentMeets()
             .map((meet) => {
                 const participant = meet.participants.find(
-                    (p) => p.name === s.name || (s.aliases ?? []).includes(p.name),
+                    (p) => p.name === s.name || (s.aliases ?? []).includes(p.name)
                 )
                 const duration = participant?.duration ?? 0
                 const meetDuration = calculateMeetDuration(meet)
@@ -207,17 +204,13 @@ export function useStudentProfile(
 
                     if (leaveTime > sessionEnd) sessionEnd = leaveTime
 
-                    const totalSessionDuration =
-                        (sessionEnd.getTime() - sessionStart.getTime()) / 1000
+                    const totalSessionDuration = (sessionEnd.getTime() - sessionStart.getTime()) / 1000
                     if (totalSessionDuration > 0) {
                         const offsetSeconds = (joinTime.getTime() - sessionStart.getTime()) / 1000
-                        offsetPercent = Math.max(
-                            0,
-                            Math.min(100, (offsetSeconds / totalSessionDuration) * 100),
-                        )
+                        offsetPercent = Math.max(0, Math.min(100, (offsetSeconds / totalSessionDuration) * 100))
                         durationPercent = Math.max(
                             0,
-                            Math.min(100 - offsetPercent, (duration / totalSessionDuration) * 100),
+                            Math.min(100 - offsetPercent, (duration / totalSessionDuration) * 100)
                         )
                     }
                     startTime = sessionStart
@@ -297,8 +290,7 @@ export function useStudentProfile(
     // ---- Marks stats + history ----
     const marksStats = computed(() => {
         const s = student()
-        if (!s)
-            return { averageGrade: '0', completedTasks: 0, totalTasks: 0, completionPercent: '0' }
+        if (!s) return { averageGrade: '0', completedTasks: 0, totalTasks: 0, completionPercent: '0' }
         return {
             averageGrade: s.averageMark?.toFixed(2) ?? '0',
             completedTasks: s.completedTasks ?? 0,
@@ -312,33 +304,20 @@ export function useStudentProfile(
         if (!s?.marks) return []
         const taskMap = new Map(tasks().map((t) => [t.id, t]))
         return s.marks
-            .map(
-                (mark: {
-                    id: string | number
-                    taskId: string | number
-                    score: number
-                    createdAt: string
-                }) => {
-                    const task = taskMap.get(mark.taskId)
-                    const maxPoints = task?.maxPoints ?? 0
-                    const grade =
-                        maxPoints > 0
-                            ? formatMarkToFiveScale({ score: mark.score, maxPoints })
-                            : '-'
-                    return {
-                        id: mark.id,
-                        date: new Date(mark.createdAt).toLocaleDateString(),
-                        taskName: task?.name ?? `Task #${mark.taskId}`,
-                        score: mark.score,
-                        maxPoints,
-                        grade,
-                    }
-                },
-            )
-            .sort(
-                (a: { date: string }, b: { date: string }) =>
-                    new Date(b.date).getTime() - new Date(a.date).getTime(),
-            )
+            .map((mark: { id: string | number; taskId: string | number; score: number; createdAt: string }) => {
+                const task = taskMap.get(mark.taskId)
+                const maxPoints = task?.maxPoints ?? 0
+                const grade = maxPoints > 0 ? formatMarkToFiveScale({ score: mark.score, maxPoints }) : '-'
+                return {
+                    id: mark.id,
+                    date: new Date(mark.createdAt).toLocaleDateString(),
+                    taskName: task?.name ?? `Task #${mark.taskId}`,
+                    score: mark.score,
+                    maxPoints,
+                    grade,
+                }
+            })
+            .sort((a: { date: string }, b: { date: string }) => new Date(b.date).getTime() - new Date(a.date).getTime())
     })
 
     return {

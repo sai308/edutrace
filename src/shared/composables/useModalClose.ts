@@ -19,10 +19,7 @@ function handleGlobalEscape(event: KeyboardEvent): void {
     }
 }
 
-export function useModalClose(
-    isOpenOrCallback: Ref<boolean> | (() => void),
-    closeCallback?: () => void,
-): void {
+export function useModalClose(isOpenOrCallback: Ref<boolean> | (() => void), closeCallback?: () => void): void {
     // Support both old and new API
     // Old: useModalClose(callback)
     // New: useModalClose(isOpenRef, callback)
@@ -80,7 +77,7 @@ export function useModalClose(
                     unregisterModal()
                 }
             },
-            { immediate: true },
+            { immediate: true }
         )
 
         // Cleanup on unmount

@@ -35,10 +35,7 @@ export class ReportsService {
     async parseFile(file: File): Promise<Meet> {
         const text = await file.text()
         try {
-            return await withTimeout(
-                this.parser.parseMeetReport(text, file.name),
-                PARSER_TIMEOUT_MS,
-            )
+            return await withTimeout(this.parser.parseMeetReport(text, file.name), PARSER_TIMEOUT_MS)
         } catch (e) {
             throw classifyWorkerError(e)
         }
@@ -47,10 +44,7 @@ export class ReportsService {
     /**
      * Process multiple files: parse, validate, save.
      */
-    async processFiles(
-        files: File[],
-        filterMode: 'all' | 'related' = 'all',
-    ): Promise<ReportProcessingStats> {
+    async processFiles(files: File[], filterMode: 'all' | 'related' = 'all'): Promise<ReportProcessingStats> {
         const stats: ReportProcessingStats = { saved: 0, skipped: 0, unrecognized: 0 }
 
         if (!files || files.length === 0) return stats
@@ -85,11 +79,7 @@ export class ReportsService {
             }
 
             // Duplicate check
-            const isDup = await meetsRepository.isDuplicateFile(
-                result.filename || '',
-                result.meetId,
-                result.date,
-            )
+            const isDup = await meetsRepository.isDuplicateFile(result.filename || '', result.meetId, result.date)
             if (isDup) {
                 logger.warn(`Skipping duplicate file: ${result.filename}`)
                 stats.skipped++
@@ -110,9 +100,7 @@ export class ReportsService {
 
             // Normalize group name if a group was found, otherwise fallback
             const allGroups = Object.values(groupsMap)
-            const normalizedGroupName = group
-                ? normalizeGroupName(group.name, allGroups)
-                : 'Unknown'
+            const normalizedGroupName = group ? normalizeGroupName(group.name, allGroups) : 'Unknown'
 
             // Always process students, use 'Unknown' if group missing
             const rawStudents = result.participants.map((p) => ({
@@ -122,10 +110,7 @@ export class ReportsService {
             }))
 
             const allMembers = await studentsRepository.getAllMembers({ includeHidden: true })
-            const reconciledIdentities = await this.identityReconciler.resolveIdentities(
-                rawStudents,
-                allMembers,
-            )
+            const reconciledIdentities = await this.identityReconciler.resolveIdentities(rawStudents, allMembers)
 
             // Add required fields for storage if new
             const studentsToSave: Member[] = reconciledIdentities.map(
@@ -133,13 +118,11 @@ export class ReportsService {
                     ({
                         ...s,
                         role: s.role || 'student',
-                    }) as Member,
+                    }) as Member
             )
 
             // Deduplicate by ID before saving
-            const uniqueStudentsToSave = Array.from(
-                new Map(studentsToSave.map((s) => [s.id, s])).values(),
-            )
+            const uniqueStudentsToSave = Array.from(new Map(studentsToSave.map((s) => [s.id, s])).values())
 
             // Bulk save students
             await studentsRepository.bulkPut(uniqueStudentsToSave)

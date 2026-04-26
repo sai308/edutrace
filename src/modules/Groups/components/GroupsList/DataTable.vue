@@ -1,11 +1,6 @@
 <script setup lang="ts">
 import type { EnrichedGroup } from '@Groups/types/groups'
-import type {
-    PaginationState,
-    RowSelectionState,
-    SortingState,
-    VisibilityState,
-} from '@tanstack/vue-table'
+import type { PaginationState, RowSelectionState, SortingState, VisibilityState } from '@tanstack/vue-table'
 import type { RowActionItem } from '@/shared/types/table'
 import {
     FlexRender,
@@ -26,14 +21,7 @@ import {
     ContextMenuSeparator,
     ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import DataTableEmptyState from '@/shared/components/DataTableEmptyState.vue'
 import DataTablePagination from '@/shared/components/DataTablePagination.vue'
 import DataTableViewOptions from '@/shared/components/DataTableViewOptions.vue'
@@ -56,16 +44,10 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const columns = createColumns(
-    props.rowActions ?? (() => []),
-    t,
-    (name) => props.memberCounts[name] ?? 0,
-)
+const columns = createColumns(props.rowActions ?? (() => []), t, (name) => props.memberCounts[name] ?? 0)
 
 const sorting = ref<SortingState>(
-    props.sortField
-        ? [{ id: props.sortField, desc: props.sortOrder === 'desc' }]
-        : [{ id: 'name', desc: false }],
+    props.sortField ? [{ id: props.sortField, desc: props.sortOrder === 'desc' }] : [{ id: 'name', desc: false }]
 )
 const rowSelection = ref<RowSelectionState>({})
 const globalFilter = ref(props.searchQuery ?? '')
@@ -112,7 +94,7 @@ const table = useVueTable({
 
 watch(
     () => props.searchQuery,
-    (q) => table.setGlobalFilter(q ?? ''),
+    (q) => table.setGlobalFilter(q ?? '')
 )
 
 watch(
@@ -121,7 +103,7 @@ watch(
         table.setColumnVisibility((prev) => ({ ...prev, select: !!enabled }))
         if (!enabled) table.toggleAllRowsSelected(false)
     },
-    { immediate: true },
+    { immediate: true }
 )
 
 // Emit sort changes so the parent can sync them to the URL
@@ -144,7 +126,7 @@ watch(
         if (!current || current.id !== field || current.desc !== newDesc) {
             sorting.value = [{ id: field, desc: newDesc }]
         }
-    },
+    }
 )
 
 defineExpose({ table })
@@ -157,13 +139,9 @@ defineExpose({ table })
             <DataTableViewOptions :table="table" />
         </div>
 
-        <div
-            class="rounded-md border bg-card overflow-auto max-h-[calc(100svh-20rem)] custom-scrollbar"
-        >
+        <div class="rounded-md border bg-card overflow-auto max-h-[calc(100svh-20rem)] custom-scrollbar">
             <Table class="min-w-[800px]">
-                <TableHeader
-                    class="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]"
-                >
+                <TableHeader class="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
                     <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
                         <TableHead
                             v-for="header in headerGroup.headers"
@@ -204,10 +182,7 @@ defineExpose({ table })
                                                 : ''
                                         "
                                     >
-                                        <FlexRender
-                                            :render="cell.column.columnDef.cell"
-                                            :props="cell.getContext()"
-                                        />
+                                        <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
                                     </TableCell>
                                 </TableRow>
                             </ContextMenuTrigger>

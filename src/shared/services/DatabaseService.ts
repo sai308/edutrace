@@ -28,9 +28,7 @@ class DatabaseService {
             }
 
             const workspaces = storage.get<Workspace[]>('edutrace_workspaces', []) || []
-            const workspace = Array.isArray(workspaces)
-                ? workspaces.find((w) => w.id === currentId)
-                : null
+            const workspace = Array.isArray(workspaces) ? workspaces.find((w) => w.id === currentId) : null
 
             if (workspace && workspace.dbName) {
                 this._currentDbName = workspace.dbName
@@ -63,15 +61,11 @@ class DatabaseService {
      * Initialize database schema
      * Note: 'transaction' is specifically a VersionChange transaction during upgrade
      */
-    private async initSchema(
+    async initSchema(
         db: IDBPDatabase<IDBCustomSchema>,
         oldVersion: number,
         _newVersion: number | null,
-        transaction: IDBPTransaction<
-            IDBCustomSchema,
-            StoreNames<IDBCustomSchema>[],
-            'versionchange'
-        >,
+        transaction: IDBPTransaction<IDBCustomSchema, StoreNames<IDBCustomSchema>[], 'versionchange'>
     ): Promise<void> {
         // --- Meets Store ---
         if (!db.objectStoreNames.contains('meets')) {
@@ -194,12 +188,9 @@ class DatabaseService {
             if (oldVersion < 9 && !store.indexNames.contains('createdAt')) {
                 store.createIndex('createdAt', 'createdAt', { unique: false })
             }
-            if (!store.indexNames.contains('groupName'))
-                store.createIndex('groupName', 'groupName', { unique: false })
-            if (!store.indexNames.contains('studentId'))
-                store.createIndex('studentId', 'studentId', { unique: false })
-            if (!store.indexNames.contains('taskId'))
-                store.createIndex('taskId', 'taskId', { unique: false })
+            if (!store.indexNames.contains('groupName')) store.createIndex('groupName', 'groupName', { unique: false })
+            if (!store.indexNames.contains('studentId')) store.createIndex('studentId', 'studentId', { unique: false })
+            if (!store.indexNames.contains('taskId')) store.createIndex('taskId', 'taskId', { unique: false })
             if (!store.indexNames.contains('task_student')) {
                 store.createIndex('task_student', ['taskId', 'studentId'], { unique: true })
             }
@@ -225,10 +216,8 @@ class DatabaseService {
             store.createIndex('groupName', 'groupName', { unique: false })
         } else if (oldVersion < 10) {
             const store = transaction.objectStore('modules')
-            if (!store.indexNames.contains('groupId'))
-                store.createIndex('groupId', 'groupId', { unique: false })
-            if (!store.indexNames.contains('groupName'))
-                store.createIndex('groupName', 'groupName', { unique: false })
+            if (!store.indexNames.contains('groupId')) store.createIndex('groupId', 'groupId', { unique: false })
+            if (!store.indexNames.contains('groupName')) store.createIndex('groupName', 'groupName', { unique: false })
         }
 
         // --- FinalAssessments Store ---

@@ -17,14 +17,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import {
     Stepper,
     StepperDescription,
@@ -123,7 +116,7 @@ watch(
             }
             searchQuery.value = ''
         }
-    },
+    }
 )
 
 function handleTaskToggle(taskId: string, checked: boolean | 'indeterminate') {
@@ -188,9 +181,7 @@ function handleSave() {
 
     const taskIds = [...formData.value.taskIds]
     const testTaskId =
-        formData.value.testTaskId && formData.value.testTaskId !== 'none'
-            ? formData.value.testTaskId
-            : null
+        formData.value.testTaskId && formData.value.testTaskId !== 'none' ? formData.value.testTaskId : null
 
     emit('save', {
         name: formData.value.name.trim(),
@@ -224,10 +215,7 @@ function handleClose() {
                     </DialogDescription>
                 </DialogHeader>
 
-                <Stepper
-                    v-model="stepIndex"
-                    class="flex w-full items-start gap-2 mb-8 shrink-0 px-1"
-                >
+                <Stepper v-model="stepIndex" class="flex w-full items-start gap-2 mb-8 shrink-0 px-1">
                     <StepperItem
                         v-for="step in steps"
                         :key="step.step"
@@ -236,20 +224,13 @@ function handleClose() {
                         :step="step.step"
                     >
                         <StepperSeparator
-                            v-if="
-                                steps[steps.length - 1] &&
-                                step.step !== steps[steps.length - 1]?.step
-                            "
+                            v-if="steps[steps.length - 1] && step.step !== steps[steps.length - 1]?.step"
                             class="absolute left-[calc(50%+20px)] right-[calc(-50%+10px)] top-5 block h-0.5 shrink-0 rounded-full bg-muted group-data-[state=completed]:bg-primary"
                         />
 
                         <StepperTrigger as-child>
                             <Button
-                                :variant="
-                                    state === 'completed' || state === 'active'
-                                        ? 'default'
-                                        : 'outline'
-                                "
+                                :variant="state === 'completed' || state === 'active' ? 'default' : 'outline'"
                                 size="icon"
                                 class="z-10 rounded-full shrink-0 transition-all data-[state=active]:ring-2 data-[state=active]:ring-ring data-[state=active]:ring-offset-2 data-[state=active]:ring-offset-background"
                             >
@@ -280,9 +261,7 @@ function handleClose() {
                 <div class="py-2 px-1 flex-1 overflow-y-auto overflow-x-hidden">
                     <!-- Step 1: Basic Details -->
                     <template v-if="stepIndex === 1">
-                        <div
-                            class="grid gap-4 animate-in fade-in slide-in-from-bottom-4 duration-300"
-                        >
+                        <div class="grid gap-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
                             <div class="grid gap-2">
                                 <Label for="name">{{ t('modules.dialog.nameLabel') }}</Label>
                                 <Input
@@ -326,13 +305,9 @@ function handleClose() {
                                             >
                                                 <Checkbox
                                                     :id="`task-${task.id}`"
-                                                    :model-value="
-                                                        formData.taskIds.includes(task.id)
-                                                    "
+                                                    :model-value="formData.taskIds.includes(task.id)"
                                                     class="mt-0.5"
-                                                    @update:model-value="
-                                                        (val) => handleTaskToggle(task.id, val)
-                                                    "
+                                                    @update:model-value="(val) => handleTaskToggle(task.id, val)"
                                                 />
                                                 <Label
                                                     :for="`task-${task.id}`"
@@ -361,16 +336,12 @@ function handleClose() {
 
                     <!-- Step 3: Test Task -->
                     <template v-if="stepIndex === 3">
-                        <div
-                            class="grid gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300"
-                        >
+                        <div class="grid gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
                             <div class="grid gap-2">
                                 <Label>{{ t('modules.dialog.selectTestTask') }}</Label>
                                 <Select v-model="formData.testTaskId">
                                     <SelectTrigger>
-                                        <SelectValue
-                                            :placeholder="t('modules.dialog.selectTestPlaceholder')"
-                                        />
+                                        <SelectValue :placeholder="t('modules.dialog.selectTestPlaceholder')" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectGroup>
@@ -396,22 +367,16 @@ function handleClose() {
 
                     <!-- Step 4: Grading -->
                     <template v-if="stepIndex === 4">
-                        <div
-                            class="grid gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300"
-                        >
+                        <div class="grid gap-6 animate-in fade-in slide-in-from-bottom-4 duration-300">
                             <!-- Coefficients Row -->
                             <TooltipProvider>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="grid gap-2">
                                         <div class="flex items-center gap-2">
-                                            <Label for="taskCoef">{{
-                                                t('modules.dialog.taskCoefLabel')
-                                            }}</Label>
+                                            <Label for="taskCoef">{{ t('modules.dialog.taskCoefLabel') }}</Label>
                                             <Tooltip>
                                                 <TooltipTrigger tabindex="-1">
-                                                    <HelpCircle
-                                                        class="h-4 w-4 text-muted-foreground"
-                                                    />
+                                                    <HelpCircle class="h-4 w-4 text-muted-foreground" />
                                                 </TooltipTrigger>
                                                 <TooltipContent>
                                                     <p>{{ t('modules.dialog.taskCoefHelp') }}</p>
@@ -428,14 +393,10 @@ function handleClose() {
                                     </div>
                                     <div class="grid gap-2">
                                         <div class="flex items-center gap-2">
-                                            <Label for="testCoef">{{
-                                                t('modules.dialog.testCoefLabel')
-                                            }}</Label>
+                                            <Label for="testCoef">{{ t('modules.dialog.testCoefLabel') }}</Label>
                                             <Tooltip>
                                                 <TooltipTrigger tabindex="-1">
-                                                    <HelpCircle
-                                                        class="h-4 w-4 text-muted-foreground"
-                                                    />
+                                                    <HelpCircle class="h-4 w-4 text-muted-foreground" />
                                                 </TooltipTrigger>
                                                 <TooltipContent>
                                                     <p>{{ t('modules.dialog.testCoefHelp') }}</p>
@@ -467,13 +428,10 @@ function handleClose() {
                                                 <div
                                                     class="w-1.5 h-1.5 rounded-full bg-primary shrink-0"
                                                     :class="{
-                                                        'bg-amber-500':
-                                                            formData.testTaskId === task.id,
+                                                        'bg-amber-500': formData.testTaskId === task.id,
                                                     }"
                                                 />
-                                                <div
-                                                    class="text-sm font-medium leading-none flex items-center"
-                                                >
+                                                <div class="text-sm font-medium leading-none flex items-center">
                                                     {{ task.name }}
                                                     <span
                                                         v-show="formData.testTaskId === task.id"
@@ -499,28 +457,16 @@ function handleClose() {
                 </div>
             </div>
 
-            <DialogFooter
-                class="flex sm:justify-between w-full mt-4 pt-4 flex-row items-center border-t shrink-0 px-1"
-            >
+            <DialogFooter class="flex sm:justify-between w-full mt-4 pt-4 flex-row items-center border-t shrink-0 px-1">
                 <Button type="button" variant="outline" class="mr-auto" @click="handleClose">
                     {{ t('modules.dialog.cancel') }}
                 </Button>
 
                 <div class="flex gap-2">
-                    <Button
-                        type="button"
-                        variant="ghost"
-                        :disabled="stepIndex === 1"
-                        @click="prevStep"
-                    >
+                    <Button type="button" variant="ghost" :disabled="stepIndex === 1" @click="prevStep">
                         {{ t('modules.dialog.previous') }}
                     </Button>
-                    <Button
-                        v-if="stepIndex < steps.length"
-                        type="button"
-                        :disabled="!canProceed"
-                        @click="nextStep"
-                    >
+                    <Button v-if="stepIndex < steps.length" type="button" :disabled="!canProceed" @click="nextStep">
                         {{ t('modules.dialog.next') }}
                     </Button>
                     <Button v-else type="submit" :disabled="!canProceed" @click="handleSave">

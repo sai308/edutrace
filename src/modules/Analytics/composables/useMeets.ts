@@ -13,10 +13,7 @@ const groupsMap = ref<Record<string, Group>>({})
 
 export function useMeets() {
     async function loadMeets(): Promise<void> {
-        const [allMeets, groupMap] = await Promise.all([
-            meetsRepository.getAllMeets(),
-            groupsRepository.getGroupMap(),
-        ])
+        const [allMeets, groupMap] = await Promise.all([meetsRepository.getAllMeets(), groupsRepository.getGroupMap()])
         meets.value = allMeets
         groupsMap.value = groupMap
     }

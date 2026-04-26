@@ -28,10 +28,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     (e: 'update:open', value: boolean): void
-    (
-        e: 'submit',
-        data: { name: string; icon: string; color?: string; copySettings?: boolean },
-    ): void
+    (e: 'submit', data: { name: string; icon: string; color?: string; copySettings?: boolean }): void
 }>()
 
 // --- State ---
@@ -67,9 +64,7 @@ const filteredIcons = computed(() => {
     if (!iconSearch.value) return allSelectionIcons
     const search = iconSearch.value.toLowerCase()
     return allSelectionIcons.filter(
-        (icon) =>
-            icon.toLowerCase().includes(search) ||
-            getIconTitle(icon).toLowerCase().includes(search),
+        (icon) => icon.toLowerCase().includes(search) || getIconTitle(icon).toLowerCase().includes(search)
     )
 })
 
@@ -92,7 +87,7 @@ watch(
             }
             iconSearch.value = ''
         }
-    },
+    }
 )
 
 function handleSubmit() {
@@ -112,11 +107,7 @@ function handleSubmit() {
         <DialogContent class="sm:max-w-[500px] h-[80vh] sm:h-auto flex flex-col">
             <DialogHeader>
                 <DialogTitle>
-                    {{
-                        mode === 'create'
-                            ? $t('workspace.create_modal_title')
-                            : $t('workspace.edit_modal_title')
-                    }}
+                    {{ mode === 'create' ? $t('workspace.create_modal_title') : $t('workspace.edit_modal_title') }}
                 </DialogTitle>
                 <DialogDescription>
                     {{
@@ -144,11 +135,7 @@ function handleSubmit() {
                         <Label>{{ $t('workspace.icon_label') }}</Label>
                         <div class="relative w-32">
                             <Search class="absolute left-2 top-1.5 h-3 w-3 text-muted-foreground" />
-                            <Input
-                                v-model="iconSearch"
-                                class="h-6 pl-7 text-xs"
-                                placeholder="Search..."
-                            />
+                            <Input v-model="iconSearch" class="h-6 pl-7 text-xs" placeholder="Search..." />
                         </div>
                     </div>
 
@@ -157,17 +144,13 @@ function handleSubmit() {
                             <div class="grid grid-cols-4 sm:grid-cols-6 gap-2">
                                 <!-- Always show Database if searching or if it's selected/default -->
                                 <Button
-                                    v-if="
-                                        !iconSearch || 'database'.includes(iconSearch.toLowerCase())
-                                    "
+                                    v-if="!iconSearch || 'database'.includes(iconSearch.toLowerCase())"
                                     variant="ghost"
                                     size="icon"
                                     class="h-10 w-10 hover:bg-muted transition-all duration-200"
                                     :style="{
                                         color:
-                                            selectedIcon === 'Database'
-                                                ? selectedColor || 'var(--primary)'
-                                                : undefined,
+                                            selectedIcon === 'Database' ? selectedColor || 'var(--primary)' : undefined,
                                         borderColor:
                                             selectedIcon === 'Database' && selectedColor
                                                 ? `${selectedColor}60`
@@ -181,8 +164,7 @@ function handleSubmit() {
                                     }"
                                     :class="{
                                         'border-2': selectedIcon === 'Database' && selectedColor,
-                                        'bg-primary/20':
-                                            selectedIcon === 'Database' && !selectedColor,
+                                        'bg-primary/20': selectedIcon === 'Database' && !selectedColor,
                                     }"
                                     title="Database"
                                     @click="selectedIcon = 'Database'"
@@ -198,9 +180,7 @@ function handleSubmit() {
                                     class="h-10 w-10 hover:bg-muted transition-all duration-200"
                                     :style="{
                                         color:
-                                            selectedIcon === iconName
-                                                ? selectedColor || 'var(--primary)'
-                                                : undefined,
+                                            selectedIcon === iconName ? selectedColor || 'var(--primary)' : undefined,
                                         borderColor:
                                             selectedIcon === iconName && selectedColor
                                                 ? `${selectedColor}60`
@@ -214,25 +194,19 @@ function handleSubmit() {
                                     }"
                                     :class="{
                                         'border-2': selectedIcon === iconName && selectedColor,
-                                        'bg-primary/20':
-                                            selectedIcon === iconName && !selectedColor,
+                                        'bg-primary/20': selectedIcon === iconName && !selectedColor,
                                     }"
                                     :title="getIconTitle(iconName)"
                                     @click="selectedIcon = iconName"
                                 >
                                     <component
-                                        :is="
-                                            LucideIcons[iconName as keyof typeof LucideIcons] as any
-                                        "
+                                        :is="LucideIcons[iconName as keyof typeof LucideIcons] as any"
                                         class="size-5"
                                     />
                                 </Button>
                             </div>
                             <div
-                                v-if="
-                                    filteredIcons.length === 0 &&
-                                    !'database'.includes(iconSearch.toLowerCase())
-                                "
+                                v-if="filteredIcons.length === 0 && !'database'.includes(iconSearch.toLowerCase())"
                                 class="py-8 text-center text-xs text-muted-foreground"
                             >
                                 No icons found.
@@ -276,9 +250,7 @@ function handleSubmit() {
                     v-if="mode === 'edit' && workspaceData?.dbName"
                     class="rounded-md border border-dashed p-3 bg-muted/20 space-y-1.5"
                 >
-                    <p class="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        Storage Info
-                    </p>
+                    <p class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Storage Info</p>
                     <div class="flex items-center gap-2">
                         <span class="text-xs text-muted-foreground">DB Name:</span>
                         <code class="text-xs font-mono bg-muted px-1.5 py-0.5 rounded select-all">{{
@@ -314,11 +286,7 @@ function handleSubmit() {
                     </Button>
                 </DialogClose>
                 <Button :disabled="!name.trim()" @click="handleSubmit">
-                    {{
-                        mode === 'create'
-                            ? $t('workspace.create_button')
-                            : $t('workspace.update_button')
-                    }}
+                    {{ mode === 'create' ? $t('workspace.create_button') : $t('workspace.update_button') }}
                 </Button>
             </DialogFooter>
         </DialogContent>

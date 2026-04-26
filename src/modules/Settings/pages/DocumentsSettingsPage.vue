@@ -30,22 +30,10 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { NumberInput } from '@/components/ui/custom/number-input'
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { generateTemplateBlob } from '@/modules/Sessions/services/templateGenerator'
@@ -104,12 +92,7 @@ const showPreviewDialog = ref(false)
 const previewBlob = ref<Blob | null>(null)
 
 onMounted(async () => {
-    await Promise.all([
-        loadStats(),
-        loadPrintSettings(),
-        loadTeacherSuggestions(),
-        loadTemplateStatus(),
-    ])
+    await Promise.all([loadStats(), loadPrintSettings(), loadTeacherSuggestions(), loadTemplateStatus()])
 })
 
 async function loadTemplateStatus() {
@@ -153,24 +136,19 @@ async function loadPrintSettings() {
 function updateAcademicYear() {
     const today = new Date()
     const year = today.getFullYear()
-    printSettings.value.academicYear =
-        today.getMonth() >= 8 ? `${year}/${year + 1}` : `${year - 1}/${year}`
+    printSettings.value.academicYear = today.getMonth() >= 8 ? `${year}/${year + 1}` : `${year - 1}/${year}`
 }
 
 const filteredExaminerSuggestions = computed(() => {
     const text = printSettings.value.examiner || ''
     if (!text) return teacherSuggestions.value.slice(0, 8)
-    return teacherSuggestions.value
-        .filter((t) => t.toLowerCase().includes(text.toLowerCase()))
-        .slice(0, 8)
+    return teacherSuggestions.value.filter((t) => t.toLowerCase().includes(text.toLowerCase())).slice(0, 8)
 })
 
 const filteredPracticalSuggestions = computed(() => {
     const text = printSettings.value.practicalTeacher || ''
     if (!text) return teacherSuggestions.value.slice(0, 8)
-    return teacherSuggestions.value
-        .filter((t) => t.toLowerCase().includes(text.toLowerCase()))
-        .slice(0, 8)
+    return teacherSuggestions.value.filter((t) => t.toLowerCase().includes(text.toLowerCase())).slice(0, 8)
 })
 
 function hideSuggestions() {
@@ -241,9 +219,7 @@ async function previewTemplate() {
         previewBlob.value = file
         showPreviewDialog.value = true
     } catch {
-        toast.error(
-            t('documents.settings.print.templatePreviewFail', 'Failed to load template preview'),
-        )
+        toast.error(t('documents.settings.print.templatePreviewFail', 'Failed to load template preview'))
     }
 }
 
@@ -386,10 +362,7 @@ async function handleDeletePlans() {
                             >
                                 <HardDriveDownload class="w-6 h-6" />
                                 <span>{{ $t('documents.settings.sessions.export') }}</span>
-                                <span
-                                    v-if="sessionsCount > 0"
-                                    class="text-xs text-muted-foreground"
-                                >
+                                <span v-if="sessionsCount > 0" class="text-xs text-muted-foreground">
                                     {{ sessionsCount }}
                                     {{ $t('organization.settings.recordsUnit') }} ({{
                                         (sessionsSize / 1024).toFixed(1)
@@ -419,9 +392,7 @@ async function handleDeletePlans() {
                         <div class="space-y-3">
                             <div class="flex items-center gap-2">
                                 <Database class="w-4 h-4 text-muted-foreground" />
-                                <span class="text-sm font-medium">{{
-                                    $t('documents.settings.storageTitle')
-                                }}</span>
+                                <span class="text-sm font-medium">{{ $t('documents.settings.storageTitle') }}</span>
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger as-child>
@@ -462,9 +433,7 @@ async function handleDeletePlans() {
                                         <span class="text-xs text-muted-foreground">{{
                                             $t('organization.settings.recordsLabel')
                                         }}</span>
-                                        <span class="font-medium tabular-nums">{{
-                                            sessionsCount
-                                        }}</span>
+                                        <span class="font-medium tabular-nums">{{ sessionsCount }}</span>
                                     </div>
                                 </div>
                                 <Button
@@ -504,9 +473,7 @@ async function handleDeletePlans() {
                                 <span>{{ $t('documents.settings.plans.export') }}</span>
                                 <span v-if="plansCount > 0" class="text-xs text-muted-foreground">
                                     {{ plansCount }}
-                                    {{ $t('organization.settings.recordsUnit') }} ({{
-                                        (plansSize / 1024).toFixed(1)
-                                    }}
+                                    {{ $t('organization.settings.recordsUnit') }} ({{ (plansSize / 1024).toFixed(1) }}
                                     KB)
                                 </span>
                             </Button>
@@ -532,9 +499,7 @@ async function handleDeletePlans() {
                         <div class="space-y-3">
                             <div class="flex items-center gap-2">
                                 <Database class="w-4 h-4 text-muted-foreground" />
-                                <span class="text-sm font-medium">{{
-                                    $t('documents.settings.storageTitle')
-                                }}</span>
+                                <span class="text-sm font-medium">{{ $t('documents.settings.storageTitle') }}</span>
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger as-child>
@@ -575,9 +540,7 @@ async function handleDeletePlans() {
                                         <span class="text-xs text-muted-foreground">{{
                                             $t('organization.settings.recordsLabel')
                                         }}</span>
-                                        <span class="font-medium tabular-nums">{{
-                                            plansCount
-                                        }}</span>
+                                        <span class="font-medium tabular-nums">{{ plansCount }}</span>
                                     </div>
                                 </div>
                                 <Button
@@ -614,11 +577,7 @@ async function handleDeletePlans() {
                                 <Label for="subject" class="text-sm font-semibold">{{
                                     $t('documents.settings.print.subject')
                                 }}</Label>
-                                <Input
-                                    id="subject"
-                                    v-model="printSettings.subject"
-                                    class="bg-background/50"
-                                />
+                                <Input id="subject" v-model="printSettings.subject" class="bg-background/50" />
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
@@ -627,28 +586,18 @@ async function handleDeletePlans() {
                                         $t('documents.settings.print.formOfControl')
                                     }}</Label>
                                     <Select v-model="printSettings.formOfControl">
-                                        <SelectTrigger
-                                            class="w-full bg-background/50 min-w-[120px]"
-                                        >
+                                        <SelectTrigger class="w-full bg-background/50 min-w-[120px]">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem
-                                                :value="$t('sessions.printDialog.forms.exam')"
-                                            >
+                                            <SelectItem :value="$t('sessions.printDialog.forms.exam')">
                                                 {{ $t('sessions.printDialog.forms.exam') }}
                                             </SelectItem>
-                                            <SelectItem
-                                                :value="$t('sessions.printDialog.forms.credit')"
-                                            >
+                                            <SelectItem :value="$t('sessions.printDialog.forms.credit')">
                                                 {{ $t('sessions.printDialog.forms.credit') }}
                                             </SelectItem>
-                                            <SelectItem
-                                                :value="$t('sessions.printDialog.forms.diffCredit')"
-                                            >
-                                                {{
-                                                    $t('sessions.printDialog.forms.diffCreditShort')
-                                                }}
+                                            <SelectItem :value="$t('sessions.printDialog.forms.diffCredit')">
+                                                {{ $t('sessions.printDialog.forms.diffCreditShort') }}
                                             </SelectItem>
                                         </SelectContent>
                                     </Select>
@@ -658,21 +607,14 @@ async function handleDeletePlans() {
                                         $t('documents.settings.print.semester')
                                     }}</Label>
                                     <Select v-model="printSettings.semester">
-                                        <SelectTrigger
-                                            class="w-full bg-background/50 min-w-[140px]"
-                                        >
+                                        <SelectTrigger class="w-full bg-background/50 min-w-[140px]">
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem
-                                                v-for="s in 8"
-                                                :key="s"
-                                                :value="s.toString()"
-                                            >
+                                            <SelectItem v-for="s in 8" :key="s" :value="s.toString()">
                                                 {{ s }}
                                                 {{ $t('documents.settings.print.semesterSuffix') }}
-                                                ({{ Math.ceil(s / 2) }}
-                                                {{ $t('documents.settings.print.courseUnit') }})
+                                                ({{ Math.ceil(s / 2) }} {{ $t('documents.settings.print.courseUnit') }})
                                             </SelectItem>
                                         </SelectContent>
                                     </Select>
@@ -704,10 +646,7 @@ async function handleDeletePlans() {
                                         @blur="hideSuggestions"
                                     />
                                     <div
-                                        v-if="
-                                            showExaminerSuggestions &&
-                                            filteredExaminerSuggestions.length > 0
-                                        "
+                                        v-if="showExaminerSuggestions && filteredExaminerSuggestions.length > 0"
                                         class="absolute z-50 top-full left-0 right-0 mt-1 bg-popover border rounded-md shadow-md max-h-40 overflow-y-auto"
                                     >
                                         <button
@@ -735,10 +674,7 @@ async function handleDeletePlans() {
                                         @blur="hideSuggestions"
                                     />
                                     <div
-                                        v-if="
-                                            showPracticalSuggestions &&
-                                            filteredPracticalSuggestions.length > 0
-                                        "
+                                        v-if="showPracticalSuggestions && filteredPracticalSuggestions.length > 0"
                                         class="absolute z-50 top-full left-0 right-0 mt-1 bg-popover border rounded-md shadow-md max-h-40 overflow-y-auto"
                                     >
                                         <button
@@ -795,9 +731,7 @@ async function handleDeletePlans() {
                                 </Button>
                             </div>
 
-                            <div
-                                class="flex items-center justify-between rounded-lg border px-4 py-3 bg-muted/30"
-                            >
+                            <div class="flex items-center justify-between rounded-lg border px-4 py-3 bg-muted/30">
                                 <div class="flex items-center gap-3">
                                     <div
                                         class="p-2 rounded-full"
@@ -813,9 +747,7 @@ async function handleDeletePlans() {
                                         <span class="text-sm font-medium">
                                             {{
                                                 hasCustomTemplate
-                                                    ? $t(
-                                                          'documents.settings.print.templateUploaded',
-                                                      )
+                                                    ? $t('documents.settings.print.templateUploaded')
                                                     : $t('documents.settings.print.templateDefault')
                                             }}
                                         </span>
@@ -850,10 +782,7 @@ async function handleDeletePlans() {
                                     >
                                         <Eye class="w-3.5 h-3.5" />
                                         <span class="hidden sm:inline">{{
-                                            $t(
-                                                'documents.settings.print.previewTemplate',
-                                                'Preview',
-                                            )
+                                            $t('documents.settings.print.previewTemplate', 'Preview')
                                         }}</span>
                                     </Button>
                                     <Button
@@ -874,11 +803,7 @@ async function handleDeletePlans() {
 
                         <Separator class="my-4 opacity-50" />
 
-                        <Button
-                            class="w-full gap-2 mt-4"
-                            :disabled="isSavingPrint"
-                            @click="savePrintSettings"
-                        >
+                        <Button class="w-full gap-2 mt-4" :disabled="isSavingPrint" @click="savePrintSettings">
                             <Save class="w-4 h-4" />
                             {{ $t('documents.settings.print.save') }}
                         </Button>
@@ -908,11 +833,7 @@ async function handleDeletePlans() {
                     class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     @click.prevent="handleDeleteSessions"
                 >
-                    {{
-                        isDeletingSessions
-                            ? '...'
-                            : $t('documents.settings.sessions.deleteConfirmBtn')
-                    }}
+                    {{ isDeletingSessions ? '...' : $t('documents.settings.sessions.deleteConfirmBtn') }}
                 </AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>

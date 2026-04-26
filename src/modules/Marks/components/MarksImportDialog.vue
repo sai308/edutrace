@@ -26,13 +26,7 @@ import {
     DialogTitle,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import DropZone from '@/shared/components/DropZone.vue'
 import { toast } from '@/shared/services/toast'
 import { useMarksFileQueue } from '../composables/useMarksFileQueue'
@@ -173,10 +167,7 @@ function confirmPick() {
             />
 
             <!-- File queue: processed history + pending -->
-            <div
-                v-if="processedItems.length > 0 || fileQueue.length > 0"
-                class="space-y-1 max-h-56 overflow-y-auto"
-            >
+            <div v-if="processedItems.length > 0 || fileQueue.length > 0" class="space-y-1 max-h-56 overflow-y-auto">
                 <!-- Processed items (history, in order of completion) -->
                 <div
                     v-for="(item, index) in processedItems"
@@ -189,18 +180,9 @@ function confirmPick() {
                         'bg-muted/20': item.status === 'skipped',
                     }"
                 >
-                    <Loader2
-                        v-if="item.status === 'processing'"
-                        class="w-4 h-4 animate-spin text-primary shrink-0"
-                    />
-                    <CheckCircle2
-                        v-else-if="item.status === 'done'"
-                        class="w-4 h-4 text-green-500 shrink-0"
-                    />
-                    <XCircle
-                        v-else-if="item.status === 'error'"
-                        class="w-4 h-4 text-destructive shrink-0"
-                    />
+                    <Loader2 v-if="item.status === 'processing'" class="w-4 h-4 animate-spin text-primary shrink-0" />
+                    <CheckCircle2 v-else-if="item.status === 'done'" class="w-4 h-4 text-green-500 shrink-0" />
+                    <XCircle v-else-if="item.status === 'error'" class="w-4 h-4 text-destructive shrink-0" />
                     <MinusCircle v-else class="w-4 h-4 text-muted-foreground shrink-0" />
 
                     <span class="flex-1 truncate font-mono text-xs">{{ item.file.name }}</span>
@@ -210,10 +192,7 @@ function confirmPick() {
                 </div>
 
                 <!-- Separator shown only when both sections have items -->
-                <div
-                    v-if="processedItems.length > 0 && fileQueue.length > 0"
-                    class="flex items-center gap-2 py-0.5"
-                >
+                <div v-if="processedItems.length > 0 && fileQueue.length > 0" class="flex items-center gap-2 py-0.5">
                     <div class="flex-1 border-t border-dashed border-border" />
                     <span class="text-xs text-muted-foreground shrink-0 select-none">{{
                         $t('marks.importModal.pendingLabel')
@@ -241,17 +220,10 @@ function confirmPick() {
                 class="flex items-center justify-between pt-1"
             >
                 <p class="text-xs text-muted-foreground">
-                    <span v-if="isQueueProcessing">{{
-                        $t('marks.importModal.processingHint')
-                    }}</span>
+                    <span v-if="isQueueProcessing">{{ $t('marks.importModal.processingHint') }}</span>
                     <span v-else>{{ $t('marks.importModal.doneHint') }}</span>
                 </p>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    :disabled="isQueueProcessing"
-                    @click="handleClose"
-                >
+                <Button variant="outline" size="sm" :disabled="isQueueProcessing" @click="handleClose">
                     {{ $t('marks.importModal.close') }}
                 </Button>
             </div>

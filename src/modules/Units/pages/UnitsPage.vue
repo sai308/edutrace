@@ -25,8 +25,7 @@ import DataTableViewOptions from '@/shared/components/DataTableViewOptions.vue'
 import EmptyState from '@/shared/components/EmptyState.vue'
 
 const { t } = useI18n()
-const { units, availableTasks, loadData, saveUnit, deleteUnit, bulkDeleteUnits, saveOrder } =
-    useUnits()
+const { units, availableTasks, loadData, saveUnit, deleteUnit, bulkDeleteUnits, saveOrder } = useUnits()
 
 const searchQuery = ref('')
 const bulkMode = ref(false)
@@ -102,9 +101,7 @@ function getUnitActions(unit: Unit): RowActionItem[] {
 </script>
 
 <template>
-    <div
-        class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500"
-    >
+    <div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <!-- Zone 1: Page header -->
         <div class="flex flex-row items-start sm:items-center justify-between gap-4">
             <div class="min-w-0">
@@ -138,9 +135,7 @@ function getUnitActions(unit: Unit): RowActionItem[] {
                     <div class="flex flex-col gap-2 sm:hidden">
                         <!-- Row 1: full-width search -->
                         <div class="relative">
-                            <Search
-                                class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
-                            />
+                            <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                                 v-model="searchQuery"
                                 :placeholder="t('modules.list.filterPlaceholder')"
@@ -150,9 +145,7 @@ function getUnitActions(unit: Unit): RowActionItem[] {
                         <!-- Row 2: bulk (left) | reorder + columns (right) -->
                         <div class="flex items-center gap-2">
                             <Button
-                                v-if="
-                                    bulkMode && table.getFilteredSelectedRowModel().rows.length > 0
-                                "
+                                v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
                                 variant="destructive"
                                 size="sm"
                                 class="h-9 gap-2"
@@ -164,13 +157,8 @@ function getUnitActions(unit: Unit): RowActionItem[] {
                                 </Badge>
                             </Button>
                             <div v-else class="flex items-center gap-2 h-9">
-                                <Switch
-                                    :model-value="bulkMode"
-                                    @update:model-value="bulkMode = $event"
-                                />
-                                <span class="text-sm text-muted-foreground select-none">{{
-                                    t('common.bulk')
-                                }}</span>
+                                <Switch :model-value="bulkMode" @update:model-value="bulkMode = $event" />
+                                <span class="text-sm text-muted-foreground select-none">{{ t('common.bulk') }}</span>
                             </div>
                             <div class="flex items-center gap-2 ml-auto">
                                 <Button
@@ -191,9 +179,7 @@ function getUnitActions(unit: Unit): RowActionItem[] {
                         <!-- Left: search → bulk switch → bulk delete -->
                         <div class="flex items-center gap-3 flex-1 min-w-0">
                             <div class="relative max-w-xs flex-1">
-                                <Search
-                                    class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
-                                />
+                                <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input
                                     v-model="searchQuery"
                                     :placeholder="t('modules.list.filterPlaceholder')"
@@ -201,18 +187,11 @@ function getUnitActions(unit: Unit): RowActionItem[] {
                                 />
                             </div>
                             <div class="flex items-center gap-2 shrink-0">
-                                <Switch
-                                    :model-value="bulkMode"
-                                    @update:model-value="bulkMode = $event"
-                                />
-                                <span class="text-sm text-muted-foreground select-none">{{
-                                    t('common.bulk')
-                                }}</span>
+                                <Switch :model-value="bulkMode" @update:model-value="bulkMode = $event" />
+                                <span class="text-sm text-muted-foreground select-none">{{ t('common.bulk') }}</span>
                             </div>
                             <Button
-                                v-if="
-                                    bulkMode && table.getFilteredSelectedRowModel().rows.length > 0
-                                "
+                                v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
                                 variant="destructive"
                                 size="sm"
                                 class="h-8 gap-2 shrink-0"
@@ -234,11 +213,7 @@ function getUnitActions(unit: Unit): RowActionItem[] {
                                 @click="toggleReordering"
                             >
                                 <ArrowUpDown class="mr-2 h-4 w-4" />
-                                {{
-                                    isReordering
-                                        ? t('modules.list.saveOrder')
-                                        : t('modules.list.reorder')
-                                }}
+                                {{ isReordering ? t('modules.list.saveOrder') : t('modules.list.reorder') }}
                             </Button>
                             <DataTableViewOptions :table="table" />
                         </div>
@@ -273,11 +248,7 @@ function getUnitActions(unit: Unit): RowActionItem[] {
                 <AlertDialogHeader>
                     <AlertDialogTitle>{{ t('modules.alerts.deleteTitle') }}</AlertDialogTitle>
                     <AlertDialogDescription>
-                        {{
-                            unitToDelete
-                                ? t('modules.alerts.deleteDesc', { name: unitToDelete.name })
-                                : ''
-                        }}
+                        {{ unitToDelete ? t('modules.alerts.deleteDesc', { name: unitToDelete.name }) : '' }}
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

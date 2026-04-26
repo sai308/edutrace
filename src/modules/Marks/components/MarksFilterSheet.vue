@@ -7,14 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetFooter,
-    SheetHeader,
-    SheetTitle,
-} from '@/components/ui/sheet'
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 
 export interface MarksFilters {
     synced: 'all' | 'unsynced'
@@ -50,7 +43,7 @@ watch(
                 localFilters.value.hideFailed = true
             }
         }
-    },
+    }
 )
 
 function handleOpenUpdate(val: boolean) {
@@ -85,9 +78,7 @@ function clear() {
                 <div class="grid grid-cols-2 gap-4">
                     <!-- Synced Status -->
                     <div class="space-y-3">
-                        <Label class="text-base font-semibold">{{
-                            t('marks.filterModal.status')
-                        }}</Label>
+                        <Label class="text-base font-semibold">{{ t('marks.filterModal.status') }}</Label>
                         <RadioGroup v-model="localFilters.synced" class="flex flex-col gap-2">
                             <div class="flex items-center space-x-2">
                                 <RadioGroupItem id="synced-all" value="all" />
@@ -97,24 +88,18 @@ function clear() {
                             </div>
                             <div class="flex items-center space-x-2">
                                 <RadioGroupItem id="synced-unsynced" value="unsynced" />
-                                <Label
-                                    html-for="synced-unsynced"
-                                    class="font-normal cursor-pointer"
-                                    >{{ t('marks.filterModal.unsynced') }}</Label
-                                >
+                                <Label html-for="synced-unsynced" class="font-normal cursor-pointer">{{
+                                    t('marks.filterModal.unsynced')
+                                }}</Label>
                             </div>
                         </RadioGroup>
                     </div>
 
                     <!-- Date From -->
                     <div class="space-y-3">
-                        <Label class="text-base font-semibold">{{
-                            t('marks.filterModal.dateFrom')
-                        }}</Label>
+                        <Label class="text-base font-semibold">{{ t('marks.filterModal.dateFrom') }}</Label>
                         <div class="relative">
-                            <Calendar
-                                class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground"
-                            />
+                            <Calendar class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                             <Input v-model="localFilters.dateFrom" type="date" class="pl-9" />
                         </div>
                     </div>

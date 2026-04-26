@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import type {
-    PaginationState,
-    RowSelectionState,
-    SortingState,
-    VisibilityState,
-} from '@tanstack/vue-table'
+import type { PaginationState, RowSelectionState, SortingState, VisibilityState } from '@tanstack/vue-table'
 import type { Task } from '@Tasks/types/tasks'
 import type { RowActionItem } from '@/shared/types/table'
 import {
@@ -26,14 +21,7 @@ import {
     ContextMenuSeparator,
     ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import DataTableEmptyState from '@/shared/components/DataTableEmptyState.vue'
 import DataTablePagination from '@/shared/components/DataTablePagination.vue'
 import { useFormatters } from '@/shared/composables/useFormatters'
@@ -89,7 +77,7 @@ const table = useVueTable({
 watch(
     () => props.searchQuery,
     (q) => table.setGlobalFilter(q ?? ''),
-    { immediate: true },
+    { immediate: true }
 )
 
 watch(
@@ -98,7 +86,7 @@ watch(
         table.setColumnVisibility((prev) => ({ ...prev, select: !!enabled }))
         if (!enabled) table.toggleAllRowsSelected(false)
     },
-    { immediate: true },
+    { immediate: true }
 )
 
 defineExpose({ table })
@@ -108,13 +96,9 @@ defineExpose({ table })
     <div class="space-y-2">
         <slot name="toolbar" :table="table" />
 
-        <div
-            class="rounded-md border bg-card overflow-auto max-h-[calc(100svh-20rem)] custom-scrollbar"
-        >
+        <div class="rounded-md border bg-card overflow-auto max-h-[calc(100svh-20rem)] custom-scrollbar">
             <Table>
-                <TableHeader
-                    class="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]"
-                >
+                <TableHeader class="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
                     <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
                         <TableHead
                             v-for="header in headerGroup.headers"
@@ -133,14 +117,9 @@ defineExpose({ table })
                     <template v-if="table.getRowModel().rows.length">
                         <ContextMenu v-for="row in table.getRowModel().rows" :key="row.id">
                             <ContextMenuTrigger as-child>
-                                <TableRow
-                                    :data-state="row.getIsSelected() ? 'selected' : undefined"
-                                >
+                                <TableRow :data-state="row.getIsSelected() ? 'selected' : undefined">
                                     <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-                                        <FlexRender
-                                            :render="cell.column.columnDef.cell"
-                                            :props="cell.getContext()"
-                                        />
+                                        <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
                                     </TableCell>
                                 </TableRow>
                             </ContextMenuTrigger>

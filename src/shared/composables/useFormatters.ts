@@ -30,7 +30,7 @@ export function useFormatters() {
 
     function formatDate(
         dateStr: string | number | Date | null | undefined,
-        options: Intl.DateTimeFormatOptions = {},
+        options: Intl.DateTimeFormatOptions = {}
     ): string {
         if (!dateStr) return '-'
         try {
@@ -51,7 +51,7 @@ export function useFormatters() {
 
     function formatDateTime(
         dateStr: string | number | Date | null | undefined,
-        options: Intl.DateTimeFormatOptions = {},
+        options: Intl.DateTimeFormatOptions = {}
     ): string {
         if (!dateStr) return '-'
         try {
@@ -70,7 +70,7 @@ export function useFormatters() {
 
     function formatTime(
         dateStr: string | number | Date | null | undefined,
-        options: Intl.DateTimeFormatOptions = {},
+        options: Intl.DateTimeFormatOptions = {}
     ): string {
         if (!dateStr) return '-'
         try {

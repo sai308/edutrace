@@ -16,7 +16,7 @@ describe('unitsRepository', () => {
                     testTaskId: null,
                     taskCoef: 1,
                     testCoef: 1,
-                }),
+                })
             ).rejects.toThrow('Unit name is required')
         })
 
@@ -29,7 +29,7 @@ describe('unitsRepository', () => {
                     testTaskId: null,
                     taskCoef: 1,
                     testCoef: 1,
-                }),
+                })
             ).rejects.toThrow('Unit name is required')
         })
 
@@ -42,7 +42,7 @@ describe('unitsRepository', () => {
                     testTaskId: null,
                     taskCoef: 1,
                     testCoef: 1,
-                }),
+                })
             ).rejects.toThrow('Unit normalizedName is required')
         })
 
@@ -62,9 +62,7 @@ describe('unitsRepository', () => {
         })
 
         it('calls add and assigns ordinal when unit has no id', async () => {
-            const getNextOrdinalSpy = vi
-                .spyOn(unitsRepository, 'getNextOrdinal')
-                .mockResolvedValue(3)
+            const getNextOrdinalSpy = vi.spyOn(unitsRepository, 'getNextOrdinal').mockResolvedValue(3)
             const addSpy = vi.spyOn(unitsRepository, 'add').mockResolvedValue(3 as any)
             const unit = {
                 name: 'New Module',
@@ -129,9 +127,7 @@ describe('unitsRepository', () => {
             const result = await unitsRepository.getAllUnits()
 
             expect(result).toHaveLength(2)
-            expect(result.map((u) => u.name)).toEqual(
-                expect.arrayContaining(['Unit Alpha', 'Unit Beta']),
-            )
+            expect(result.map((u) => u.name)).toEqual(expect.arrayContaining(['Unit Alpha', 'Unit Beta']))
         })
 
         it('includes all unit fields in the result', async () => {
@@ -296,9 +292,7 @@ describe('unitsRepository', () => {
         })
 
         it('does not throw when given ids that do not exist', async () => {
-            await expect(
-                unitsRepository.updateOrdinals([{ id: 9999, ordinal: 1 }]),
-            ).resolves.not.toThrow()
+            await expect(unitsRepository.updateOrdinals([{ id: 9999, ordinal: 1 }])).resolves.not.toThrow()
         })
 
         it('preserves other fields when updating ordinal', async () => {

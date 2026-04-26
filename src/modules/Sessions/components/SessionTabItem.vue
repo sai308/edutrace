@@ -68,7 +68,7 @@ watch(
     () => props.session.id,
     () => {
         printFormData.value = null
-    },
+    }
 )
 
 function handlePrintClick() {
@@ -96,7 +96,7 @@ async function handleDocxDownload(formData: PrintFormData) {
         const { blob, filename } = await sessionDocumentService.generateDocument(
             props.session,
             props.group ?? null,
-            formData,
+            formData
         )
         downloadBlob(blob, filename)
         toast.success(t('sessions.document.downloadSuccess'))
@@ -138,9 +138,7 @@ async function handleConfirmClose() {
 <template>
     <div class="flex flex-col space-y-4 h-full min-h-0">
         <!-- Status Bar -->
-        <div
-            class="flex flex-col lg:flex-row lg:items-center justify-between p-4 bg-muted/50 rounded-lg border gap-4"
-        >
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between p-4 bg-muted/50 rounded-lg border gap-4">
             <div class="space-y-1 shrink-0 text-center lg:text-left">
                 <div class="flex items-center justify-center lg:justify-start gap-2">
                     <span class="font-medium">{{ $t('sessions.status.label') }}</span>
@@ -151,10 +149,7 @@ async function handleConfirmClose() {
                 <div class="text-xs sm:text-sm text-muted-foreground text-balance">
                     {{ $t('sessions.status.openedAt') }} {{ formatDateTime(session.openedAt) }}
                 </div>
-                <div
-                    v-if="isClosed && session.closedAt"
-                    class="text-xs sm:text-sm text-muted-foreground text-balance"
-                >
+                <div v-if="isClosed && session.closedAt" class="text-xs sm:text-sm text-muted-foreground text-balance">
                     {{ $t('sessions.status.closedAt') }} {{ formatDateTime(session.closedAt) }}
                 </div>
             </div>
@@ -166,66 +161,45 @@ async function handleConfirmClose() {
                 >
                     <div class="flex flex-col items-center">
                         <span class="font-bold text-green-600 dark:text-green-400">A</span
-                        ><span :class="stats.A === 0 ? 'opacity-30' : 'font-medium'">{{
-                            stats.A
-                        }}</span>
+                        ><span :class="stats.A === 0 ? 'opacity-30' : 'font-medium'">{{ stats.A }}</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <span class="font-semibold text-emerald-500 dark:text-emerald-400">B</span
-                        ><span :class="stats.B === 0 ? 'opacity-30' : 'font-medium'">{{
-                            stats.B
-                        }}</span>
+                        ><span :class="stats.B === 0 ? 'opacity-30' : 'font-medium'">{{ stats.B }}</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <span class="font-semibold text-yellow-600 dark:text-yellow-500">C</span
-                        ><span :class="stats.C === 0 ? 'opacity-30' : 'font-medium'">{{
-                            stats.C
-                        }}</span>
+                        ><span :class="stats.C === 0 ? 'opacity-30' : 'font-medium'">{{ stats.C }}</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <span class="font-medium text-orange-500 dark:text-orange-400">D</span
-                        ><span :class="stats.D === 0 ? 'opacity-30' : 'font-medium'">{{
-                            stats.D
-                        }}</span>
+                        ><span :class="stats.D === 0 ? 'opacity-30' : 'font-medium'">{{ stats.D }}</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <span class="font-medium text-orange-600 dark:text-orange-500">E</span
-                        ><span :class="stats.E === 0 ? 'opacity-30' : 'font-medium'">{{
-                            stats.E
-                        }}</span>
+                        ><span :class="stats.E === 0 ? 'opacity-30' : 'font-medium'">{{ stats.E }}</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <span class="font-bold text-red-500 dark:text-red-400">FX</span
-                        ><span :class="stats.FX === 0 ? 'opacity-30' : 'font-medium'">{{
-                            stats.FX
-                        }}</span>
+                        ><span :class="stats.FX === 0 ? 'opacity-30' : 'font-medium'">{{ stats.FX }}</span>
                     </div>
                     <div class="flex flex-col items-center">
                         <span class="font-bold text-red-600 dark:text-red-500">F</span
-                        ><span :class="stats.F === 0 ? 'opacity-30' : 'font-medium'">{{
-                            stats.F
-                        }}</span>
+                        ><span :class="stats.F === 0 ? 'opacity-30' : 'font-medium'">{{ stats.F }}</span>
                     </div>
 
                     <div class="w-px h-6 bg-border mx-1" />
 
                     <div class="flex flex-col items-center">
-                        <span
-                            class="text-muted-foreground flex items-center gap-1 text-[10px] sm:text-xs"
-                        >
+                        <span class="text-muted-foreground flex items-center gap-1 text-[10px] sm:text-xs">
                             <UserX class="w-3 h-3 opacity-60" /> {{ $t('sessions.grades.absent') }}
                         </span>
-                        <span :class="stats.absent === 0 ? 'opacity-30' : 'font-medium'">{{
-                            stats.absent
-                        }}</span>
+                        <span :class="stats.absent === 0 ? 'opacity-30' : 'font-medium'">{{ stats.absent }}</span>
                     </div>
                 </div>
             </div>
 
-            <div
-                v-if="!isClosed"
-                class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0"
-            >
+            <div v-if="!isClosed" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 shrink-0">
                 <Button
                     variant="outline"
                     :disabled="isSyncing || isClosing"
@@ -257,11 +231,7 @@ async function handleConfirmClose() {
                     @click="handleDownloadClick"
                 >
                     <FileDown class="w-4 h-4 mr-2" />
-                    {{
-                        isDocxGenerating
-                            ? $t('sessions.document.generating')
-                            : $t('sessions.actions.download')
-                    }}
+                    {{ isDocxGenerating ? $t('sessions.document.generating') : $t('sessions.actions.download') }}
                 </Button>
             </div>
         </div>

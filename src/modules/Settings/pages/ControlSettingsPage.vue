@@ -27,13 +27,7 @@ import {
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { logger } from '@/shared/lib/logger'
@@ -279,9 +273,7 @@ async function handleDeleteModules() {
 </script>
 
 <template>
-    <div
-        class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500"
-    >
+    <div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div>
             <h1 class="text-2xl font-bold tracking-tight">
                 {{ $t('control.settings.title') }}
@@ -305,22 +297,14 @@ async function handleDeleteModules() {
                 </CardHeader>
                 <CardContent class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Button
-                            variant="outline"
-                            class="h-24 flex flex-col gap-2"
-                            @click="exportMarks"
-                        >
+                        <Button variant="outline" class="h-24 flex flex-col gap-2" @click="exportMarks">
                             <HardDriveDownload class="w-6 h-6" />
                             <span>{{ $t('control.settings.exportMarks') }}</span>
                             <span v-if="marksCount > 0" class="text-xs text-muted-foreground">
                                 {{ marksCount }} records ({{ (marksSize / 1024).toFixed(1) }} KB)
                             </span>
                         </Button>
-                        <Button
-                            variant="outline"
-                            class="h-24 flex flex-col gap-2"
-                            @click="triggerImportMarks"
-                        >
+                        <Button variant="outline" class="h-24 flex flex-col gap-2" @click="triggerImportMarks">
                             <HardDriveUpload class="w-6 h-6" />
                             <span>{{ $t('control.settings.importMarks') }}</span>
                         </Button>
@@ -338,9 +322,7 @@ async function handleDeleteModules() {
                     <div class="space-y-3">
                         <div class="flex items-center gap-2">
                             <Database class="w-4 h-4 text-muted-foreground" />
-                            <span class="text-sm font-medium">{{
-                                $t('control.settings.storageTitle')
-                            }}</span>
+                            <span class="text-sm font-medium">{{ $t('control.settings.storageTitle') }}</span>
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger as-child>
@@ -373,9 +355,7 @@ async function handleDeleteModules() {
                                     <span class="text-xs text-muted-foreground">{{
                                         $t('organization.settings.storageUsedLabel')
                                     }}</span>
-                                    <span class="font-medium tabular-nums"
-                                        >{{ (marksSize / 1024).toFixed(1) }} KB</span
-                                    >
+                                    <span class="font-medium tabular-nums">{{ (marksSize / 1024).toFixed(1) }} KB</span>
                                 </div>
                                 <div class="flex flex-col gap-0.5">
                                     <span class="text-xs text-muted-foreground">{{
@@ -412,22 +392,14 @@ async function handleDeleteModules() {
                 </CardHeader>
                 <CardContent class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Button
-                            variant="outline"
-                            class="h-24 flex flex-col gap-2"
-                            @click="exportTasks"
-                        >
+                        <Button variant="outline" class="h-24 flex flex-col gap-2" @click="exportTasks">
                             <HardDriveDownload class="w-6 h-6" />
                             <span>{{ $t('control.settings.exportTasks') }}</span>
                             <span v-if="tasksCount > 0" class="text-xs text-muted-foreground">
                                 {{ tasksCount }} records ({{ (tasksSize / 1024).toFixed(1) }} KB)
                             </span>
                         </Button>
-                        <Button
-                            variant="outline"
-                            class="h-24 flex flex-col gap-2"
-                            @click="triggerImportTasks"
-                        >
+                        <Button variant="outline" class="h-24 flex flex-col gap-2" @click="triggerImportTasks">
                             <HardDriveUpload class="w-6 h-6" />
                             <span>{{ $t('control.settings.importTasks') }}</span>
                         </Button>
@@ -445,9 +417,7 @@ async function handleDeleteModules() {
                     <div class="space-y-3">
                         <div class="flex items-center gap-2">
                             <Database class="w-4 h-4 text-muted-foreground" />
-                            <span class="text-sm font-medium">{{
-                                $t('control.settings.storageTitle')
-                            }}</span>
+                            <span class="text-sm font-medium">{{ $t('control.settings.storageTitle') }}</span>
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger as-child>
@@ -480,9 +450,7 @@ async function handleDeleteModules() {
                                     <span class="text-xs text-muted-foreground">{{
                                         $t('organization.settings.storageUsedLabel')
                                     }}</span>
-                                    <span class="font-medium tabular-nums"
-                                        >{{ (tasksSize / 1024).toFixed(1) }} KB</span
-                                    >
+                                    <span class="font-medium tabular-nums">{{ (tasksSize / 1024).toFixed(1) }} KB</span>
                                 </div>
                                 <div class="flex flex-col gap-0.5">
                                     <span class="text-xs text-muted-foreground">{{
@@ -519,11 +487,7 @@ async function handleDeleteModules() {
                 </CardHeader>
                 <CardContent class="space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Button
-                            variant="outline"
-                            class="h-24 flex flex-col gap-2"
-                            @click="exportModules"
-                        >
+                        <Button variant="outline" class="h-24 flex flex-col gap-2" @click="exportModules">
                             <HardDriveDownload class="w-6 h-6" />
                             <span>{{ $t('control.settings.exportModules') }}</span>
                             <span
@@ -536,11 +500,7 @@ async function handleDeleteModules() {
                                 KB)
                             </span>
                         </Button>
-                        <Button
-                            variant="outline"
-                            class="h-24 flex flex-col gap-2"
-                            @click="triggerImportModules"
-                        >
+                        <Button variant="outline" class="h-24 flex flex-col gap-2" @click="triggerImportModules">
                             <HardDriveUpload class="w-6 h-6" />
                             <span>{{ $t('control.settings.importModules') }}</span>
                         </Button>
@@ -558,9 +518,7 @@ async function handleDeleteModules() {
                     <div class="space-y-3">
                         <div class="flex items-center gap-2">
                             <Database class="w-4 h-4 text-muted-foreground" />
-                            <span class="text-sm font-medium">{{
-                                $t('control.settings.storageTitle')
-                            }}</span>
+                            <span class="text-sm font-medium">{{ $t('control.settings.storageTitle') }}</span>
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger as-child>
@@ -635,16 +593,10 @@ async function handleDeleteModules() {
                     <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                         <Select v-model="selectedSummaryGroupId" class="w-full sm:w-[240px]">
                             <SelectTrigger class="w-full sm:w-[240px]">
-                                <SelectValue
-                                    :placeholder="$t('control.settings.summaryExport.selectGroup')"
-                                />
+                                <SelectValue :placeholder="$t('control.settings.summaryExport.selectGroup')" />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem
-                                    v-for="group in summaryGroups"
-                                    :key="group.id"
-                                    :value="String(group.id)"
-                                >
+                                <SelectItem v-for="group in summaryGroups" :key="group.id" :value="String(group.id)">
                                     {{ group.name }}
                                 </SelectItem>
                             </SelectContent>
@@ -658,9 +610,7 @@ async function handleDeleteModules() {
                                 @click="handleExportSummaryAs('csv')"
                             >
                                 <FileSpreadsheet class="w-4 h-4 shrink-0" />
-                                <span class="truncate">{{
-                                    $t('control.settings.summaryExport.exportCsv')
-                                }}</span>
+                                <span class="truncate">{{ $t('control.settings.summaryExport.exportCsv') }}</span>
                             </Button>
                             <Button
                                 variant="outline"
@@ -669,9 +619,7 @@ async function handleDeleteModules() {
                                 @click="handleExportSummaryAs('docx')"
                             >
                                 <FileText class="w-4 h-4 shrink-0" />
-                                <span class="truncate">{{
-                                    $t('control.settings.summaryExport.exportDocx')
-                                }}</span>
+                                <span class="truncate">{{ $t('control.settings.summaryExport.exportDocx') }}</span>
                             </Button>
                         </div>
                     </div>

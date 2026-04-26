@@ -41,8 +41,7 @@ function rPr({ bold, italic, size = 20 }: RProps = {}): string {
     const b = bold ? '<w:b/><w:bCs/>' : ''
     const it = italic ? '<w:i/><w:iCs/>' : ''
     const sz = `<w:sz w:val="${size}"/><w:szCs w:val="${size}"/>`
-    const fn =
-        '<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>'
+    const fn = '<w:rFonts w:ascii="Times New Roman" w:hAnsi="Times New Roman" w:cs="Times New Roman"/>'
     return `<w:rPr>${fn}${b}${it}${sz}</w:rPr>`
 }
 
@@ -88,8 +87,7 @@ function tcBorders(underline?: boolean): string {
 function tc(text: string, o: TcOpts = {}): string {
     const width = o.w != null ? `<w:tcW w:w="${o.w}" w:type="dxa"/>` : ''
     const span = o.span ? `<w:gridSpan w:val="${o.span}"/>` : ''
-    const vm =
-        o.vm === 'start' ? '<w:vMerge w:val="restart"/>' : o.vm === 'cont' ? '<w:vMerge/>' : ''
+    const vm = o.vm === 'start' ? '<w:vMerge w:val="restart"/>' : o.vm === 'cont' ? '<w:vMerge/>' : ''
     const vAlign = o.vAlign === 'center' ? '<w:vAlign w:val="center"/>' : ''
     const borders = tcBorders(o.underline)
     const tcPr = `<w:tcPr>${width}${span}${vm}${vAlign}${borders}</w:tcPr>`
@@ -164,13 +162,7 @@ function buildDocumentXml(): string {
                 tr([
                     tc(`${pt('specialty')}:`, { w: META_COLS[0] }),
                     tc('{specialty}', {
-                        w:
-                            META_COLS[1] +
-                            META_COLS[2] +
-                            META_COLS[3] +
-                            META_COLS[4] +
-                            META_COLS[5] +
-                            META_COLS[6],
+                        w: META_COLS[1] + META_COLS[2] + META_COLS[3] + META_COLS[4] + META_COLS[5] + META_COLS[6],
                         span: 6,
                         underline: true,
                     }),
@@ -187,8 +179,8 @@ function buildDocumentXml(): string {
                 ]),
             ],
             false,
-            META_COLS,
-        ),
+            META_COLS
+        )
     )
 
     // Date — centered on an underline
@@ -242,8 +234,8 @@ function buildDocumentXml(): string {
                 ]),
             ],
             false,
-            [SUB_COLS[0], SUB_COLS[1], SUB_COLS[2], SUB_COLS[3]],
-        ),
+            [SUB_COLS[0], SUB_COLS[1], SUB_COLS[2], SUB_COLS[3]]
+        )
     )
 
     parts.push(emptyPara())
@@ -251,9 +243,7 @@ function buildDocumentXml(): string {
     // ── 4. Grades table ───────────────────────────────────────────────────
     // 7 columns: №, ПІБ, ПНП, National, Points, ECTS, Signature
     // Total ≈ 9921 twips (A4 content width at the configured margins)
-    const GW: [number, number, number, number, number, number, number] = [
-        500, 3000, 1600, 1800, 800, 700, 521,
-    ]
+    const GW: [number, number, number, number, number, number, number] = [500, 3000, 1600, 1800, 800, 700, 521]
 
     const gradeHdr1 = tr([
         tc(pt('table.number'), {
@@ -324,10 +314,7 @@ function buildDocumentXml(): string {
 
     // Head of department signature
     parts.push(
-        para(
-            `${pt('headOfDepartment')} _________________   _______________________________________`,
-            { size: 18 },
-        ),
+        para(`${pt('headOfDepartment')} _________________   _______________________________________`, { size: 18 })
     )
     parts.push(emptyPara())
 
@@ -392,7 +379,7 @@ function buildDocumentXml(): string {
             tc(grade, { w: EW[2], center: true, bold: true, size: 18 }),
             tc(exam, { w: EW[3], center: true, size: 18 }),
             tc(credit, { w: EW[4], center: true, size: 18 }),
-        ]),
+        ])
     )
 
     const ectsAbsent = tr([

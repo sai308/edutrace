@@ -220,9 +220,7 @@ describe('analyticsService', () => {
 
     describe('getDetailedStats', () => {
         it('throws if meetId is empty', async () => {
-            await expect(analyticsService.getDetailedStats('')).rejects.toThrow(
-                'meetId must be a non-empty string',
-            )
+            await expect(analyticsService.getDetailedStats('')).rejects.toThrow('meetId must be a non-empty string')
         })
 
         it('returns empty dates and matrix when no meets found', async () => {
@@ -337,16 +335,12 @@ describe('analyticsService', () => {
 
     describe('getSingleReportStats', () => {
         it('throws if id is empty', async () => {
-            await expect(analyticsService.getSingleReportStats('')).rejects.toThrow(
-                'id must be a non-empty string',
-            )
+            await expect(analyticsService.getSingleReportStats('')).rejects.toThrow('id must be a non-empty string')
         })
 
         it('throws if meet is not found', async () => {
             vi.mocked(meetsRepository.getMeetById).mockResolvedValue(undefined)
-            await expect(analyticsService.getSingleReportStats('missing-id')).rejects.toThrow(
-                'Meet not found',
-            )
+            await expect(analyticsService.getSingleReportStats('missing-id')).rejects.toThrow('Meet not found')
         })
 
         it('returns a single-date snapshot sorted by duration descending', async () => {

@@ -41,19 +41,19 @@ describe('marksRepository', () => {
     describe('_validateMark (via saveMark)', () => {
         it('throws if taskId is missing', async () => {
             await expect(
-                marksRepository.saveMark({ studentId: 's1', taskId: '', groupName: 'G' } as any),
+                marksRepository.saveMark({ studentId: 's1', taskId: '', groupName: 'G' } as any)
             ).rejects.toThrow('Mark.taskId is required')
         })
 
         it('throws if studentId is missing', async () => {
             await expect(
-                marksRepository.saveMark({ taskId: 't1', studentId: '', groupName: 'G' } as any),
+                marksRepository.saveMark({ taskId: 't1', studentId: '', groupName: 'G' } as any)
             ).rejects.toThrow('Mark.studentId is required')
         })
 
         it('throws if groupName is missing', async () => {
             await expect(
-                marksRepository.saveMark({ taskId: 't1', studentId: 's1', groupName: '' } as any),
+                marksRepository.saveMark({ taskId: 't1', studentId: 's1', groupName: '' } as any)
             ).rejects.toThrow('Mark.groupName is required')
         })
     })
@@ -84,7 +84,7 @@ describe('marksRepository', () => {
                     studentId: 'ssync',
                     synced: true,
                     score: 90,
-                }) as any,
+                }) as any
             )
 
             const result = await marksRepository.saveMark({
@@ -112,7 +112,7 @@ describe('marksRepository', () => {
                     studentId: 'supd',
                     synced: false,
                     score: 60,
-                }) as any,
+                }) as any
             )
 
             const result = await marksRepository.saveMark({
@@ -154,7 +154,7 @@ describe('marksRepository', () => {
                     studentId: 'bms-skip',
                     score: 70,
                     synced: false,
-                }) as any,
+                }) as any
             )
 
             const stats = await marksRepository.bulkSaveSafe([
@@ -176,7 +176,7 @@ describe('marksRepository', () => {
                     studentId: 'bms-upd',
                     score: 70,
                     synced: false,
-                }) as any,
+                }) as any
             )
 
             const stats = await marksRepository.bulkSaveSafe([
@@ -200,7 +200,7 @@ describe('marksRepository', () => {
                     studentId: 'bms-prot',
                     score: 70,
                     synced: true,
-                }) as any,
+                }) as any
             )
 
             const stats = await marksRepository.bulkSaveSafe([
@@ -227,7 +227,7 @@ describe('marksRepository', () => {
                         synced: false,
                         createdAt: '',
                     },
-                ]),
+                ])
             ).rejects.toThrow('Mark.taskId is required')
         })
     })
@@ -246,10 +246,7 @@ describe('marksRepository', () => {
 
         it('sets synced = false and clears syncedAt', async () => {
             const db = await getDb()
-            await db.put(
-                'marks',
-                makeMark({ id: 'sync-off', synced: true, syncedAt: '2024-01-01T00:00:00Z' }) as any,
-            )
+            await db.put('marks', makeMark({ id: 'sync-off', synced: true, syncedAt: '2024-01-01T00:00:00Z' }) as any)
 
             await marksRepository.updateMarkSynced('sync-off', false)
 
@@ -259,23 +256,15 @@ describe('marksRepository', () => {
         })
 
         it('is a no-op for unknown id', async () => {
-            await expect(
-                marksRepository.updateMarkSynced('nonexistent', true),
-            ).resolves.toBeUndefined()
+            await expect(marksRepository.updateMarkSynced('nonexistent', true)).resolves.toBeUndefined()
         })
     })
 
     describe('deleteMarks', () => {
         it('removes marks by ids', async () => {
             const db = await getDb()
-            await db.put(
-                'marks',
-                makeMark({ id: 'del-1', taskId: 'del-t1', studentId: 'del-s1' }) as any,
-            )
-            await db.put(
-                'marks',
-                makeMark({ id: 'del-2', taskId: 'del-t2', studentId: 'del-s2' }) as any,
-            )
+            await db.put('marks', makeMark({ id: 'del-1', taskId: 'del-t1', studentId: 'del-s1' }) as any)
+            await db.put('marks', makeMark({ id: 'del-2', taskId: 'del-t2', studentId: 'del-s2' }) as any)
 
             await marksRepository.deleteMarks(['del-1', 'del-2'])
 
@@ -296,7 +285,7 @@ describe('marksRepository', () => {
                     taskId: 'task-rel-1',
                     studentId: 'student-rel-1',
                     score: 88,
-                }) as any,
+                }) as any
             )
 
             const flat = await marksRepository.getAllMarksWithRelations()
@@ -316,7 +305,7 @@ describe('marksRepository', () => {
                     id: 'orphan-m',
                     taskId: 'ghost-task',
                     studentId: 'ghost-student',
-                }) as any,
+                }) as any
             )
 
             const flat = await marksRepository.getAllMarksWithRelations()
@@ -337,7 +326,7 @@ describe('marksRepository', () => {
                     taskId: 'task-grp-1',
                     studentId: 's-grp-1',
                     groupName: 'GroupB',
-                }) as any,
+                }) as any
             )
             await db.put(
                 'marks',
@@ -346,7 +335,7 @@ describe('marksRepository', () => {
                     taskId: 'task-grp-1',
                     studentId: 's-grp-2',
                     groupName: 'GroupC',
-                }) as any,
+                }) as any
             )
 
             const flat = await marksRepository.getMarksByGroupWithRelations('GroupB')

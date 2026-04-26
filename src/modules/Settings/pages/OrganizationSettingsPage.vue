@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import {
-    Database,
-    FileBracesCorner,
-    HardDriveDownload,
-    HardDriveUpload,
-    HelpCircle,
-    Trash2,
-} from 'lucide-vue-next'
+import { Database, FileBracesCorner, HardDriveDownload, HardDriveUpload, HelpCircle, Trash2 } from 'lucide-vue-next'
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
@@ -172,9 +165,7 @@ async function handleDeleteGroups() {
 </script>
 
 <template>
-    <div
-        class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500"
-    >
+    <div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div>
             <h1 class="text-2xl font-bold tracking-tight">
                 {{ $t('organization.settings.title') }}
@@ -199,26 +190,16 @@ async function handleDeleteGroups() {
                 <CardContent class="space-y-4">
                     <!-- Export / Import -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Button
-                            variant="outline"
-                            class="h-24 flex flex-col gap-2"
-                            @click="exportStudents"
-                        >
+                        <Button variant="outline" class="h-24 flex flex-col gap-2" @click="exportStudents">
                             <HardDriveDownload class="w-6 h-6" />
                             <span>{{ $t('organization.settings.students.export') }}</span>
                             <span v-if="studentsCount > 0" class="text-xs text-muted-foreground">
                                 {{ studentsCount }}
-                                {{ $t('organization.settings.recordsUnit') }} ({{
-                                    (studentsSize / 1024).toFixed(1)
-                                }}
+                                {{ $t('organization.settings.recordsUnit') }} ({{ (studentsSize / 1024).toFixed(1) }}
                                 KB)
                             </span>
                         </Button>
-                        <Button
-                            variant="outline"
-                            class="h-24 flex flex-col gap-2"
-                            @click="triggerStudentsImport"
-                        >
+                        <Button variant="outline" class="h-24 flex flex-col gap-2" @click="triggerStudentsImport">
                             <HardDriveUpload class="w-6 h-6" />
                             <span>{{ $t('organization.settings.students.import') }}</span>
                         </Button>
@@ -237,9 +218,7 @@ async function handleDeleteGroups() {
                     <div class="space-y-3">
                         <div class="flex items-center gap-2">
                             <Database class="w-4 h-4 text-muted-foreground" />
-                            <span class="text-sm font-medium">{{
-                                $t('organization.settings.storageTitle')
-                            }}</span>
+                            <span class="text-sm font-medium">{{ $t('organization.settings.storageTitle') }}</span>
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger as-child>
@@ -280,9 +259,7 @@ async function handleDeleteGroups() {
                                     <span class="text-xs text-muted-foreground">{{
                                         $t('organization.settings.recordsLabel')
                                     }}</span>
-                                    <span class="font-medium tabular-nums">{{
-                                        studentsCount
-                                    }}</span>
+                                    <span class="font-medium tabular-nums">{{ studentsCount }}</span>
                                 </div>
                             </div>
                             <Button
@@ -314,11 +291,7 @@ async function handleDeleteGroups() {
                 <CardContent class="space-y-4">
                     <!-- Export / Import -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Button
-                            variant="outline"
-                            class="h-24 flex flex-col gap-2"
-                            @click="exportGroups"
-                        >
+                        <Button variant="outline" class="h-24 flex flex-col gap-2" @click="exportGroups">
                             <HardDriveDownload class="w-6 h-6" />
                             <span>{{ $t('organization.settings.groups.export') }}</span>
                             <span v-if="groupsCount > 0" class="text-xs text-muted-foreground">
@@ -328,11 +301,7 @@ async function handleDeleteGroups() {
                                 KB)
                             </span>
                         </Button>
-                        <Button
-                            variant="outline"
-                            class="h-24 flex flex-col gap-2"
-                            @click="triggerGroupsImport"
-                        >
+                        <Button variant="outline" class="h-24 flex flex-col gap-2" @click="triggerGroupsImport">
                             <HardDriveUpload class="w-6 h-6" />
                             <span>{{ $t('organization.settings.groups.import') }}</span>
                         </Button>
@@ -351,9 +320,7 @@ async function handleDeleteGroups() {
                     <div class="space-y-3">
                         <div class="flex items-center gap-2">
                             <Database class="w-4 h-4 text-muted-foreground" />
-                            <span class="text-sm font-medium">{{
-                                $t('organization.settings.storageTitle')
-                            }}</span>
+                            <span class="text-sm font-medium">{{ $t('organization.settings.storageTitle') }}</span>
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger as-child>
@@ -434,11 +401,7 @@ async function handleDeleteGroups() {
                     class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     @click.prevent="handleDeleteStudents"
                 >
-                    {{
-                        isDeletingStudents
-                            ? '...'
-                            : $t('organization.settings.students.deleteConfirmBtn')
-                    }}
+                    {{ isDeletingStudents ? '...' : $t('organization.settings.students.deleteConfirmBtn') }}
                 </AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>
@@ -464,11 +427,7 @@ async function handleDeleteGroups() {
                     class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     @click.prevent="handleDeleteGroups"
                 >
-                    {{
-                        isDeletingGroups
-                            ? '...'
-                            : $t('organization.settings.groups.deleteConfirmBtn')
-                    }}
+                    {{ isDeletingGroups ? '...' : $t('organization.settings.groups.deleteConfirmBtn') }}
                 </AlertDialogAction>
             </AlertDialogFooter>
         </AlertDialogContent>

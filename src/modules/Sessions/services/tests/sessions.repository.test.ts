@@ -15,9 +15,7 @@ function makeEntry(studentId: string, grade: number | null = null): SessionEntry
     }
 }
 
-function makeSession(
-    overrides: Partial<Omit<SessionReport, 'id'>> = {},
-): Omit<SessionReport, 'id'> {
+function makeSession(overrides: Partial<Omit<SessionReport, 'id'>> = {}): Omit<SessionReport, 'id'> {
     return {
         sessionType: SessionTypeEnum.MAIN,
         status: SessionStatusEnum.OPEN,
@@ -59,37 +57,34 @@ describe('sessionRepository', () => {
         })
 
         it('throws when groupId is missing', async () => {
-            await expect(sessionRepository.create(makeSession({ groupId: '' }))).rejects.toThrow(
-                'groupId is required',
-            )
+            await expect(sessionRepository.create(makeSession({ groupId: '' }))).rejects.toThrow('groupId is required')
         })
 
         it('throws when sessionType is invalid', async () => {
-            await expect(
-                sessionRepository.create(makeSession({ sessionType: 'INVALID' as any })),
-            ).rejects.toThrow('sessionType must be one of')
+            await expect(sessionRepository.create(makeSession({ sessionType: 'INVALID' as any }))).rejects.toThrow(
+                'sessionType must be one of'
+            )
         })
 
         it('throws when status is invalid', async () => {
-            await expect(
-                sessionRepository.create(makeSession({ status: 'PENDING' as any })),
-            ).rejects.toThrow('status must be one of')
+            await expect(sessionRepository.create(makeSession({ status: 'PENDING' as any }))).rejects.toThrow(
+                'status must be one of'
+            )
         })
 
         it('throws when entries is not an array', async () => {
-            await expect(
-                sessionRepository.create(makeSession({ entries: 'not-array' as any })),
-            ).rejects.toThrow('entries must be an array')
+            await expect(sessionRepository.create(makeSession({ entries: 'not-array' as any }))).rejects.toThrow(
+                'entries must be an array'
+            )
         })
 
-        it.each([
-            SessionTypeEnum.MAIN,
-            SessionTypeEnum.FIRST_RETAKE,
-            SessionTypeEnum.SECOND_RETAKE,
-        ])('accepts sessionType %s', async (sessionType) => {
-            const result = await sessionRepository.create(makeSession({ sessionType }))
-            expect(result.sessionType).toBe(sessionType)
-        })
+        it.each([SessionTypeEnum.MAIN, SessionTypeEnum.FIRST_RETAKE, SessionTypeEnum.SECOND_RETAKE])(
+            'accepts sessionType %s',
+            async (sessionType) => {
+                const result = await sessionRepository.create(makeSession({ sessionType }))
+                expect(result.sessionType).toBe(sessionType)
+            }
+        )
 
         it('persists entries correctly', async () => {
             const entries = [makeEntry('s1', 85), makeEntry('s2', 70)]
@@ -111,15 +106,9 @@ describe('sessionRepository', () => {
         })
 
         it('returns all sessions for a given group', async () => {
-            await sessionRepository.create(
-                makeSession({ groupId: 'g1', sessionType: SessionTypeEnum.MAIN }),
-            )
-            await sessionRepository.create(
-                makeSession({ groupId: 'g1', sessionType: SessionTypeEnum.FIRST_RETAKE }),
-            )
-            await sessionRepository.create(
-                makeSession({ groupId: 'g2', sessionType: SessionTypeEnum.MAIN }),
-            )
+            await sessionRepository.create(makeSession({ groupId: 'g1', sessionType: SessionTypeEnum.MAIN }))
+            await sessionRepository.create(makeSession({ groupId: 'g1', sessionType: SessionTypeEnum.FIRST_RETAKE }))
+            await sessionRepository.create(makeSession({ groupId: 'g2', sessionType: SessionTypeEnum.MAIN }))
 
             const result = await sessionRepository.getByGroupId('g1')
             expect(result).toHaveLength(2)
@@ -127,9 +116,7 @@ describe('sessionRepository', () => {
         })
 
         it('does not return sessions from other groups', async () => {
-            await sessionRepository.create(
-                makeSession({ groupId: 'g-other', sessionType: SessionTypeEnum.MAIN }),
-            )
+            await sessionRepository.create(makeSession({ groupId: 'g-other', sessionType: SessionTypeEnum.MAIN }))
 
             const result = await sessionRepository.getByGroupId('g1')
             expect(result).toHaveLength(0)
@@ -146,7 +133,7 @@ describe('sessionRepository', () => {
 
         it('returns the matching session for group + type', async () => {
             const created = await sessionRepository.create(
-                makeSession({ groupId: 'g1', sessionType: SessionTypeEnum.MAIN }),
+                makeSession({ groupId: 'g1', sessionType: SessionTypeEnum.MAIN })
             )
 
             const result = await sessionRepository.getGroupSession('g1', SessionTypeEnum.MAIN)
@@ -155,18 +142,14 @@ describe('sessionRepository', () => {
         })
 
         it('does not return a session for a different type', async () => {
-            await sessionRepository.create(
-                makeSession({ groupId: 'g1', sessionType: SessionTypeEnum.FIRST_RETAKE }),
-            )
+            await sessionRepository.create(makeSession({ groupId: 'g1', sessionType: SessionTypeEnum.FIRST_RETAKE }))
 
             const result = await sessionRepository.getGroupSession('g1', SessionTypeEnum.MAIN)
             expect(result).toBeUndefined()
         })
 
         it('does not return a session for a different group', async () => {
-            await sessionRepository.create(
-                makeSession({ groupId: 'g2', sessionType: SessionTypeEnum.MAIN }),
-            )
+            await sessionRepository.create(makeSession({ groupId: 'g2', sessionType: SessionTypeEnum.MAIN }))
 
             const result = await sessionRepository.getGroupSession('g1', SessionTypeEnum.MAIN)
             expect(result).toBeUndefined()
@@ -174,19 +157,12 @@ describe('sessionRepository', () => {
 
         it('returns the correct session when multiple groups/types exist', async () => {
             const target = await sessionRepository.create(
-                makeSession({ groupId: 'g1', sessionType: SessionTypeEnum.SECOND_RETAKE }),
+                makeSession({ groupId: 'g1', sessionType: SessionTypeEnum.SECOND_RETAKE })
             )
-            await sessionRepository.create(
-                makeSession({ groupId: 'g1', sessionType: SessionTypeEnum.MAIN }),
-            )
-            await sessionRepository.create(
-                makeSession({ groupId: 'g2', sessionType: SessionTypeEnum.SECOND_RETAKE }),
-            )
+            await sessionRepository.create(makeSession({ groupId: 'g1', sessionType: SessionTypeEnum.MAIN }))
+            await sessionRepository.create(makeSession({ groupId: 'g2', sessionType: SessionTypeEnum.SECOND_RETAKE }))
 
-            const result = await sessionRepository.getGroupSession(
-                'g1',
-                SessionTypeEnum.SECOND_RETAKE,
-            )
+            const result = await sessionRepository.getGroupSession('g1', SessionTypeEnum.SECOND_RETAKE)
             expect(result!.id).toBe(target.id)
         })
     })

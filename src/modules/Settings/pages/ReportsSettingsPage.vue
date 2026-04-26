@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import {
-    Database,
-    FileBracesCorner,
-    HardDriveDownload,
-    HardDriveUpload,
-    HelpCircle,
-    Trash2,
-} from 'lucide-vue-next'
+import { Database, FileBracesCorner, HardDriveDownload, HardDriveUpload, HelpCircle, Trash2 } from 'lucide-vue-next'
 import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
@@ -143,9 +136,7 @@ async function handleDeleteReports() {
 </script>
 
 <template>
-    <div
-        class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500"
-    >
+    <div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div>
             <h1 class="text-2xl font-bold tracking-tight">
                 {{ $t('reports.settings.title') }}
@@ -167,9 +158,7 @@ async function handleDeleteReports() {
                 <CardContent class="space-y-4 md:space-y-6">
                     <!-- Duration Limit -->
                     <div class="space-y-2">
-                        <Label for="duration-limit">{{
-                            $t('reports.settings.durationLimitLabel')
-                        }}</Label>
+                        <Label for="duration-limit">{{ $t('reports.settings.durationLimitLabel') }}</Label>
                         <div class="flex flex-col sm:flex-row gap-2">
                             <Input
                                 id="duration-limit"
@@ -179,11 +168,7 @@ async function handleDeleteReports() {
                                 placeholder="e.g. 75"
                                 class="w-full sm:w-24 sm:shrink-0"
                             />
-                            <Button
-                                variant="secondary"
-                                class="sm:flex-none"
-                                @click="saveDurationLimit"
-                            >
+                            <Button variant="secondary" class="sm:flex-none" @click="saveDurationLimit">
                                 {{ $t('reports.settings.saveBtn') }}
                             </Button>
                         </div>
@@ -197,9 +182,7 @@ async function handleDeleteReports() {
                     <!-- Session Squash -->
                     <div class="flex items-center justify-between space-x-2">
                         <div class="space-y-0.5">
-                            <Label class="text-base">{{
-                                $t('reports.settings.squashLabel')
-                            }}</Label>
+                            <Label class="text-base">{{ $t('reports.settings.squashLabel') }}</Label>
                             <p class="text-[0.8rem] text-muted-foreground">
                                 {{ $t('reports.settings.squashHelp') }}
                             </p>
@@ -211,9 +194,7 @@ async function handleDeleteReports() {
                         class="space-y-2 pt-2 animate-in slide-in-from-top-2"
                         :class="{ 'opacity-50': !isSquashEnabled }"
                     >
-                        <Label for="squash-threshold">{{
-                            $t('reports.settings.squashThresholdLabel')
-                        }}</Label>
+                        <Label for="squash-threshold">{{ $t('reports.settings.squashThresholdLabel') }}</Label>
                         <div class="flex flex-col sm:flex-row gap-2">
                             <Input
                                 id="squash-threshold"
@@ -254,11 +235,7 @@ async function handleDeleteReports() {
                 <CardContent class="space-y-4">
                     <!-- Export / Import -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <Button
-                            variant="outline"
-                            class="h-24 flex flex-col gap-2"
-                            @click="exportReports"
-                        >
+                        <Button variant="outline" class="h-24 flex flex-col gap-2" @click="exportReports">
                             <HardDriveDownload class="w-6 h-6" />
                             <span>{{ $t('reports.settings.exportReports') }}</span>
                             <span v-if="reportsCount > 0" class="text-xs text-muted-foreground">
@@ -270,21 +247,11 @@ async function handleDeleteReports() {
                                 }}
                             </span>
                         </Button>
-                        <Button
-                            variant="outline"
-                            class="h-24 flex flex-col gap-2"
-                            @click="triggerImport"
-                        >
+                        <Button variant="outline" class="h-24 flex flex-col gap-2" @click="triggerImport">
                             <HardDriveUpload class="w-6 h-6" />
                             <span>{{ $t('reports.settings.importReports') }}</span>
                         </Button>
-                        <input
-                            ref="importInput"
-                            type="file"
-                            accept=".json"
-                            class="hidden"
-                            @change="handleImport"
-                        />
+                        <input ref="importInput" type="file" accept=".json" class="hidden" @change="handleImport" />
                     </div>
 
                     <Separator />
@@ -293,9 +260,7 @@ async function handleDeleteReports() {
                     <div class="space-y-3">
                         <div class="flex items-center gap-2">
                             <Database class="w-4 h-4 text-muted-foreground" />
-                            <span class="text-sm font-medium">{{
-                                $t('reports.settings.storageTitle')
-                            }}</span>
+                            <span class="text-sm font-medium">{{ $t('reports.settings.storageTitle') }}</span>
                             <TooltipProvider>
                                 <Tooltip>
                                     <TooltipTrigger as-child>

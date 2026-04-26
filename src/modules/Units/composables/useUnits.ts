@@ -15,10 +15,7 @@ export function useUnits() {
 
     async function loadData(): Promise<void> {
         try {
-            const [rawUnits, tasks] = await Promise.all([
-                unitsRepository.getAllUnits(),
-                tasksRepository.getAllTasks(),
-            ])
+            const [rawUnits, tasks] = await Promise.all([unitsRepository.getAllUnits(), tasksRepository.getAllTasks()])
             units.value = rawUnits.sort((a, b) => (a.ordinal ?? 0) - (b.ordinal ?? 0))
             availableTasks.value = tasks
         } catch (e: unknown) {
@@ -36,9 +33,7 @@ export function useUnits() {
         try {
             await serviceSaveUnit(formData, existingUnit)
             await loadData()
-            toast.success(
-                isEditing ? t('modules.toasts.updatedSuccess') : t('modules.toasts.createdSuccess'),
-            )
+            toast.success(isEditing ? t('modules.toasts.updatedSuccess') : t('modules.toasts.createdSuccess'))
             return true
         } catch (e: unknown) {
             if (e instanceof Error && e.name === 'DuplicateUnitError') {

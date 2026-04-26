@@ -36,7 +36,7 @@ export function createColumns(
     formatters: Formatters,
     t: (key: string, ...args: unknown[]) => string,
     getFormat: () => MarkFormat | '',
-    isCompact: Ref<boolean>,
+    isCompact: Ref<boolean>
 ): ColumnDef<UIMark>[] {
     return [
         {
@@ -44,8 +44,7 @@ export function createColumns(
             header: ({ table }) =>
                 h(Checkbox, {
                     modelValue:
-                        table.getIsAllPageRowsSelected() ||
-                        (table.getIsSomePageRowsSelected() && 'indeterminate'),
+                        table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
                     'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
                         table.toggleAllPageRowsSelected(!!value),
                     ariaLabel: 'Select all',
@@ -53,8 +52,7 @@ export function createColumns(
             cell: ({ row }) =>
                 h(Checkbox, {
                     modelValue: row.getIsSelected(),
-                    'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
-                        row.toggleSelected(!!value),
+                    'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
                     ariaLabel: 'Select row',
                 }),
             enableSorting: false,
@@ -64,8 +62,7 @@ export function createColumns(
             accessorKey: 'createdAt',
             id: 'added',
             meta: { label: t('marks.table.added') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('marks.table.added') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('marks.table.added') }),
             cell: ({ row }) => {
                 const dateRaw = row.getValue('added') as string
                 return h('div', { class: 'text-xs text-muted-foreground' }, [
@@ -86,8 +83,7 @@ export function createColumns(
             accessorKey: 'studentName',
             id: 'student',
             meta: { label: t('marks.table.student') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('marks.table.student') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('marks.table.student') }),
             cell: ({ row }) => {
                 const name = row.getValue('student') as string
                 const display = isCompact.value ? (name.split(/\s+/)[0] ?? name) : name
@@ -98,8 +94,7 @@ export function createColumns(
             accessorKey: 'groupName',
             id: 'group',
             meta: { label: t('marks.table.group') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('marks.table.group') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('marks.table.group') }),
             cell: ({ row }) => {
                 const groupName = row.getValue('group') as string
                 return h(
@@ -108,7 +103,7 @@ export function createColumns(
                         variant: 'secondary',
                         class: 'max-w-[120px] truncate select-none',
                     },
-                    () => groupName,
+                    () => groupName
                 )
             },
         },
@@ -116,8 +111,7 @@ export function createColumns(
             accessorKey: 'taskName',
             id: 'task',
             meta: { label: t('marks.table.task') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('marks.table.task') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('marks.table.task') }),
             cell: ({ row }) => {
                 const taskName = (row.getValue('task') || '') as string
                 const formattedTaskName = taskName.replace(/_/g, ' ')
@@ -134,8 +128,7 @@ export function createColumns(
             accessorKey: 'syncedAt',
             id: 'syncedAt',
             meta: { label: t('marks.table.syncedAt') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('marks.table.syncedAt') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('marks.table.syncedAt') }),
             cell: ({ row }) => {
                 const val = row.getValue('syncedAt') as string | null | undefined
                 if (!val) return h('span', { class: 'text-xs text-muted-foreground' }, '—')
@@ -163,10 +156,7 @@ export function createColumns(
                 }),
             cell: ({ row }) => {
                 const mark = row.original
-                const tooltipLines = formatters.getMarkTooltip(
-                    mark.score ?? 0,
-                    mark.maxPoints ?? 100,
-                )
+                const tooltipLines = formatters.getMarkTooltip(mark.score ?? 0, mark.maxPoints ?? 100)
 
                 // CSS-only tooltip via named group hover — no JS reactivity needed.
                 // row.original is a plain object; mutating it doesn't trigger Vue re-renders.
@@ -176,12 +166,7 @@ export function createColumns(
                         {
                             class: 'font-mono font-bold cursor-help border-b border-dotted border-muted-foreground/50',
                         },
-                        String(
-                            formatters.getFormattedMark(
-                                mark,
-                                (getFormat() as MarkFormat) || undefined,
-                            ) ?? '',
-                        ),
+                        String(formatters.getFormattedMark(mark, (getFormat() as MarkFormat) || undefined) ?? '')
                     ),
                     tooltipLines.length > 0
                         ? h(
@@ -195,7 +180,7 @@ export function createColumns(
                                       'transition-opacity duration-150',
                                   ].join(' '),
                               },
-                              tooltipLines.map((line) => h('div', { class: 'py-0.5' }, line)),
+                              tooltipLines.map((line) => h('div', { class: 'py-0.5' }, line))
                           )
                         : null,
                 ])
@@ -226,11 +211,7 @@ export function createColumns(
                     const fromDate = new Date(filterValue.dateFrom).setHours(0, 0, 0, 0)
                     if (new Date(m.createdAt).getTime() < fromDate) return false
                 }
-                if (
-                    filterValue.group &&
-                    filterValue.group !== '_all' &&
-                    filterValue.group !== 'null'
-                ) {
+                if (filterValue.group && filterValue.group !== '_all' && filterValue.group !== 'null') {
                     if (m.groupName !== filterValue.group) return false
                 }
                 if (filterValue.hideFailed) {
@@ -264,12 +245,10 @@ export function createColumns(
                                     : 'text-muted-foreground hover:text-primary',
                             ],
                             style: { touchAction: 'manipulation' },
-                            title: mark.synced
-                                ? t('marks.tooltips.markAsUnsynced')
-                                : t('marks.tooltips.markAsSynced'),
+                            title: mark.synced ? t('marks.tooltips.markAsUnsynced') : t('marks.tooltips.markAsSynced'),
                             onClick: () => emit('toggle-synced', mark),
                         },
-                        () => h(CircleCheckBig, { class: 'w-4 h-4' }),
+                        () => h(CircleCheckBig, { class: 'w-4 h-4' })
                     ),
                     h(
                         Button,
@@ -280,7 +259,7 @@ export function createColumns(
                             title: t('marks.tooltips.delete'),
                             onClick: () => emit('delete-mark', mark),
                         },
-                        () => h(Trash2, { class: 'w-4 h-4' }),
+                        () => h(Trash2, { class: 'w-4 h-4' })
                     ),
                 ])
             },

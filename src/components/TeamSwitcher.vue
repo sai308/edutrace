@@ -13,12 +13,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-import {
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    useSidebar,
-} from '@/components/ui/sidebar'
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/ui/sidebar'
 
 import { useWorkspace } from '@/shared/composables/useWorkspace'
 import { useWorkspaceModals } from '@/shared/composables/useWorkspaceModals'
@@ -84,18 +79,9 @@ function getIcon(name?: string) {
                         <div
                             class="flex aspect-square size-8 items-center justify-center rounded-lg border"
                             style="
-                                background-color: color-mix(
-                                    in srgb,
-                                    var(--workspace-color),
-                                    transparent 92%
-                                );
-                                border-color: color-mix(
-                                    in srgb,
-                                    var(--workspace-color),
-                                    transparent 75%
-                                );
-                                box-shadow: 0 0 10px
-                                    color-mix(in srgb, var(--workspace-color), transparent 87%);
+                                background-color: color-mix(in srgb, var(--workspace-color), transparent 92%);
+                                border-color: color-mix(in srgb, var(--workspace-color), transparent 75%);
+                                box-shadow: 0 0 10px color-mix(in srgb, var(--workspace-color), transparent 87%);
                                 color: var(--workspace-color);
                             "
                         >
@@ -116,9 +102,7 @@ function getIcon(name?: string) {
                     :side="isMobile ? 'bottom' : 'right'"
                     :side-offset="4"
                 >
-                    <DropdownMenuLabel
-                        class="text-xs text-muted-foreground flex justify-between items-center"
-                    >
+                    <DropdownMenuLabel class="text-xs text-muted-foreground flex justify-between items-center">
                         {{ $t('workspace.title') }}
                         <button class="hover:text-primary transition-colors" @click="goToGuide">
                             <HelpCircle class="size-3.5" />
@@ -152,8 +136,7 @@ function getIcon(name?: string) {
                             v-if="ws.id === currentWorkspaceId"
                             class="size-4 text-primary absolute right-2 transition-opacity duration-200"
                             :class="{
-                                'opacity-0':
-                                    ws.id !== 'default' && (isMobile || 'group-hover:opacity-0'),
+                                'opacity-0': ws.id !== 'default' && (isMobile || 'group-hover:opacity-0'),
                             }"
                         />
 
@@ -185,13 +168,8 @@ function getIcon(name?: string) {
                         </div>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem
-                        class="gap-2 p-2 cursor-pointer"
-                        @click="handleOpenCreateModal"
-                    >
-                        <div
-                            class="flex size-6 items-center justify-center rounded-md border bg-transparent"
-                        >
+                    <DropdownMenuItem class="gap-2 p-2 cursor-pointer" @click="handleOpenCreateModal">
+                        <div class="flex size-6 items-center justify-center rounded-md border bg-transparent">
                             <Plus class="size-4" />
                         </div>
                         <div class="font-medium text-muted-foreground">

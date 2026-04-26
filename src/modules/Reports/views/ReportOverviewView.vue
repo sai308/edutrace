@@ -47,9 +47,7 @@ function formatTimeHHMM(date: Date | null): string {
                     <div class="flex items-center gap-2">
                         <div class="w-3 h-3 sm:w-4 sm:h-4 rounded bg-yellow-500" />
                         <span class="text-muted-foreground whitespace-nowrap"
-                            >{{ ATTENDANCE_BADGE_THRESHOLDS.GOOD }}–{{
-                                ATTENDANCE_BADGE_THRESHOLDS.GREAT - 1
-                            }}%</span
+                            >{{ ATTENDANCE_BADGE_THRESHOLDS.GOOD }}–{{ ATTENDANCE_BADGE_THRESHOLDS.GREAT - 1 }}%</span
                         >
                     </div>
                     <div class="flex items-center gap-2">
@@ -63,17 +61,11 @@ function formatTimeHHMM(date: Date | null): string {
         </CardHeader>
         <CardContent>
             <div class="space-y-4">
-                <div
-                    v-for="(participant, index) in timelineData.participants"
-                    :key="index"
-                    class="space-y-1"
-                >
+                <div v-for="(participant, index) in timelineData.participants" :key="index" class="space-y-1">
                     <div class="flex items-center justify-between text-sm">
                         <span class="font-medium">{{ participant.name }}</span>
                         <span class="text-xs text-muted-foreground">
-                            {{ formatDuration(participant.duration) }} ({{
-                                participant.percentage
-                            }}%)
+                            {{ formatDuration(participant.duration) }} ({{ participant.percentage }}%)
                         </span>
                     </div>
 
@@ -81,11 +73,7 @@ function formatTimeHHMM(date: Date | null): string {
                     <div class="relative h-6 bg-muted/30 rounded-lg overflow-hidden">
                         <!-- Time markers -->
                         <div class="absolute inset-0 flex">
-                            <div
-                                v-for="i in 4"
-                                :key="i"
-                                class="flex-1 border-r border-muted/50 last:border-r-0"
-                            />
+                            <div v-for="i in 4" :key="i" class="flex-1 border-r border-muted/50 last:border-r-0" />
                         </div>
 
                         <!-- Participant bar -->
@@ -105,9 +93,7 @@ function formatTimeHHMM(date: Date | null): string {
                             <div
                                 class="h-full flex items-center justify-center text-xs font-medium text-white px-2 overflow-hidden whitespace-nowrap"
                             >
-                                <span
-                                    v-if="participant.durationPercent > 15 && participant.joinTime"
-                                >
+                                <span v-if="participant.durationPercent > 15 && participant.joinTime">
                                     {{ formatTime(participant.joinTime) }}
                                 </span>
                             </div>

@@ -1,25 +1,12 @@
 <script setup lang="ts">
 import type { RowSelectionState, SortingState, VisibilityState } from '@tanstack/vue-table'
 import type { SessionEntry } from '../../models/session.model'
-import {
-    FlexRender,
-    getCoreRowModel,
-    getFilteredRowModel,
-    getSortedRowModel,
-    useVueTable,
-} from '@tanstack/vue-table'
+import { FlexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useVueTable } from '@tanstack/vue-table'
 import { useStorage } from '@vueuse/core'
 import { Clock } from 'lucide-vue-next'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import DataTableEmptyState from '@/shared/components/DataTableEmptyState.vue'
 import DataTableViewOptions from '@/shared/components/DataTableViewOptions.vue'
 import { useFormatters } from '@/shared/composables/useFormatters'
@@ -42,14 +29,12 @@ const ordinalMap = computed<Map<string, number>>(() => {
     const sorted = [...pool].sort((a, b) =>
         a.studentSnapshot.fullName.localeCompare(b.studentSnapshot.fullName, undefined, {
             sensitivity: 'base',
-        }),
+        })
     )
     return new Map(sorted.map((e, i) => [e.studentId, i + 1]))
 })
 
-const columns = computed(() =>
-    createColumns(t, { formatDate, formatTime, formatSurname }, ordinalMap.value),
-)
+const columns = computed(() => createColumns(t, { formatDate, formatTime, formatSurname }, ordinalMap.value))
 
 const sorting = ref<SortingState>([{ id: 'lastUpdate', desc: true }])
 const rowSelection = ref<RowSelectionState>({})
@@ -88,7 +73,7 @@ const table = useVueTable({
 
 watch(
     () => props.searchQuery,
-    (q) => table.setGlobalFilter(q ?? ''),
+    (q) => table.setGlobalFilter(q ?? '')
 )
 
 defineExpose({ table })
@@ -133,11 +118,7 @@ defineExpose({ table })
                             v-for="row in table.getRowModel().rows"
                             :key="row.id"
                             :data-state="row.getIsSelected() ? 'selected' : undefined"
-                            :class="
-                                row.original.grade === null
-                                    ? 'opacity-60 text-muted-foreground'
-                                    : ''
-                            "
+                            :class="row.original.grade === null ? 'opacity-60 text-muted-foreground' : ''"
                         >
                             <TableCell
                                 v-for="cell in row.getVisibleCells()"
@@ -151,10 +132,7 @@ defineExpose({ table })
                                           : ''
                                 "
                             >
-                                <FlexRender
-                                    :render="cell.column.columnDef.cell"
-                                    :props="cell.getContext()"
-                                />
+                                <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
                             </TableCell>
                         </TableRow>
                     </template>

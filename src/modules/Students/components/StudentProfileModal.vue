@@ -5,16 +5,7 @@ import { useStudentProfile } from '@Students/composables/useStudentProfile'
 import { Donut, StackedBar } from '@unovis/ts'
 
 import { VisAxis, VisDonut, VisSingleContainer, VisStackedBar, VisXYContainer } from '@unovis/vue'
-import {
-    Calendar,
-    Check,
-    Copy,
-    FileText,
-    GraduationCap,
-    Mail,
-    Pencil,
-    User as UserIcon,
-} from 'lucide-vue-next'
+import { Calendar, Check, Copy, FileText, GraduationCap, Mail, Pencil, User as UserIcon } from 'lucide-vue-next'
 import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Button } from '@/components/ui/button'
@@ -32,14 +23,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
 
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 const props = withDefaults(defineProps<Props>(), {
@@ -72,7 +56,7 @@ watch(
     () => [props.open, props.defaultView] as const,
     ([open, tab]) => {
         if (open) viewMode.value = tab ?? 'attendance'
-    },
+    }
 )
 
 const {
@@ -99,7 +83,7 @@ const {
     () => props.meets,
     () => props.groupsMap,
     () => props.tasks,
-    () => props.allStudents ?? [],
+    () => props.allStudents ?? []
 )
 
 function onSave() {
@@ -131,9 +115,7 @@ function handleCancel() {
                             <UserIcon class="w-6 h-6 text-primary" />
                         </div>
                         <div class="min-w-0 flex-1">
-                            <DialogTitle
-                                class="text-xl sm:text-2xl font-bold leading-tight break-words"
-                            >
+                            <DialogTitle class="text-xl sm:text-2xl font-bold leading-tight break-words">
                                 {{ student?.name }}
                             </DialogTitle>
                             <DialogDescription class="sr-only">
@@ -162,10 +144,7 @@ function handleCancel() {
                                         :title="t('students.actions.copyEmail')"
                                         @click="copyEmail"
                                     >
-                                        <Check
-                                            v-if="showCopyCheck"
-                                            class="w-3 h-3 text-green-500"
-                                        />
+                                        <Check v-if="showCopyCheck" class="w-3 h-3 text-green-500" />
                                         <Copy v-else class="w-3 h-3 text-muted-foreground" />
                                     </Button>
                                 </span>
@@ -178,15 +157,11 @@ function handleCancel() {
                         v-if="student?.iep"
                         class="p-3 bg-muted/30 rounded-lg border border-primary/20 animate-in fade-in slide-in-from-top-2"
                     >
-                        <div
-                            class="flex items-center gap-2 mb-1 text-primary font-semibold text-sm"
-                        >
+                        <div class="flex items-center gap-2 mb-1 text-primary font-semibold text-sm">
                             <FileText class="w-4 h-4" />
                             <span>{{ t('members.iep') }}</span>
                         </div>
-                        <p
-                            class="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed"
-                        >
+                        <p class="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
                             {{ student.iep }}
                         </p>
                     </div>
@@ -195,21 +170,15 @@ function handleCancel() {
                     <TabsList class="w-full h-auto p-1">
                         <TabsTrigger value="attendance" class="flex-1 gap-2">
                             <Calendar class="w-4 h-4" />
-                            <span class="hidden sm:inline">{{
-                                t('students.profile.views.attendance')
-                            }}</span>
+                            <span class="hidden sm:inline">{{ t('students.profile.views.attendance') }}</span>
                         </TabsTrigger>
                         <TabsTrigger value="marks" class="flex-1 gap-2">
                             <GraduationCap class="w-4 h-4" />
-                            <span class="hidden sm:inline">{{
-                                t('students.profile.views.marks')
-                            }}</span>
+                            <span class="hidden sm:inline">{{ t('students.profile.views.marks') }}</span>
                         </TabsTrigger>
                         <TabsTrigger value="edit" class="flex-1 gap-2">
                             <Pencil class="w-4 h-4" />
-                            <span class="hidden sm:inline">{{
-                                t('students.profile.views.edit')
-                            }}</span>
+                            <span class="hidden sm:inline">{{ t('students.profile.views.edit') }}</span>
                         </TabsTrigger>
                     </TabsList>
                 </div>
@@ -242,9 +211,7 @@ function handleCancel() {
                                             :tick-format="
                                                 (i: number) =>
                                                     attendanceChartData[i]?.date
-                                                        ? new Date(
-                                                              attendanceChartData[i].date,
-                                                          ).toLocaleDateString()
+                                                        ? new Date(attendanceChartData[i].date).toLocaleDateString()
                                                         : ''
                                             "
                                         />
@@ -259,7 +226,7 @@ function handleCancel() {
                                             :triggers="{
                                                 [StackedBar.selectors.bar]: componentToString(
                                                     attendanceChartConfig,
-                                                    ChartTooltipContent,
+                                                    ChartTooltipContent
                                                 )!,
                                             }"
                                         />
@@ -276,9 +243,7 @@ function handleCancel() {
                             <div class="grid grid-cols-3 gap-3">
                                 <Card>
                                     <CardHeader class="pb-1 pt-3 px-3">
-                                        <CardTitle
-                                            class="text-xs font-medium text-muted-foreground"
-                                        >
+                                        <CardTitle class="text-xs font-medium text-muted-foreground">
                                             {{ t('students.profile.attendance.attended') }}
                                         </CardTitle>
                                     </CardHeader>
@@ -292,23 +257,17 @@ function handleCancel() {
                                 </Card>
                                 <Card>
                                     <CardHeader class="pb-1 pt-3 px-3">
-                                        <CardTitle
-                                            class="text-xs font-medium text-muted-foreground"
-                                        >
+                                        <CardTitle class="text-xs font-medium text-muted-foreground">
                                             {{ t('students.profile.attendance.avgPercent') }}
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent class="px-3 pb-3">
-                                        <div class="text-xl font-bold">
-                                            {{ attendanceStats.averagePercent }}%
-                                        </div>
+                                        <div class="text-xl font-bold">{{ attendanceStats.averagePercent }}%</div>
                                     </CardContent>
                                 </Card>
                                 <Card>
                                     <CardHeader class="pb-1 pt-3 px-3">
-                                        <CardTitle
-                                            class="text-xs font-medium text-muted-foreground"
-                                        >
+                                        <CardTitle class="text-xs font-medium text-muted-foreground">
                                             {{ t('students.profile.attendance.totalTime') }}
                                         </CardTitle>
                                     </CardHeader>
@@ -329,42 +288,22 @@ function handleCancel() {
                                         <TableHeader class="sticky top-0 bg-background z-10">
                                             <TableRow>
                                                 <TableHead>
-                                                    {{
-                                                        t('students.profile.attendance.table.date')
-                                                    }}
+                                                    {{ t('students.profile.attendance.table.date') }}
                                                 </TableHead>
                                                 <TableHead>
-                                                    {{
-                                                        t('students.profile.attendance.table.group')
-                                                    }}
+                                                    {{ t('students.profile.attendance.table.group') }}
                                                 </TableHead>
                                                 <TableHead>
-                                                    {{
-                                                        t(
-                                                            'students.profile.attendance.table.meetId',
-                                                        )
-                                                    }}
+                                                    {{ t('students.profile.attendance.table.meetId') }}
                                                 </TableHead>
                                                 <TableHead class="text-right">
-                                                    {{
-                                                        t(
-                                                            'students.profile.attendance.table.duration',
-                                                        )
-                                                    }}
+                                                    {{ t('students.profile.attendance.table.duration') }}
                                                 </TableHead>
                                                 <TableHead class="text-center">
-                                                    {{
-                                                        t(
-                                                            'students.profile.attendance.table.progress',
-                                                        )
-                                                    }}
+                                                    {{ t('students.profile.attendance.table.progress') }}
                                                 </TableHead>
                                                 <TableHead class="text-right">
-                                                    {{
-                                                        t(
-                                                            'students.profile.attendance.table.status',
-                                                        )
-                                                    }}
+                                                    {{ t('students.profile.attendance.table.status') }}
                                                 </TableHead>
                                             </TableRow>
                                         </TableHeader>
@@ -378,9 +317,7 @@ function handleCancel() {
                                                         {{ meet.group }}
                                                     </span>
                                                 </TableCell>
-                                                <TableCell
-                                                    class="font-mono text-xs text-muted-foreground"
-                                                >
+                                                <TableCell class="font-mono text-xs text-muted-foreground">
                                                     {{ meet.meetId }}
                                                 </TableCell>
                                                 <TableCell class="text-right font-mono">
@@ -404,62 +341,40 @@ function handleCancel() {
                                                                 left: `${meet.offsetPercent}%`,
                                                                 width: `${meet.durationPercent}%`,
                                                                 backgroundColor:
-                                                                    parseFloat(meet.percentage) >=
-                                                                    75
+                                                                    parseFloat(meet.percentage) >= 75
                                                                         ? '#22c55e'
-                                                                        : parseFloat(
-                                                                                meet.percentage,
-                                                                            ) >= 50
+                                                                        : parseFloat(meet.percentage) >= 50
                                                                           ? '#eab308'
                                                                           : '#ef4444',
                                                             }"
-                                                            :title="
-                                                                meet.joinTime
-                                                                    ? formatTime(meet.joinTime)
-                                                                    : ''
-                                                            "
+                                                            :title="meet.joinTime ? formatTime(meet.joinTime) : ''"
                                                         >
                                                             <div
                                                                 class="h-full flex items-center justify-center text-xs font-medium text-white px-2 overflow-hidden whitespace-nowrap"
                                                             >
-                                                                <span
-                                                                    v-if="
-                                                                        meet.durationPercent > 15 &&
-                                                                        meet.joinTime
-                                                                    "
-                                                                >
+                                                                <span v-if="meet.durationPercent > 15 && meet.joinTime">
                                                                     {{
                                                                         meet.durationPercent < 25
                                                                             ? '~'
-                                                                            : formatTime(
-                                                                                  meet.joinTime,
-                                                                              )
+                                                                            : formatTime(meet.joinTime)
                                                                     }}
                                                                 </span>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div
-                                                        v-else
-                                                        class="text-xs text-muted-foreground text-center"
-                                                    >
+                                                    <div v-else class="text-xs text-muted-foreground text-center">
                                                         -
                                                     </div>
                                                 </TableCell>
                                                 <TableCell
                                                     class="text-right font-mono"
-                                                    :class="
-                                                        getScoreColor(parseFloat(meet.percentage))
-                                                    "
+                                                    :class="getScoreColor(parseFloat(meet.percentage))"
                                                 >
                                                     {{ meet.percentage }}%
                                                 </TableCell>
                                             </TableRow>
                                             <TableRow v-if="attendedMeets.length === 0">
-                                                <TableCell
-                                                    colspan="6"
-                                                    class="h-24 text-center text-muted-foreground"
-                                                >
+                                                <TableCell colspan="6" class="h-24 text-center text-muted-foreground">
                                                     {{ t('students.profile.attendance.noRecords') }}
                                                 </TableCell>
                                             </TableRow>
@@ -485,10 +400,8 @@ function handleCancel() {
                                                 :config="gradeDistributionConfig"
                                                 class="h-full"
                                                 :style="{
-                                                    '--vis-donut-central-label-font-size':
-                                                        'var(--text-3xl)',
-                                                    '--vis-donut-central-label-font-weight':
-                                                        'var(--font-weight-bold)',
+                                                    '--vis-donut-central-label-font-size': 'var(--text-3xl)',
+                                                    '--vis-donut-central-label-font-weight': 'var(--font-weight-bold)',
                                                 }"
                                             >
                                                 <VisSingleContainer :data="gradeDistributionData">
@@ -505,24 +418,19 @@ function handleCancel() {
                                                         "
                                                         :arc-width="30"
                                                         :central-label="marksStats.averageGrade"
-                                                        :central-sub-label="
-                                                            t('students.profile.marks.avgGrade')
-                                                        "
+                                                        :central-sub-label="t('students.profile.marks.avgGrade')"
                                                     />
                                                     <ChartTooltip
                                                         :triggers="{
-                                                            [Donut.selectors.segment]:
-                                                                componentToString(
-                                                                    {
-                                                                        count: {
-                                                                            label: t(
-                                                                                'students.profile.marks.grades',
-                                                                            ),
-                                                                        },
+                                                            [Donut.selectors.segment]: componentToString(
+                                                                {
+                                                                    count: {
+                                                                        label: t('students.profile.marks.grades'),
                                                                     },
-                                                                    ChartTooltipContent,
-                                                                    { labelKey: 'grade' },
-                                                                )!,
+                                                                },
+                                                                ChartTooltipContent,
+                                                                { labelKey: 'grade' }
+                                                            )!,
                                                         }"
                                                     />
                                                 </VisSingleContainer>
@@ -550,10 +458,8 @@ function handleCancel() {
                                                 :config="taskCompletionConfig"
                                                 class="h-full"
                                                 :style="{
-                                                    '--vis-donut-central-label-font-size':
-                                                        'var(--text-3xl)',
-                                                    '--vis-donut-central-label-font-weight':
-                                                        'var(--font-weight-bold)',
+                                                    '--vis-donut-central-label-font-size': 'var(--text-3xl)',
+                                                    '--vis-donut-central-label-font-weight': 'var(--font-weight-bold)',
                                                 }"
                                             >
                                                 <VisSingleContainer :data="taskCompletionData">
@@ -570,26 +476,19 @@ function handleCancel() {
                                                         "
                                                         :arc-width="30"
                                                         :central-label="`${marksStats.completedTasks}/${marksStats.totalTasks}`"
-                                                        :central-sub-label="
-                                                            t(
-                                                                'students.profile.marks.tasksCompleted',
-                                                            )
-                                                        "
+                                                        :central-sub-label="t('students.profile.marks.tasksCompleted')"
                                                     />
                                                     <ChartTooltip
                                                         :triggers="{
-                                                            [Donut.selectors.segment]:
-                                                                componentToString(
-                                                                    {
-                                                                        count: {
-                                                                            label: t(
-                                                                                'students.profile.marks.tasks',
-                                                                            ),
-                                                                        },
+                                                            [Donut.selectors.segment]: componentToString(
+                                                                {
+                                                                    count: {
+                                                                        label: t('students.profile.marks.tasks'),
                                                                     },
-                                                                    ChartTooltipContent,
-                                                                    { labelKey: 'status' },
-                                                                )!,
+                                                                },
+                                                                ChartTooltipContent,
+                                                                { labelKey: 'status' }
+                                                            )!,
                                                         }"
                                                     />
                                                 </VisSingleContainer>
@@ -654,10 +553,7 @@ function handleCancel() {
                                                 </TableCell>
                                             </TableRow>
                                             <TableRow v-if="studentMarks.length === 0">
-                                                <TableCell
-                                                    colspan="4"
-                                                    class="h-24 text-center text-muted-foreground"
-                                                >
+                                                <TableCell colspan="4" class="h-24 text-center text-muted-foreground">
                                                     {{ t('students.profile.marks.noRecords') }}
                                                 </TableCell>
                                             </TableRow>
@@ -678,9 +574,7 @@ function handleCancel() {
                                 />
                             </div>
                             <div class="grid gap-2">
-                                <Label for="edit-groupName">{{
-                                    t('students.editModal.groups')
-                                }}</Label>
+                                <Label for="edit-groupName">{{ t('students.editModal.groups') }}</Label>
                                 <div class="relative">
                                     <Input
                                         id="edit-groupName"
@@ -695,10 +589,7 @@ function handleCancel() {
                                         </option>
                                     </datalist>
                                 </div>
-                                <p
-                                    v-if="(allGroups ?? []).length > 0"
-                                    class="text-[0.8rem] text-muted-foreground"
-                                >
+                                <p v-if="(allGroups ?? []).length > 0" class="text-[0.8rem] text-muted-foreground">
                                     {{ t('students.editModal.groupHint') }}
                                 </p>
                             </div>
@@ -724,10 +615,7 @@ function handleCancel() {
                 </ScrollArea>
 
                 <!-- Zone 3: Footer (edit view only) -->
-                <div
-                    v-if="viewMode === 'edit'"
-                    class="px-6 py-4 border-t shrink-0 flex justify-end gap-2"
-                >
+                <div v-if="viewMode === 'edit'" class="px-6 py-4 border-t shrink-0 flex justify-end gap-2">
                     <Button variant="outline" @click="handleCancel">
                         {{ t('students.editModal.cancel') }}
                     </Button>

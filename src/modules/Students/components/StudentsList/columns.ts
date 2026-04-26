@@ -19,7 +19,7 @@ export function createColumns(
     emit: EmitFn,
     t: ComposerTranslation,
     getScoreColor: (v: number) => string,
-    ordinalMap: Map<string, number>,
+    ordinalMap: Map<string, number>
 ): ColumnDef<StudentDashboardStats>[] {
     return [
         {
@@ -27,18 +27,15 @@ export function createColumns(
             header: ({ table }) =>
                 h(Checkbox, {
                     modelValue:
-                        table.getIsAllPageRowsSelected() ||
-                        (table.getIsSomePageRowsSelected() && 'indeterminate'),
-                    'onUpdate:modelValue': (v: boolean | 'indeterminate') =>
-                        table.toggleAllPageRowsSelected(!!v),
+                        table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
+                    'onUpdate:modelValue': (v: boolean | 'indeterminate') => table.toggleAllPageRowsSelected(!!v),
                     ariaLabel: t('common.selectAll'),
                     class: 'translate-y-[2px]',
                 }),
             cell: ({ row }) =>
                 h(Checkbox, {
                     modelValue: row.getIsSelected(),
-                    'onUpdate:modelValue': (v: boolean | 'indeterminate') =>
-                        row.toggleSelected(!!v),
+                    'onUpdate:modelValue': (v: boolean | 'indeterminate') => row.toggleSelected(!!v),
                     ariaLabel: t('common.selectRow'),
                     class: 'translate-y-[2px]',
                 }),
@@ -53,7 +50,7 @@ export function createColumns(
                 return h(
                     'div',
                     { class: 'text-center tabular-nums text-muted-foreground text-xs font-mono' },
-                    n != null ? String(n) : '',
+                    n != null ? String(n) : ''
                 )
             },
             enableSorting: false,
@@ -62,13 +59,12 @@ export function createColumns(
         {
             accessorKey: 'name',
             meta: { label: t('students.table.name') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('students.table.name') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('students.table.name') }),
             cell: ({ row }) =>
                 h(
                     'div',
                     { class: 'font-medium truncate', title: row.getValue('name') as string },
-                    row.getValue('name') as string,
+                    row.getValue('name') as string
                 ),
         },
         {
@@ -76,8 +72,7 @@ export function createColumns(
             accessorFn: (row) => row.groups.join(' '),
             meta: { label: t('students.table.groups') },
             filterFn: (row, _id, value: string) => row.original.groups.includes(value),
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('students.table.groups') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('students.table.groups') }),
             cell: ({ row }) => {
                 const groups = row.original.groups
                 return h(
@@ -96,9 +91,9 @@ export function createColumns(
                                     emit('select-group', group)
                                 },
                             },
-                            () => group,
-                        ),
-                    ),
+                            () => group
+                        )
+                    )
                 )
             },
         },
@@ -106,8 +101,7 @@ export function createColumns(
             id: 'meetIds',
             accessorFn: (row) => row.meetIds.join(' '),
             meta: { label: t('students.table.meetIds') },
-            header: ({ column }) =>
-                h(DataTableColumnHeader, { column, title: t('students.table.meetIds') }),
+            header: ({ column }) => h(DataTableColumnHeader, { column, title: t('students.table.meetIds') }),
             cell: ({ row }) => {
                 const meetIds = row.original.meetIds
                 return h(
@@ -126,9 +120,9 @@ export function createColumns(
                                     emit('open-analytics', meetId)
                                 },
                             },
-                            () => meetId,
-                        ),
-                    ),
+                            () => meetId
+                        )
+                    )
                 )
             },
         },
@@ -160,11 +154,7 @@ export function createColumns(
                 }),
             cell: ({ row }) => {
                 const v = row.original.averageAttendancePercent
-                return h(
-                    'div',
-                    { class: ['text-center font-mono', getScoreColor(v)] },
-                    `${v.toFixed(1)}%`,
-                )
+                return h('div', { class: ['text-center font-mono', getScoreColor(v)] }, `${v.toFixed(1)}%`)
             },
         },
         {
@@ -179,11 +169,7 @@ export function createColumns(
                 }),
             cell: ({ row }) => {
                 const v = row.original.totalAttendancePercent
-                return h(
-                    'div',
-                    { class: ['text-center font-mono', getScoreColor(v)] },
-                    `${v.toFixed(1)}%`,
-                )
+                return h('div', { class: ['text-center font-mono', getScoreColor(v)] }, `${v.toFixed(1)}%`)
             },
         },
         {
@@ -198,11 +184,7 @@ export function createColumns(
                 }),
             cell: ({ row }) => {
                 const v = row.original.averageMark
-                return h(
-                    'div',
-                    { class: ['text-center font-mono', getScoreColor(v * 20)] },
-                    v ? v.toFixed(2) : '—',
-                )
+                return h('div', { class: ['text-center font-mono', getScoreColor(v * 20)] }, v ? v.toFixed(2) : '—')
             },
         },
         {
@@ -217,22 +199,14 @@ export function createColumns(
                 }),
             cell: ({ row }) => {
                 const v = row.original.completionPercent
-                return h(
-                    'div',
-                    { class: ['text-center font-mono', getScoreColor(v)] },
-                    v ? `${v.toFixed(1)}%` : '0%',
-                )
+                return h('div', { class: ['text-center font-mono', getScoreColor(v)] }, v ? `${v.toFixed(1)}%` : '0%')
             },
         },
         {
             id: 'actions',
             enableHiding: false,
             cell: ({ row }) =>
-                h(
-                    'div',
-                    { class: 'flex justify-end' },
-                    h(DataTableRowActions, { items: rowActions(row.original) }),
-                ),
+                h('div', { class: 'flex justify-end' }, h(DataTableRowActions, { items: rowActions(row.original) })),
         },
     ]
 }

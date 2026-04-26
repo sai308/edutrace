@@ -24,10 +24,7 @@ export function useMarkFormat() {
         return percentToECTS(percent)
     }
 
-    function getFormattedMark(
-        mark: Partial<Mark>,
-        format: MarkFormat = 'raw',
-    ): string | number | undefined {
+    function getFormattedMark(mark: Partial<Mark>, format: MarkFormat = 'raw'): string | number | undefined {
         if (format === 'raw') return mark.score
 
         const max = Number(mark.maxPoints) || 100

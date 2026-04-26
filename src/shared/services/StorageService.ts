@@ -53,8 +53,7 @@ class StorageAdapter {
      */
     set(key: string, value: unknown): void {
         try {
-            const stringValue =
-                value !== null && typeof value === 'object' ? JSON.stringify(value) : String(value)
+            const stringValue = value !== null && typeof value === 'object' ? JSON.stringify(value) : String(value)
             this.storage.setItem(key, stringValue)
         } catch (e) {
             logger.error(`StorageService: Error setting key '${key}'`, e)
