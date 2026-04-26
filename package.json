@@ -3,6 +3,14 @@
     "type": "module",
     "version": "1.0.0",
     "private": true,
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "esbuild",
+            "sharp",
+            "vue-demi",
+            "workerd"
+        ]
+    },
     "scripts": {
         "dev": "vite",
         "prebuild": "node scripts/check-icons.js",

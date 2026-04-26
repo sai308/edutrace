@@ -1,9 +1,0 @@
-onlyBuiltDependencies:
-  - esbuild
-  - sharp
-  - vue-demi
-  - workerd
-
-shellEmulator: true
-
-trustPolicy: no-downgrade
