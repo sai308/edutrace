@@ -7,7 +7,8 @@ let errorClearTimer: ReturnType<typeof setTimeout> | null = null
 
 export function reportWorkerError() {
     hasRecentError.value = true
-    if (errorClearTimer) clearTimeout(errorClearTimer)
+    if (errorClearTimer)
+        clearTimeout(errorClearTimer)
     errorClearTimer = setTimeout(() => {
         hasRecentError.value = false
         errorClearTimer = null

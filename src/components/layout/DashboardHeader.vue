@@ -57,7 +57,7 @@ const breadcrumbs = computed(() => (route.meta.breadcrumbs as NavBreadcrumb[]) |
             </Breadcrumb>
         </div>
         <RouterLink to="/" class="absolute left-1/2 -translate-x-1/2 select-none">
-            <img src="/edutrace-logo.svg" class="h-7" alt="EduTrace" />
+            <img src="/edutrace-logo.svg" class="h-7" alt="EduTrace">
         </RouterLink>
         <div class="ml-auto flex items-center gap-1 px-4">
             <AppStatusIndicator />

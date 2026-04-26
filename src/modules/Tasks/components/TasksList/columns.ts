@@ -15,26 +15,26 @@ interface Formatters {
 export function createColumns(
     rowActions: (task: Task) => RowActionItem[],
     t: ComposerTranslation,
-    formatters: Formatters
+    formatters: Formatters,
 ): ColumnDef<Task>[] {
     return [
         {
             id: 'select',
             header: ({ table }) =>
                 h(Checkbox, {
-                    modelValue:
+                    'modelValue':
                         table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
                     'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
                         table.toggleAllPageRowsSelected(!!value),
-                    ariaLabel: t('common.selectAll'),
-                    class: 'translate-y-[2px]',
+                    'ariaLabel': t('common.selectAll'),
+                    'class': 'translate-y-[2px]',
                 }),
             cell: ({ row }) =>
                 h(Checkbox, {
-                    modelValue: row.getIsSelected(),
+                    'modelValue': row.getIsSelected(),
                     'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
-                    ariaLabel: t('common.selectRow'),
-                    class: 'translate-y-[2px]',
+                    'ariaLabel': t('common.selectRow'),
+                    'class': 'translate-y-[2px]',
                 }),
             enableSorting: false,
             enableHiding: false,

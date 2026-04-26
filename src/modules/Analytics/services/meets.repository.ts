@@ -18,44 +18,51 @@ class MeetsRepository extends BaseRepository<'meets'> {
     }
 
     async getMeetsByMeetId(meetId: string): Promise<Meet[]> {
-        if (!meetId || typeof meetId !== 'string') return []
+        if (!meetId || typeof meetId !== 'string')
+            return []
         return this.getAllFromIndex('meetId', meetId)
     }
 
     async getMeetById(id: string): Promise<Meet | undefined> {
-        if (!id || typeof id !== 'string') return undefined
+        if (!id || typeof id !== 'string')
+            return undefined
         return this.getById(id)
     }
 
     async checkMeetExists(meetId: string, date: string): Promise<boolean> {
-        if (!meetId || !date) return false
+        if (!meetId || !date)
+            return false
         const db = await this.getDb()
         let cursor = await db.transaction('meets').store.index('meetId').openCursor(meetId)
         while (cursor) {
-            if (cursor.value.date === date) return true
+            if (cursor.value.date === date)
+                return true
             cursor = (await cursor.continue()) ?? null
         }
         return false
     }
 
     async isDuplicateFile(filename: string, meetId: string, date: string): Promise<boolean> {
-        if (!filename || !meetId || !date) return false
+        if (!filename || !meetId || !date)
+            return false
         const db = await this.getDb()
         let cursor = await db.transaction('meets').store.index('meetId').openCursor(meetId)
         while (cursor) {
             const m = cursor.value
-            if (m.date === date && m.filename === filename) return true
+            if (m.date === date && m.filename === filename)
+                return true
             cursor = (await cursor.continue()) ?? null
         }
         return false
     }
 
     async deleteMeets(ids: string[]): Promise<void> {
-        if (!ids || ids.length === 0) return
+        if (!ids || ids.length === 0)
+            return
         const db = await this.getDb()
         const tx = db.transaction(this.storeName, 'readwrite')
         const store = tx.objectStore(this.storeName)
-        await Promise.all(ids.map((id) => store.delete(id)))
+        await Promise.all(ids.map(id => store.delete(id)))
         await tx.done
     }
 

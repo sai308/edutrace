@@ -24,7 +24,8 @@ export interface SummaryModule extends Module {
  * Strips unnecessary Vue reactivity or extra properties if needed.
  */
 export function serializeTask(task: Task | null): SummaryTask | null {
-    if (!task) return null
+    if (!task)
+        return null
     return {
         id: task.id,
         name: task.name,
@@ -39,7 +40,8 @@ export function serializeTask(task: Task | null): SummaryTask | null {
  * Ensures all required properties are present and correctly formatted.
  */
 export function serializeModule(module: any, group: Group): SummaryModule | null {
-    if (!module || !group) return null
+    if (!module || !group)
+        return null
 
     return {
         id: module.id,

@@ -24,7 +24,7 @@ class StudentsRepository extends BaseRepository<'members'> {
         if (options.includeHidden) {
             return members
         }
-        return members.filter((m) => !m.hidden) // Filter hidden members by default
+        return members.filter(m => !m.hidden) // Filter hidden members by default
     }
 
     /**
@@ -34,20 +34,20 @@ class StudentsRepository extends BaseRepository<'members'> {
      */
     async getIepMap(options: { includeHidden?: boolean } = {}): Promise<Record<string, string>> {
         const members = await this.getAllMembers(options)
-        return Object.fromEntries(members.filter((m) => m.iep).map((m) => [m.id, m.iep as string]))
+        return Object.fromEntries(members.filter(m => m.iep).map(m => [m.id, m.iep as string]))
     }
 
     async getMembersByGroup(groupName: string): Promise<Member[]> {
         // Use the index on 'groupName' directly
         const members = await this.getAllFromIndex('groupName', groupName)
-        return members.filter((m) => !m.hidden)
+        return members.filter(m => !m.hidden)
     }
 
     async deleteMembers(ids: string[]): Promise<void> {
         const db = await this.getDb()
         const tx = db.transaction(this.storeName, 'readwrite')
         const store = tx.objectStore(this.storeName)
-        await Promise.all(ids.map((id) => store.delete(id)))
+        await Promise.all(ids.map(id => store.delete(id)))
         await tx.done
     }
 
@@ -64,14 +64,15 @@ class StudentsRepository extends BaseRepository<'members'> {
         const existingMembers = await this.getAll()
         const membersMap = new Map<string, Member>() // Key: name, Value: member
 
-        existingMembers.forEach((m) => membersMap.set(m.name, m))
+        existingMembers.forEach(m => membersMap.set(m.name, m))
 
         let addedCount = 0
         const tx = db.transaction(this.storeName, 'readwrite')
         const store = tx.objectStore(this.storeName)
 
         for (const meet of allMeets) {
-            if (!meet.participants) continue
+            if (!meet.participants)
+                continue
 
             for (const participant of meet.participants) {
                 if (!membersMap.has(participant.name)) {
@@ -163,7 +164,8 @@ class StudentsRepository extends BaseRepository<'members'> {
         const store = tx.objectStore(this.storeName)
 
         for (const meet of meets) {
-            if (!meet.participants) continue
+            if (!meet.participants)
+                continue
             for (const p of meet.participants) {
                 if (!memberMap.has(p.name)) {
                     const newMember: Member = {

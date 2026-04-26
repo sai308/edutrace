@@ -39,7 +39,8 @@ export function useQuerySync(stateMap: Record<string, Ref<any>>) {
         if (val != null) {
             refVal.value = val
             intent[key] = val
-        } else {
+        }
+        else {
             intent[key] = undefined
         }
     })
@@ -54,19 +55,23 @@ export function useQuerySync(stateMap: Record<string, Ref<any>>) {
                 const raw = newQuery[key]
                 const newVal: string | undefined = (Array.isArray(raw) ? raw[0] : raw) ?? undefined
 
-                if (newVal === intent[key]) return // our own navigation — skip
+                if (newVal === intent[key])
+                    return // our own navigation — skip
 
                 // External navigation: sync state and update intent.
                 intent[key] = newVal
                 if (newVal !== undefined) {
                     refVal.value = newVal
-                } else {
-                    if (typeof refVal.value === 'boolean') refVal.value = false
-                    else if (typeof refVal.value === 'string') refVal.value = ''
+                }
+                else {
+                    if (typeof refVal.value === 'boolean')
+                        refVal.value = false
+                    else if (typeof refVal.value === 'string')
+                        refVal.value = ''
                     else refVal.value = null
                 }
             })
-        }
+        },
     )
 
     // 3. State → route: update intent immediately (keeps watcher 2 correct),
@@ -79,13 +84,15 @@ export function useQuerySync(stateMap: Record<string, Ref<any>>) {
             intent[key] = val ? String(val) : undefined
         })
 
-        if (timer !== null) clearTimeout(timer)
+        if (timer !== null)
+            clearTimeout(timer)
         timer = setTimeout(() => {
             timer = null
             const newQuery = { ...route.query }
             Object.entries(stateMap).forEach(([key, refVal]) => {
                 const val = refVal.value
-                if (val) newQuery[key] = String(val) as LocationQueryValue
+                if (val)
+                    newQuery[key] = String(val) as LocationQueryValue
                 else delete newQuery[key]
             })
             router.replace({ query: newQuery })
@@ -93,6 +100,7 @@ export function useQuerySync(stateMap: Record<string, Ref<any>>) {
     })
 
     onUnmounted(() => {
-        if (timer !== null) clearTimeout(timer)
+        if (timer !== null)
+            clearTimeout(timer)
     })
 }

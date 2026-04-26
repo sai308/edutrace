@@ -14,7 +14,7 @@ describe('tasksRepository', () => {
                     name: '',
                     normalizedName: 'test',
                     maxPoints: 0,
-                })
+                }),
             ).rejects.toThrow('Task name is required')
         })
 
@@ -25,7 +25,7 @@ describe('tasksRepository', () => {
                     name: '   ',
                     normalizedName: 'test',
                     maxPoints: 0,
-                })
+                }),
             ).rejects.toThrow('Task name is required')
         })
 
@@ -36,7 +36,7 @@ describe('tasksRepository', () => {
                     name: 'Task',
                     normalizedName: '',
                     maxPoints: 0,
-                })
+                }),
             ).rejects.toThrow('Task normalizedName is required')
         })
 
@@ -88,7 +88,7 @@ describe('tasksRepository', () => {
             const result = await tasksRepository.getAllTasks()
 
             expect(result).toHaveLength(2)
-            expect(result.map((t) => t.name)).toEqual(expect.arrayContaining(['Task Alpha', 'Task Beta']))
+            expect(result.map(t => t.name)).toEqual(expect.arrayContaining(['Task Alpha', 'Task Beta']))
         })
 
         it('includes all task fields in the result', async () => {
@@ -103,7 +103,7 @@ describe('tasksRepository', () => {
             })
 
             const tasks = await tasksRepository.getAllTasks()
-            const task = tasks.find((t) => (t as any).id === 3)!
+            const task = tasks.find(t => (t as any).id === 3)!
 
             expect(task.description).toBe('Desc')
             expect(task.date).toBe('2024-01-01')
@@ -192,7 +192,7 @@ describe('tasksRepository', () => {
             await tasksRepository.deleteTasks([])
 
             const tasks = await tasksRepository.getAllTasks()
-            expect(tasks.some((t) => (t as any).id === 13)).toBe(true)
+            expect(tasks.some(t => (t as any).id === 13)).toBe(true)
         })
 
         it('silently ignores non-existent ids', async () => {

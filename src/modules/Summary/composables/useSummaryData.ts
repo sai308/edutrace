@@ -28,7 +28,7 @@ export function useSummaryData() {
         attendanceEnabled = true,
         gradeFormat = '5-scale',
         requiredTasks = 0,
-        assessmentType = 'examination'
+        assessmentType = 'examination',
     ) {
         if (!group) {
             students.value = []
@@ -53,18 +53,22 @@ export function useSummaryData() {
             meets.value = data.context.meets
             tasks.value = data.context.tasks
             groupsMap.value = data.context.groupsMap
-        } catch (error) {
+        }
+        catch (error) {
             logger.error('Error loading summary data:', error)
             reportWorkerError()
             students.value = []
             if (error instanceof WorkerError && error.code === 'WORKER_TIMEOUT') {
                 toast.error(t('workerErrors.timeout'))
-            } else if (error instanceof WorkerError && error.code === 'SERIALIZATION_ERROR') {
+            }
+            else if (error instanceof WorkerError && error.code === 'SERIALIZATION_ERROR') {
                 toast.error(t('workerErrors.serialization'))
-            } else {
+            }
+            else {
                 toast.error(t('workerErrors.unknown'))
             }
-        } finally {
+        }
+        finally {
             isLoading.value = false
             activeWorkerTasks.value = Math.max(0, activeWorkerTasks.value - 1)
         }

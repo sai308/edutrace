@@ -44,13 +44,13 @@ const table = useVueTable({
         return props.units
     },
     columns,
-    getRowId: (row) => String(row.id ?? row.name),
+    getRowId: row => String(row.id ?? row.name),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: (u) => valueUpdater(u, sorting),
-    onColumnVisibilityChange: (u) => valueUpdater(u, columnVisibility),
-    onRowSelectionChange: (u) => valueUpdater(u, rowSelection),
+    onSortingChange: u => valueUpdater(u, sorting),
+    onColumnVisibilityChange: u => valueUpdater(u, columnVisibility),
+    onRowSelectionChange: u => valueUpdater(u, rowSelection),
     state: {
         get sorting() {
             return sorting.value
@@ -66,16 +66,17 @@ const table = useVueTable({
 
 watch(
     () => props.searchQuery,
-    (q) => table.setGlobalFilter(q ?? '')
+    q => table.setGlobalFilter(q ?? ''),
 )
 
 watch(
     () => props.bulkMode,
     (enabled) => {
-        table.setColumnVisibility((prev) => ({ ...prev, select: !!enabled }))
-        if (!enabled) table.toggleAllRowsSelected(false)
+        table.setColumnVisibility(prev => ({ ...prev, select: !!enabled }))
+        if (!enabled)
+            table.toggleAllRowsSelected(false)
     },
-    { immediate: true }
+    { immediate: true },
 )
 
 // ── Drag-to-reorder ──────────────────────────────────────────────────────────
@@ -85,7 +86,8 @@ const draggedOverIndex = ref<number | null>(null)
 const dragDirection = ref<'up' | 'down' | null>(null)
 
 function handleDragStart(e: DragEvent, index: number) {
-    if (!props.isReordering) return
+    if (!props.isReordering)
+        return
     draggedIndex.value = index
     if (e.dataTransfer) {
         e.dataTransfer.effectAllowed = 'move'
@@ -99,31 +101,38 @@ function handleDragStart(e: DragEvent, index: number) {
 }
 
 function handleDragOver(e: DragEvent, index: number) {
-    if (!props.isReordering || draggedIndex.value === null) return
+    if (!props.isReordering || draggedIndex.value === null)
+        return
     e.preventDefault()
-    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move'
+    if (e.dataTransfer)
+        e.dataTransfer.dropEffect = 'move'
     if (draggedIndex.value !== index) {
         draggedOverIndex.value = index
         if (e.currentTarget instanceof HTMLElement) {
             const rect = e.currentTarget.getBoundingClientRect()
             dragDirection.value = e.clientY < rect.top + rect.height / 2 ? 'up' : 'down'
         }
-    } else {
+    }
+    else {
         draggedOverIndex.value = null
         dragDirection.value = null
     }
 }
 
 function handleDrop(e: DragEvent, index: number) {
-    if (!props.isReordering || draggedIndex.value === null) return
+    if (!props.isReordering || draggedIndex.value === null)
+        return
     e.preventDefault()
     if (draggedIndex.value !== index) {
         let targetIndex = index
-        if (dragDirection.value === 'up' && index > draggedIndex.value) targetIndex--
-        else if (dragDirection.value === 'down' && index < draggedIndex.value) targetIndex++
+        if (dragDirection.value === 'up' && index > draggedIndex.value)
+            targetIndex--
+        else if (dragDirection.value === 'down' && index < draggedIndex.value)
+            targetIndex++
         const newData = [...props.units]
         const item = newData[draggedIndex.value]
-        if (!item) return
+        if (!item)
+            return
         newData.splice(draggedIndex.value, 1)
         newData.splice(targetIndex, 0, item)
         emit('update-order', newData)

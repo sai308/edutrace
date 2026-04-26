@@ -25,7 +25,8 @@ async function copyMeetId(meetId: string) {
     try {
         await navigator.clipboard.writeText(meetId)
         toast.success(t('analytics.toast.copySuccess'))
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Failed to copy:', e)
         toast.error(t('analytics.toast.copyError'))
     }
@@ -90,9 +91,7 @@ async function copyMeetId(meetId: string) {
                     </div>
                     <div class="flex items-center gap-1.5" :title="$t('analytics.card.tooltips.avgDuration')">
                         <Timer :size="16" />
-                        <span class="text-xs font-medium text-foreground"
-                            >~{{ stat.avgDuration.toFixed(0) }}{{ $t('duration.minutes') }}</span
-                        >
+                        <span class="text-xs font-medium text-foreground">~{{ stat.avgDuration.toFixed(0) }}{{ $t('duration.minutes') }}</span>
                     </div>
                     <div class="flex items-center gap-1.5" :title="$t('analytics.card.tooltips.participants')">
                         <Users :size="16" />
@@ -109,8 +108,8 @@ async function copyMeetId(meetId: string) {
                         stat.attendancePercentage >= 75
                             ? 'bg-green-200 text-green-800 hover:bg-green-200/80 border-transparent'
                             : stat.attendancePercentage >= 50
-                              ? 'bg-yellow-200 text-yellow-800 hover:bg-yellow-200/80 border-transparent'
-                              : 'bg-destructive/10 text-destructive hover:bg-destructive/20 border-transparent',
+                                ? 'bg-yellow-200 text-yellow-800 hover:bg-yellow-200/80 border-transparent'
+                                : 'bg-destructive/10 text-destructive hover:bg-destructive/20 border-transparent',
                     ]"
                     variant="outline"
                     :title="$t('analytics.card.tooltips.attendance')"

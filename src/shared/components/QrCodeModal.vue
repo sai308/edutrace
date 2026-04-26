@@ -41,12 +41,13 @@ watch(
                     margin: 2,
                     color: { dark: '#000000', light: '#ffffff' },
                 })
-            } catch (err) {
+            }
+            catch (err) {
                 logger.error('Error generating QR code', err)
                 toast.error('Failed to generate QR code')
             }
         }
-    }
+    },
 )
 
 function copyLink() {
@@ -76,7 +77,7 @@ function downloadQr() {
 
             <div class="flex flex-col items-center space-y-4 py-2">
                 <div class="bg-white p-2 rounded-lg border shadow-sm">
-                    <img v-if="qrDataUrl" :src="qrDataUrl" alt="QR Code" class="w-64 h-64" />
+                    <img v-if="qrDataUrl" :src="qrDataUrl" alt="QR Code" class="w-64 h-64">
                     <div v-else class="w-64 h-64 flex items-center justify-center text-muted-foreground">
                         {{ $t('qrCode.generating') }}
                     </div>

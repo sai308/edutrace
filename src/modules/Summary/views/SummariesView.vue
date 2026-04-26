@@ -83,8 +83,8 @@ const settingsForm = ref<SummaryThresholds>({ ...DEFAULT_SETTINGS })
 const unsavedCount = computed(
     () =>
         students.value.filter(
-            (s) => s.examGrade !== null && s.examGrade !== undefined && s.examGrade !== '' && !s.completedAt
-        ).length
+            s => s.examGrade !== null && s.examGrade !== undefined && s.examGrade !== '' && !s.completedAt,
+        ).length,
 )
 
 const isProfileOpen = ref(false)
@@ -99,7 +99,8 @@ const showLeaveDialog = ref(false)
 let resolveLeaveGuard: ((confirmed: boolean) => void) | null = null
 
 onBeforeRouteLeave(() => {
-    if (unsavedCount.value === 0) return true
+    if (unsavedCount.value === 0)
+        return true
 
     showLeaveDialog.value = true
     return new Promise<boolean>((resolve) => {
@@ -137,7 +138,7 @@ async function initialize() {
     if (groups.value.length > 0) {
         // If a group name came from the URL query param, preselect it; otherwise default to first
         const fromQuery = selectedGroupName.value
-            ? (groups.value.find((g) => g.name === selectedGroupName.value) ?? null)
+            ? (groups.value.find(g => g.name === selectedGroupName.value) ?? null)
             : null
         selectedGroup.value = fromQuery ?? groups.value[0] ?? null
     }
@@ -163,7 +164,7 @@ watch(
             await handleReload()
         }
     },
-    { immediate: false }
+    { immediate: false },
 )
 
 onMounted(() => {
@@ -179,7 +180,7 @@ async function handleReload() {
             settingsForm.value.attendanceThreshold,
             settingsForm.value.attendanceEnabled,
             selectedFormat.value,
-            settingsForm.value.requiredTasks
+            settingsForm.value.requiredTasks,
         )
     }
 }
@@ -283,10 +284,10 @@ function getGradeActions(student: StudentSummaryData): RowActionItem[] {
                                     selectedFormat === '5-scale'
                                         ? $t('summary.scales.five')
                                         : selectedFormat === '100-scale'
-                                          ? $t('summary.scales.hundred')
-                                          : selectedFormat === 'ects'
-                                            ? $t('summary.scales.ects')
-                                            : 'Default'
+                                            ? $t('summary.scales.hundred')
+                                            : selectedFormat === 'ects'
+                                                ? $t('summary.scales.ects')
+                                                : 'Default'
                                 }}
                             </span>
                             <ChevronDown class="h-3 w-3 opacity-50 shrink-0" />

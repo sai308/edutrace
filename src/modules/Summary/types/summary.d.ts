@@ -77,7 +77,7 @@ export interface StudentSummaryData {
     moduleDetails: Record<string, any>
     total: string | number | null
     totalRaw: number | null
-    totalDetails?: { missingLabel: string; missingModules: string[] } | null
+    totalDetails?: { missingLabel: string, missingModules: string[] } | null
     examGrade: string | number | null
     examGradeRaw: number | null
     examIsAuto: boolean

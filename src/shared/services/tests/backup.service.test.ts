@@ -111,7 +111,7 @@ describe('importReports', () => {
 
         const stored = await meetsRepository.getAllMeets()
         expect(stored).toHaveLength(2)
-        expect(stored.map((m) => m.id)).toEqual(expect.arrayContaining(['r1', 'r2']))
+        expect(stored.map(m => m.id)).toEqual(expect.arrayContaining(['r1', 'r2']))
     })
 
     it('syncs new members from imported participants', async () => {
@@ -220,7 +220,7 @@ describe('importData', () => {
         await backupService.importData({ meets: [makeMeet('imp-m')], groups: [] })
 
         const stored = await meetsRepository.getAllMeets()
-        expect(stored.map((m) => m.id)).toContain('imp-m')
+        expect(stored.map(m => m.id)).toContain('imp-m')
     })
 
     it('restores group records from the payload', async () => {
@@ -298,7 +298,7 @@ describe('importData', () => {
         await backupService.importData(exported)
 
         const meets = await meetsRepository.getAllMeets()
-        expect(meets.map((m) => m.id)).toContain('rd-m')
+        expect(meets.map(m => m.id)).toContain('rd-m')
 
         const groups = await db.getAll('groups')
         expect(groups.map((g: any) => g.id)).toContain('rd-g')
@@ -866,7 +866,7 @@ describe('exportTasks', () => {
 
         expect(result.tasks).toHaveLength(2)
         expect(result.tasks.map((t: any) => t.normalizedName)).toEqual(
-            expect.arrayContaining(['exp-task-a', 'exp-task-b'])
+            expect.arrayContaining(['exp-task-a', 'exp-task-b']),
         )
     })
 })

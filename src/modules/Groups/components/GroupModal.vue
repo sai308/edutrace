@@ -69,7 +69,8 @@ watch(
                 if (!formData.value.course && formData.value.name) {
                     formData.value.course = suggestCourseFromName(formData.value.name)
                 }
-            } else {
+            }
+            else {
                 formData.value = {
                     name: '',
                     meetId: props.suggestedMeetIds?.[0] ?? '',
@@ -80,7 +81,7 @@ watch(
             showMeetIdSuggestions.value = false
             showTeacherSuggestions.value = false
         }
-    }
+    },
 )
 
 // Auto-suggest course from name when course is not yet set
@@ -90,19 +91,20 @@ watch(
         if (newName && !formData.value.course) {
             formData.value.course = suggestCourseFromName(newName)
         }
-    }
+    },
 )
 
 const filteredSuggested = computed(() => {
-    if (!props.suggestedMeetIds?.length) return []
+    if (!props.suggestedMeetIds?.length)
+        return []
     const query = formData.value.meetId.toLowerCase()
-    return props.suggestedMeetIds.filter((id) => id.toLowerCase().includes(query))
+    return props.suggestedMeetIds.filter(id => id.toLowerCase().includes(query))
 })
 
 const filteredMeetIds = computed(() => {
     const suggestedSet = new Set(props.suggestedMeetIds ?? [])
     const query = formData.value.meetId.toLowerCase()
-    return props.allMeetIds.filter((id) => !suggestedSet.has(id) && id.toLowerCase().includes(query))
+    return props.allMeetIds.filter(id => !suggestedSet.has(id) && id.toLowerCase().includes(query))
 })
 
 const hasAnyMeetIds = computed(() => (props.allMeetIds?.length ?? 0) > 0 || (props.suggestedMeetIds?.length ?? 0) > 0)
@@ -114,7 +116,7 @@ const meetIdInvalid = computed(() => {
 
 const filteredTeachers = computed(() => {
     const query = (formData.value.teacher ?? '').toLowerCase()
-    return props.allTeachers.filter((t) => t.toLowerCase().includes(query))
+    return props.allTeachers.filter(t => t.toLowerCase().includes(query))
 })
 
 function selectMeetId(id: string): void {
@@ -134,14 +136,17 @@ function handleSave(): void {
 // Small delay lets the click event on a suggestion item fire before the input loses focus
 function handleBlur(type: 'meetId' | 'teacher'): void {
     setTimeout(() => {
-        if (type === 'meetId') showMeetIdSuggestions.value = false
-        if (type === 'teacher') showTeacherSuggestions.value = false
+        if (type === 'meetId')
+            showMeetIdSuggestions.value = false
+        if (type === 'teacher')
+            showTeacherSuggestions.value = false
     }, 200)
 }
 
 function handlePaste(event: ClipboardEvent): void {
     const text = event.clipboardData?.getData('text')
-    if (!text) return
+    if (!text)
+        return
     const match = text.match(GOOGLE_MEET_ID_PATTERN)
     if (match) {
         event.preventDefault()
@@ -151,7 +156,8 @@ function handlePaste(event: ClipboardEvent): void {
 
 function handleOpenChange(val: boolean): void {
     emit('update:open', val)
-    if (!val) emit('close')
+    if (!val)
+        emit('close')
 }
 </script>
 

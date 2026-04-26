@@ -73,7 +73,7 @@ export class BaseRepository<T extends StoreNames<IDBCustomSchema>> {
     async getAllFromIndex(
         indexName: IndexNames<IDBCustomSchema, T>,
         query: IDBKeyRange | any = null,
-        count?: number
+        count?: number,
     ): Promise<StoreValue<IDBCustomSchema, T>[]> {
         const db = await this.getDb()
         return db.getAllFromIndex(this.storeName, indexName, query, count)
@@ -84,7 +84,7 @@ export class BaseRepository<T extends StoreNames<IDBCustomSchema>> {
      */
     async getFromIndex(
         indexName: IndexNames<IDBCustomSchema, T>,
-        query: IDBKeyRange | any
+        query: IDBKeyRange | any,
     ): Promise<StoreValue<IDBCustomSchema, T> | undefined> {
         const db = await this.getDb()
         return db.getFromIndex(this.storeName, indexName, query)
@@ -98,7 +98,7 @@ export class BaseRepository<T extends StoreNames<IDBCustomSchema>> {
     async getManyFromIndex(
         indexName: IndexNames<IDBCustomSchema, T>,
         query: IDBKeyRange | any,
-        { limit, offset = 0 }: PageOptions = {}
+        { limit, offset = 0 }: PageOptions = {},
     ): Promise<StoreValue<IDBCustomSchema, T>[]> {
         const db = await this.getDb()
         const tx = db.transaction(this.storeName, 'readonly')
@@ -113,7 +113,8 @@ export class BaseRepository<T extends StoreNames<IDBCustomSchema>> {
 
         const results: StoreValue<IDBCustomSchema, T>[] = []
         while (cursor) {
-            if (limit !== undefined && results.length >= limit) break
+            if (limit !== undefined && results.length >= limit)
+                break
             results.push(cursor.value as StoreValue<IDBCustomSchema, T>)
             cursor = (await cursor.continue()) ?? null
         }
@@ -129,7 +130,7 @@ export class BaseRepository<T extends StoreNames<IDBCustomSchema>> {
         const tx = db.transaction(this.storeName, 'readwrite')
         const store = tx.objectStore(this.storeName)
 
-        await Promise.all(items.map((item) => store.put(item)))
+        await Promise.all(items.map(item => store.put(item)))
         await tx.done
     }
 
@@ -141,7 +142,7 @@ export class BaseRepository<T extends StoreNames<IDBCustomSchema>> {
         const tx = db.transaction(this.storeName, 'readwrite')
         const store = tx.objectStore(this.storeName)
 
-        await Promise.all(ids.map((id) => store.delete(id)))
+        await Promise.all(ids.map(id => store.delete(id)))
         await tx.done
     }
 }

@@ -37,7 +37,7 @@ const props = defineProps<{
     groups: Group[]
     allMeetIds: string[]
     allTeachers: string[]
-    processFileFn: (payload: { file: File; groupName: string }) => Promise<void>
+    processFileFn: (payload: { file: File, groupName: string }) => Promise<void>
     createGroupFn: (data: Partial<Group>) => Promise<Group>
 }>()
 
@@ -75,7 +75,7 @@ const {
 } = useMarksFileQueue(groupsRef, {
     onProcessFile: props.processFileFn,
     onCreateGroup: props.createGroupFn,
-    onSuggestMeetIds: (file) => marksService.suggestMeetIdsForFile(file),
+    onSuggestMeetIds: file => marksService.suggestMeetIdsForFile(file),
     onQueueComplete: ({ done, modeSkipped }) => {
         if (modeSkipped > 0 && done === 0) {
             toast.info(t('marks.importModal.allSkippedByMode', { count: modeSkipped }))

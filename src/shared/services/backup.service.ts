@@ -207,7 +207,8 @@ export async function importData(jsonData: any): Promise<void> {
             if (existing) {
                 await storeTasks.put({ ...task, id: existing.id })
                 taskIdMapping.set(oldId, existing.id)
-            } else {
+            }
+            else {
                 const { id, ...taskWithoutId } = task
                 const newId = await storeTasks.add(taskWithoutId)
                 taskIdMapping.set(oldId, newId as number)
@@ -233,7 +234,7 @@ export async function importData(jsonData: any): Promise<void> {
             jsonData.marks.map((mark: any) => {
                 const newTaskId = taskIdMapping.get(mark.taskId) || mark.taskId
                 return storeMarks.put({ ...mark, taskId: newTaskId as string })
-            })
+            }),
         )
 
         await txMarks.done
@@ -386,7 +387,8 @@ export async function importSummary(jsonData: any): Promise<void> {
 }
 
 export async function importReports(jsonData: any): Promise<void> {
-    if (!jsonData || !jsonData.meets) throw new Error('Invalid reports data')
+    if (!jsonData || !jsonData.meets)
+        throw new Error('Invalid reports data')
     const db = await databaseService.getDb()
     const tx = db.transaction('meets', 'readwrite')
     const store = tx.objectStore('meets')
@@ -399,7 +401,8 @@ export async function importReports(jsonData: any): Promise<void> {
 }
 
 export async function importGroups(jsonData: any): Promise<void> {
-    if (!jsonData || !jsonData.groups) throw new Error('Invalid groups data')
+    if (!jsonData || !jsonData.groups)
+        throw new Error('Invalid groups data')
     const db = await databaseService.getDb()
     const tx = db.transaction('groups', 'readwrite')
     const store = tx.objectStore('groups')
@@ -409,7 +412,8 @@ export async function importGroups(jsonData: any): Promise<void> {
 }
 
 export async function importTasks(jsonData: any): Promise<void> {
-    if (!jsonData || !jsonData.tasks) throw new Error('Invalid tasks data')
+    if (!jsonData || !jsonData.tasks)
+        throw new Error('Invalid tasks data')
     await clearTasks()
     const db = await databaseService.getDb()
 
@@ -424,7 +428,8 @@ export async function importTasks(jsonData: any): Promise<void> {
 }
 
 export async function importMarks(jsonData: any): Promise<void> {
-    if (!jsonData || !jsonData.marks) throw new Error('Invalid marks data')
+    if (!jsonData || !jsonData.marks)
+        throw new Error('Invalid marks data')
     await clearMarks()
 
     // In version 3 marks, members might be updated, so it's safer to clear members
@@ -463,11 +468,12 @@ export async function importMarks(jsonData: any): Promise<void> {
                 jsonData.marks.map((mark: any) => {
                     const newTaskId = taskIdMapping.get(mark.taskId) || mark.taskId
                     return storeMarks.put({ ...mark, taskId: newTaskId as string })
-                })
+                }),
             )
             await txMarks.done
         }
-    } else {
+    }
+    else {
         // Pure marks import without task mapping (version 3 or independent marks)
         if (jsonData.marks && jsonData.marks.length > 0) {
             const txMarks = db.transaction('marks', 'readwrite')
@@ -489,7 +495,8 @@ export async function exportMembers(): Promise<any> {
 }
 
 export async function importMembers(jsonData: any): Promise<void> {
-    if (!jsonData || !jsonData.members) throw new Error('Invalid members data')
+    if (!jsonData || !jsonData.members)
+        throw new Error('Invalid members data')
 
     const db = await databaseService.getDb()
     const tx = db.transaction('members', 'readwrite')
@@ -511,7 +518,8 @@ export async function exportDocumentSessions(): Promise<any> {
 }
 
 export async function importDocumentSessions(jsonData: any): Promise<void> {
-    if (!jsonData || !jsonData.sessions) throw new Error('Invalid sessions data')
+    if (!jsonData || !jsonData.sessions)
+        throw new Error('Invalid sessions data')
     await clearSessions()
     const db = await databaseService.getDb()
     const tx = db.transaction('sessions', 'readwrite')
@@ -531,7 +539,8 @@ export async function exportPlans(): Promise<any> {
 }
 
 export async function importPlans(jsonData: any): Promise<void> {
-    if (!jsonData || !jsonData.plans) throw new Error('Invalid plans data')
+    if (!jsonData || !jsonData.plans)
+        throw new Error('Invalid plans data')
     await clearPlans()
     const db = await databaseService.getDb()
     const tx = db.transaction('plans', 'readwrite')

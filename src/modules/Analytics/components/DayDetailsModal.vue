@@ -41,7 +41,8 @@ const open = computed({
     get: () => props.isOpen,
     set: (val: boolean) => {
         emit('update:open', val)
-        if (!val) emit('close')
+        if (!val)
+            emit('close')
     },
 })
 </script>

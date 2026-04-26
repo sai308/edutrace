@@ -51,12 +51,12 @@ const ordinalMap = computed<Map<string, number>>(() => {
 const columns = computed(() =>
     createSummaryColumns(
         props.modules,
-        (student) => emit('student-click', student),
+        student => emit('student-click', student),
         props.rowActions ?? (() => []),
         ordinalMap.value,
         { formatDate, formatTime },
-        t
-    )
+        t,
+    ),
 )
 
 const table = useVueTable({
@@ -73,8 +73,8 @@ const table = useVueTable({
         sorting.value = typeof updaterOrValue === 'function' ? updaterOrValue(sorting.value) : updaterOrValue
     },
     onColumnFiltersChange: (updaterOrValue) => {
-        columnFilters.value =
-            typeof updaterOrValue === 'function' ? updaterOrValue(columnFilters.value) : updaterOrValue
+        columnFilters.value
+            = typeof updaterOrValue === 'function' ? updaterOrValue(columnFilters.value) : updaterOrValue
     },
     state: {
         get sorting() {
@@ -92,7 +92,7 @@ watch(
     () => props.searchQuery,
     (q) => {
         table.getColumn('name')?.setFilterValue(q || undefined)
-    }
+    },
 )
 
 defineExpose({ table })
@@ -113,8 +113,8 @@ defineExpose({ table })
                                 header.column.id === 'name'
                                     ? 'min-w-[200px] sticky left-0 z-40 bg-card shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
                                     : ['actions', 'ordinal'].includes(header.column.id)
-                                      ? 'w-10'
-                                      : '',
+                                        ? 'w-10'
+                                        : '',
                             ]"
                         >
                             <FlexRender

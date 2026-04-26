@@ -61,11 +61,11 @@ const table = useVueTable({
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
-    onRowSelectionChange: (updaterOrValue) => valueUpdater(updaterOrValue, rowSelection),
-    onGlobalFilterChange: (updaterOrValue) => valueUpdater(updaterOrValue, globalFilter),
-    onColumnVisibilityChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnVisibility),
-    onPaginationChange: (updaterOrValue) => valueUpdater(updaterOrValue, pagination),
+    onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
+    onRowSelectionChange: updaterOrValue => valueUpdater(updaterOrValue, rowSelection),
+    onGlobalFilterChange: updaterOrValue => valueUpdater(updaterOrValue, globalFilter),
+    onColumnVisibilityChange: updaterOrValue => valueUpdater(updaterOrValue, columnVisibility),
+    onPaginationChange: updaterOrValue => valueUpdater(updaterOrValue, pagination),
     state: {
         get sorting() {
             return sorting.value
@@ -87,7 +87,7 @@ const table = useVueTable({
 
 watch(
     () => props.searchQuery,
-    (q) => table.setGlobalFilter(q ?? '')
+    q => table.setGlobalFilter(q ?? ''),
 )
 
 // Reveal/hide the select column when bulk mode changes.
@@ -96,10 +96,11 @@ watch(
 watch(
     () => props.bulkMode,
     (enabled) => {
-        table.setColumnVisibility((prev) => ({ ...prev, select: !!enabled }))
-        if (!enabled) table.toggleAllRowsSelected(false)
+        table.setColumnVisibility(prev => ({ ...prev, select: !!enabled }))
+        if (!enabled)
+            table.toggleAllRowsSelected(false)
     },
-    { immediate: true }
+    { immediate: true },
 )
 
 defineExpose({ table })
@@ -120,10 +121,10 @@ defineExpose({ table })
                                 header.id === 'groupName'
                                     ? 'sticky left-0 z-40 w-[160px] bg-card shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
                                     : header.id === 'actions'
-                                      ? 'w-10'
-                                      : !['select'].includes(header.id)
-                                        ? 'min-w-[100px]'
-                                        : '',
+                                        ? 'w-10'
+                                        : !['select'].includes(header.id)
+                                            ? 'min-w-[100px]'
+                                            : '',
                             ]"
                         >
                             <FlexRender

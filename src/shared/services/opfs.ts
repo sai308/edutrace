@@ -17,7 +17,7 @@ export interface FileMetadata {
  */
 async function getDirectoryHandle(
     path: string,
-    options: { create?: boolean } = {}
+    options: { create?: boolean } = {},
 ): Promise<FileSystemDirectoryHandle> {
     const root = await navigator.storage.getDirectory()
     if (!path || path === '.' || path === '/') {
@@ -44,7 +44,7 @@ export const opfs = {
     async saveFile(
         directoryPath: string,
         fileName: string,
-        content: Blob | File | ArrayBuffer | string
+        content: Blob | File | ArrayBuffer | string,
     ): Promise<void> {
         const dirHandle = await getDirectoryHandle(directoryPath, { create: true })
         const fileHandle = await dirHandle.getFileHandle(fileName, { create: true })
@@ -74,7 +74,8 @@ export const opfs = {
             const dirHandle = await getDirectoryHandle(directoryPath)
             await dirHandle.getFileHandle(fileName)
             return true
-        } catch {
+        }
+        catch {
             return false
         }
     },
@@ -117,7 +118,8 @@ export const opfs = {
      */
     async deleteDirectory(directoryPath: string, recursive = true): Promise<void> {
         const segments = directoryPath.split('/').filter(Boolean)
-        if (segments.length === 0) return // Cannot delete root
+        if (segments.length === 0)
+            return // Cannot delete root
 
         const lastSegment = segments.pop()!
         const parentPath = segments.join('/')

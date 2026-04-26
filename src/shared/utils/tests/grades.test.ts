@@ -92,7 +92,7 @@ describe('toNationalGrade', () => {
             return key.split('.').at(-1)!
         }
         toNationalGrade(95, EXAM, trackingT)
-        expect(calls.some((k) => k.includes('sessions.grades'))).toBe(true)
+        expect(calls.some(k => k.includes('sessions.grades'))).toBe(true)
     })
 })
 

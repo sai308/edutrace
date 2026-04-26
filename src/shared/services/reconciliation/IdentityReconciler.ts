@@ -65,14 +65,15 @@ export class IdentityReconciler {
                     email: !matchedByEmail && student.email ? student.email : match.email,
                     // Update groupName if existing is 'Unknown' or empty, and new is valid
                     groupName:
-                        (match.groupName === 'Unknown' || !match.groupName) &&
-                        student.groupName &&
-                        student.groupName !== 'Unknown'
+                        (match.groupName === 'Unknown' || !match.groupName)
+                        && student.groupName
+                        && student.groupName !== 'Unknown'
                             ? student.groupName
                             : match.groupName,
                     isNew: false,
                 } as ReconciledStudent
-            } else {
+            }
+            else {
                 result = {
                     ...student,
                     id: uuidv4(),
@@ -100,7 +101,8 @@ export class IdentityReconciler {
      * Normalizes a name string: lowercase, removed spaces.
      */
     private _normalizeName(name: string): string {
-        if (!name) return ''
+        if (!name)
+            return ''
         return name.toLowerCase().replace(/\s+/g, '')
     }
 }

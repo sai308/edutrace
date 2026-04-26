@@ -14,7 +14,7 @@ function makeGroup(name: string, id = '1'): Group {
 }
 
 describe('useMarksFileQueue', () => {
-    let onProcessFile: Mock<(payload: { file: File; groupName: string }) => Promise<void>>
+    let onProcessFile: Mock<(payload: { file: File, groupName: string }) => Promise<void>>
     let onCreateGroup: Mock<(groupData: Partial<Group>) => Promise<Group>>
     let onQueueComplete: Mock<() => void>
     let groups: Ref<Group[]>
@@ -95,7 +95,7 @@ describe('useMarksFileQueue', () => {
 
     // ─── known-only mode ────────────────────────────────────────────────
 
-    describe("importMode = 'known-only'", () => {
+    describe('importMode = \'known-only\'', () => {
         it('silently skips files with unknown group prefix without showing GroupModal', async () => {
             const q = makeQueue()
             q.importMode.value = 'known-only'
@@ -118,7 +118,7 @@ describe('useMarksFileQueue', () => {
 
     // ─── create-on-fly mode ─────────────────────────────────────────────
 
-    describe("importMode = 'create-on-fly'", () => {
+    describe('importMode = \'create-on-fly\'', () => {
         it('shows confirm dialog then GroupModal for unknown group prefix', async () => {
             const q = makeQueue()
             q.importMode.value = 'create-on-fly'

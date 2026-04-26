@@ -43,7 +43,8 @@ function getSize(data: unknown): number {
     try {
         // Use Blob to accurately count UTF-8 bytes, avoiding JS string length issues
         return new Blob([JSON.stringify(data)]).size
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Error calculating size for data:', e)
         return 0
     }

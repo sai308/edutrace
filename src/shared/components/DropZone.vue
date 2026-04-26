@@ -43,7 +43,7 @@ function onFileSelect(event: Event) {
         @dragover="onDragOver"
         @drop="onDrop"
     >
-        <input ref="fileInput" type="file" multiple accept=".csv" class="hidden" @change="onFileSelect" />
+        <input ref="fileInput" type="file" multiple accept=".csv" class="hidden" @change="onFileSelect">
 
         <div
             class="flex flex-col items-center gap-4 transition-transform duration-200 pointer-events-none"

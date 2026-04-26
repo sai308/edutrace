@@ -31,20 +31,24 @@ const { deleteMeet, bulkDeleteMeets } = useMeets()
 const isDeleting = ref(false)
 
 async function handleConfirm() {
-    if (!props.meetId && (!props.meetIds || props.meetIds.length === 0)) return
+    if (!props.meetId && (!props.meetIds || props.meetIds.length === 0))
+        return
 
     try {
         isDeleting.value = true
         if (props.meetId) {
             await deleteMeet(props.meetId)
-        } else if (props.meetIds && props.meetIds.length > 0) {
+        }
+        else if (props.meetIds && props.meetIds.length > 0) {
             await bulkDeleteMeets(props.meetIds)
         }
         emit('success')
         emit('update:open', false)
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Failed to delete meet(s):', e)
-    } finally {
+    }
+    finally {
         isDeleting.value = false
     }
 }
@@ -59,12 +63,12 @@ async function handleConfirm() {
                     {{
                         props.meetIds?.length
                             ? t(
-                                  'reports.deleteModal.message_multiple',
-                                  {
-                                      count: props.meetIds.length,
-                                  },
-                                  `${props.meetIds.length} reports will be deleted.`
-                              )
+                                'reports.deleteModal.message_multiple',
+                                {
+                                    count: props.meetIds.length,
+                                },
+                                `${props.meetIds.length} reports will be deleted.`,
+                            )
                             : t('reports.deleteModal.message_single')
                     }}
                 </AlertDialogDescription>

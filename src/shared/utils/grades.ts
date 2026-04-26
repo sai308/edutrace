@@ -2,10 +2,14 @@
  * Formats a percentage mark to a 5-scale system.
  */
 export function to5Scale(percent: number): number {
-    if (percent >= 90) return 5
-    if (percent >= 75) return 4
-    if (percent >= 60) return 3
-    if (percent >= 35) return 2
+    if (percent >= 90)
+        return 5
+    if (percent >= 75)
+        return 4
+    if (percent >= 60)
+        return 3
+    if (percent >= 35)
+        return 2
     return 1
 }
 
@@ -15,12 +19,18 @@ export function to5Scale(percent: number): number {
  * A≥90, B≥82, C≥74, D≥64, E≥60, FX≥35, F<35
  */
 export function toECTS(percent: number): string {
-    if (percent >= 90) return 'A'
-    if (percent >= 82) return 'B'
-    if (percent >= 74) return 'C'
-    if (percent >= 64) return 'D'
-    if (percent >= 60) return 'E'
-    if (percent >= 35) return 'FX'
+    if (percent >= 90)
+        return 'A'
+    if (percent >= 82)
+        return 'B'
+    if (percent >= 74)
+        return 'C'
+    if (percent >= 64)
+        return 'D'
+    if (percent >= 60)
+        return 'E'
+    if (percent >= 35)
+        return 'FX'
     return 'F'
 }
 
@@ -30,11 +40,15 @@ export function toECTS(percent: number): string {
  * `t` is the active i18n translation function.
  */
 export function toNationalGrade(grade: number | null, formOfControl: string, t: (key: string) => string): string {
-    if (grade === null) return t('sessions.grades.absentTooltip')
+    if (grade === null)
+        return t('sessions.grades.absentTooltip')
     const isExam = formOfControl === t('sessions.printDialog.forms.exam')
-    if (grade >= 90) return isExam ? t('sessions.grades.excellent') : t('sessions.grades.passed')
-    if (grade >= 75) return isExam ? t('sessions.grades.good') : t('sessions.grades.passed')
-    if (grade >= 60) return isExam ? t('sessions.grades.satisfactory') : t('sessions.grades.passed')
+    if (grade >= 90)
+        return isExam ? t('sessions.grades.excellent') : t('sessions.grades.passed')
+    if (grade >= 75)
+        return isExam ? t('sessions.grades.good') : t('sessions.grades.passed')
+    if (grade >= 60)
+        return isExam ? t('sessions.grades.satisfactory') : t('sessions.grades.passed')
     return isExam ? t('sessions.grades.unsatisfactory') : t('sessions.grades.notPassed')
 }
 
@@ -52,9 +66,12 @@ export type MarkFormat = '5-scale' | 'ects' | '100-scale'
  */
 export function createMarkFormatter(format: MarkFormat | string): (percent: number) => string | number {
     return (percent: number) => {
-        if (!format || format === '5-scale') return to5Scale(percent)
-        if (format === 'ects') return toECTS(percent)
-        if (format === '100-scale') return to100Scale(percent)
+        if (!format || format === '5-scale')
+            return to5Scale(percent)
+        if (format === 'ects')
+            return toECTS(percent)
+        if (format === '100-scale')
+            return to100Scale(percent)
         return Math.round(percent)
     }
 }
@@ -72,10 +89,14 @@ export function formatMarkToFiveScale(score: number | string, maxPoints: number 
  * Reverse: 5-scale grade → 100-point midpoint of the corresponding band.
  */
 export function from5ScaleTo100(grade: number): number {
-    if (grade >= 5) return 95 // 90-100 band
-    if (grade >= 4) return 82 // 75-89 band
-    if (grade >= 3) return 67 // 60-74 band
-    if (grade >= 2) return 47 // 35-59 band
+    if (grade >= 5)
+        return 95 // 90-100 band
+    if (grade >= 4)
+        return 82 // 75-89 band
+    if (grade >= 3)
+        return 67 // 60-74 band
+    if (grade >= 2)
+        return 47 // 35-59 band
     return 17 // 0-34 band
 }
 
@@ -84,12 +105,18 @@ export function from5ScaleTo100(grade: number): number {
  */
 export function fromECTSTo100(grade: string): number {
     const g = grade.toUpperCase().trim()
-    if (g === 'A') return 95
-    if (g === 'B') return 86
-    if (g === 'C') return 78
-    if (g === 'D') return 71
-    if (g === 'E') return 63
-    if (g === 'FX') return 47
+    if (g === 'A')
+        return 95
+    if (g === 'B')
+        return 86
+    if (g === 'C')
+        return 78
+    if (g === 'D')
+        return 71
+    if (g === 'E')
+        return 63
+    if (g === 'FX')
+        return 47
     return 17 // F
 }
 
@@ -116,13 +143,20 @@ export function computeECTSStats(grades: (number | null)[]): EctsStats {
             continue
         }
         const ects = toECTS(grade)
-        if (ects === 'A') stats.A++
-        else if (ects === 'B') stats.B++
-        else if (ects === 'C') stats.C++
-        else if (ects === 'D') stats.D++
-        else if (ects === 'E') stats.E++
-        else if (ects === 'FX') stats.FX++
-        else if (ects === 'F') stats.F++
+        if (ects === 'A')
+            stats.A++
+        else if (ects === 'B')
+            stats.B++
+        else if (ects === 'C')
+            stats.C++
+        else if (ects === 'D')
+            stats.D++
+        else if (ects === 'E')
+            stats.E++
+        else if (ects === 'FX')
+            stats.FX++
+        else if (ects === 'F')
+            stats.F++
     }
     return stats
 }
@@ -160,20 +194,24 @@ export function convertGradeTo100(value: string | number, format: MarkFormat | s
     const num = Number(strVal)
 
     if (format === '5-scale') {
-        if (!isNaN(num) && num >= 1 && num <= 5) return from5ScaleTo100(num)
+        if (!isNaN(num) && num >= 1 && num <= 5)
+            return from5ScaleTo100(num)
         // If it's already a 100-scale number typed by user, pass through
-        if (!isNaN(num)) return Math.min(100, Math.max(0, num))
+        if (!isNaN(num))
+            return Math.min(100, Math.max(0, num))
         return 0
     }
 
     if (format === 'ects') {
         // Try letter grade first
-        if (isNaN(num) || /^[A-F]X?$/i.test(strVal)) return fromECTSTo100(strVal)
+        if (isNaN(num) || /^[A-F]X?$/i.test(strVal))
+            return fromECTSTo100(strVal)
         // Numeric input — assume already 100-point
         return Math.min(100, Math.max(0, num))
     }
 
     // 100-scale or fallback
-    if (!isNaN(num)) return Math.min(100, Math.max(0, num))
+    if (!isNaN(num))
+        return Math.min(100, Math.max(0, num))
     return 0
 }

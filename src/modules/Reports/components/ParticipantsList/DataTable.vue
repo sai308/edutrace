@@ -26,7 +26,8 @@ const { getScoreColor } = useColors()
 const { formatDuration } = useFormatters()
 
 function getAttendancePercentage(duration: number): number {
-    if (props.totalDuration <= 0) return 0
+    if (props.totalDuration <= 0)
+        return 0
     return Math.round((duration / props.totalDuration) * 100)
 }
 
@@ -49,9 +50,9 @@ const table = useVueTable({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
-    onRowSelectionChange: (updaterOrValue) => valueUpdater(updaterOrValue, rowSelection),
-    onColumnVisibilityChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnVisibility),
+    onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
+    onRowSelectionChange: updaterOrValue => valueUpdater(updaterOrValue, rowSelection),
+    onColumnVisibilityChange: updaterOrValue => valueUpdater(updaterOrValue, columnVisibility),
     state: {
         get sorting() {
             return sorting.value

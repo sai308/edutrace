@@ -58,14 +58,19 @@ const steps = [
 
 const stepIndex = computed({
     get: () => {
-        if (activeTab.value === SessionTypeEnum.SECOND_RETAKE) return 3
-        if (activeTab.value === SessionTypeEnum.FIRST_RETAKE) return 2
+        if (activeTab.value === SessionTypeEnum.SECOND_RETAKE)
+            return 3
+        if (activeTab.value === SessionTypeEnum.FIRST_RETAKE)
+            return 2
         return 1
     },
     set: (val) => {
-        if (val === 1) activeTab.value = SessionTypeEnum.MAIN
-        else if (val === 2) activeTab.value = SessionTypeEnum.FIRST_RETAKE
-        else if (val === 3) activeTab.value = SessionTypeEnum.SECOND_RETAKE
+        if (val === 1)
+            activeTab.value = SessionTypeEnum.MAIN
+        else if (val === 2)
+            activeTab.value = SessionTypeEnum.FIRST_RETAKE
+        else if (val === 3)
+            activeTab.value = SessionTypeEnum.SECOND_RETAKE
     },
 })
 

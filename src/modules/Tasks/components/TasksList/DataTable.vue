@@ -49,15 +49,15 @@ const table = useVueTable({
         return props.tasks
     },
     columns,
-    getRowId: (row) => row.id,
+    getRowId: row => row.id,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: (u) => valueUpdater(u, sorting),
-    onColumnVisibilityChange: (u) => valueUpdater(u, columnVisibility),
-    onRowSelectionChange: (u) => valueUpdater(u, rowSelection),
-    onPaginationChange: (u) => valueUpdater(u, pagination),
+    onSortingChange: u => valueUpdater(u, sorting),
+    onColumnVisibilityChange: u => valueUpdater(u, columnVisibility),
+    onRowSelectionChange: u => valueUpdater(u, rowSelection),
+    onPaginationChange: u => valueUpdater(u, pagination),
     state: {
         get sorting() {
             return sorting.value
@@ -76,17 +76,18 @@ const table = useVueTable({
 
 watch(
     () => props.searchQuery,
-    (q) => table.setGlobalFilter(q ?? ''),
-    { immediate: true }
+    q => table.setGlobalFilter(q ?? ''),
+    { immediate: true },
 )
 
 watch(
     () => props.bulkMode,
     (enabled) => {
-        table.setColumnVisibility((prev) => ({ ...prev, select: !!enabled }))
-        if (!enabled) table.toggleAllRowsSelected(false)
+        table.setColumnVisibility(prev => ({ ...prev, select: !!enabled }))
+        if (!enabled)
+            table.toggleAllRowsSelected(false)
     },
-    { immediate: true }
+    { immediate: true },
 )
 
 defineExpose({ table })

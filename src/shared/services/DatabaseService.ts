@@ -17,7 +17,8 @@ class DatabaseService {
      * Get database name for current workspace
      */
     getCurrentDbName(): string {
-        if (this._currentDbName) return this._currentDbName
+        if (this._currentDbName)
+            return this._currentDbName
 
         try {
             const currentId = storage.get<string>('edutrace_current_workspace', 'default')
@@ -28,7 +29,7 @@ class DatabaseService {
             }
 
             const workspaces = storage.get<Workspace[]>('edutrace_workspaces', []) || []
-            const workspace = Array.isArray(workspaces) ? workspaces.find((w) => w.id === currentId) : null
+            const workspace = Array.isArray(workspaces) ? workspaces.find(w => w.id === currentId) : null
 
             if (workspace && workspace.dbName) {
                 this._currentDbName = workspace.dbName
@@ -37,7 +38,8 @@ class DatabaseService {
 
             this._currentDbName = DEFAULT_DB_NAME
             return DEFAULT_DB_NAME
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Error determining workspace DB, falling back to default.', e)
             return DEFAULT_DB_NAME
         }
@@ -48,8 +50,9 @@ class DatabaseService {
             try {
                 const db = await this._dbPromise
                 db.close()
-                await new Promise((resolve) => setTimeout(resolve, 10))
-            } catch (e) {
+                await new Promise(resolve => setTimeout(resolve, 10))
+            }
+            catch (e) {
                 logger.warn('Error closing DB connection during reset:', e)
             }
         }
@@ -65,7 +68,7 @@ class DatabaseService {
         db: IDBPDatabase<IDBCustomSchema>,
         oldVersion: number,
         _newVersion: number | null,
-        transaction: IDBPTransaction<IDBCustomSchema, StoreNames<IDBCustomSchema>[], 'versionchange'>
+        transaction: IDBPTransaction<IDBCustomSchema, StoreNames<IDBCustomSchema>[], 'versionchange'>,
     ): Promise<void> {
         // --- Meets Store ---
         if (!db.objectStoreNames.contains('meets')) {
@@ -84,7 +87,8 @@ class DatabaseService {
             const store = db.createObjectStore('groups', { keyPath: 'id' })
             store.createIndex('meetId', 'meetId', { unique: true })
             store.createIndex('name', 'name', { unique: true })
-        } else if (oldVersion < 9) {
+        }
+        else if (oldVersion < 9) {
             const store = transaction.objectStore('groups')
 
             if (oldVersion < 7 && store.indexNames.contains('meetId')) {
@@ -111,7 +115,8 @@ class DatabaseService {
                             }
                         }
                     }
-                    if (updated) await cursor.update(group)
+                    if (updated)
+                        await cursor.update(group)
                     cursor = await cursor.continue()
                 }
             }
@@ -122,7 +127,8 @@ class DatabaseService {
             const store = db.createObjectStore('tasks', { keyPath: 'id', autoIncrement: true })
             store.createIndex('name', 'name', { unique: true })
             store.createIndex('normalizedName', 'normalizedName', { unique: true })
-        } else if (oldVersion < 14) {
+        }
+        else if (oldVersion < 14) {
             const store = transaction.objectStore('tasks')
 
             // v13 and below: clean up old group-coupled indexes
@@ -183,14 +189,18 @@ class DatabaseService {
             store.createIndex('task_student', ['taskId', 'studentId'], { unique: true })
             store.createIndex('createdAt', 'createdAt', { unique: false })
             store.createIndex('groupName', 'groupName', { unique: false })
-        } else if (oldVersion < 12) {
+        }
+        else if (oldVersion < 12) {
             const store = transaction.objectStore('marks')
             if (oldVersion < 9 && !store.indexNames.contains('createdAt')) {
                 store.createIndex('createdAt', 'createdAt', { unique: false })
             }
-            if (!store.indexNames.contains('groupName')) store.createIndex('groupName', 'groupName', { unique: false })
-            if (!store.indexNames.contains('studentId')) store.createIndex('studentId', 'studentId', { unique: false })
-            if (!store.indexNames.contains('taskId')) store.createIndex('taskId', 'taskId', { unique: false })
+            if (!store.indexNames.contains('groupName'))
+                store.createIndex('groupName', 'groupName', { unique: false })
+            if (!store.indexNames.contains('studentId'))
+                store.createIndex('studentId', 'studentId', { unique: false })
+            if (!store.indexNames.contains('taskId'))
+                store.createIndex('taskId', 'taskId', { unique: false })
             if (!store.indexNames.contains('task_student')) {
                 store.createIndex('task_student', ['taskId', 'studentId'], { unique: true })
             }
@@ -214,10 +224,13 @@ class DatabaseService {
             const store = db.createObjectStore('modules', { keyPath: 'id', autoIncrement: true })
             store.createIndex('groupId', 'groupId', { unique: false })
             store.createIndex('groupName', 'groupName', { unique: false })
-        } else if (oldVersion < 10) {
+        }
+        else if (oldVersion < 10) {
             const store = transaction.objectStore('modules')
-            if (!store.indexNames.contains('groupId')) store.createIndex('groupId', 'groupId', { unique: false })
-            if (!store.indexNames.contains('groupName')) store.createIndex('groupName', 'groupName', { unique: false })
+            if (!store.indexNames.contains('groupId'))
+                store.createIndex('groupId', 'groupId', { unique: false })
+            if (!store.indexNames.contains('groupName'))
+                store.createIndex('groupName', 'groupName', { unique: false })
         }
 
         // --- FinalAssessments Store ---

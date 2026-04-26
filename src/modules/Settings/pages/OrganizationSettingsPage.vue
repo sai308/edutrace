@@ -67,7 +67,8 @@ async function exportStudents() {
         const data = await backupService.exportMembers()
         downloadJson(data, 'students')
         toast.success(t('organization.settings.students.exportSuccess'))
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Export failed:', e)
         toast.error(t('organization.settings.students.exportFail'))
     }
@@ -79,7 +80,8 @@ function triggerStudentsImport() {
 
 async function handleStudentsImport(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0]
-    if (!file) return
+    if (!file)
+        return
 
     try {
         const text = await file.text()
@@ -87,7 +89,8 @@ async function handleStudentsImport(event: Event) {
         await backupService.importMembers(data)
         toast.success(t('organization.settings.students.importSuccess'))
         await loadStats()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Import failed:', e)
         toast.error(t('organization.settings.students.importFail'))
     }
@@ -103,10 +106,12 @@ async function handleDeleteStudents() {
         await backupService.clearMembers()
         toast.success(t('organization.settings.students.deleteSuccess'))
         await loadStats()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Delete failed:', e)
         toast.error(t('organization.settings.students.deleteFail'))
-    } finally {
+    }
+    finally {
         isDeletingStudents.value = false
         showDeleteStudents.value = false
     }
@@ -118,7 +123,8 @@ async function exportGroups() {
         const data = await backupService.exportGroups()
         downloadJson(data, 'groups')
         toast.success(t('organization.settings.groups.exportSuccess'))
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Export failed:', e)
         toast.error(t('organization.settings.groups.exportFail'))
     }
@@ -130,7 +136,8 @@ function triggerGroupsImport() {
 
 async function handleGroupsImport(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0]
-    if (!file) return
+    if (!file)
+        return
 
     try {
         const text = await file.text()
@@ -138,7 +145,8 @@ async function handleGroupsImport(event: Event) {
         await backupService.importGroups(data)
         toast.success(t('organization.settings.groups.importSuccess'))
         await loadStats()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Import failed:', e)
         toast.error(t('organization.settings.groups.importFail'))
     }
@@ -154,10 +162,12 @@ async function handleDeleteGroups() {
         await backupService.clearGroups()
         toast.success(t('organization.settings.groups.deleteSuccess'))
         await loadStats()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Delete failed:', e)
         toast.error(t('organization.settings.groups.deleteFail'))
-    } finally {
+    }
+    finally {
         isDeletingGroups.value = false
         showDeleteGroups.value = false
     }
@@ -209,7 +219,7 @@ async function handleDeleteGroups() {
                             accept=".json"
                             class="hidden"
                             @change="handleStudentsImport"
-                        />
+                        >
                     </div>
 
                     <Separator />
@@ -251,9 +261,7 @@ async function handleDeleteGroups() {
                                     <span class="text-xs text-muted-foreground">{{
                                         $t('organization.settings.storageUsedLabel')
                                     }}</span>
-                                    <span class="font-medium tabular-nums"
-                                        >{{ (studentsSize / 1024).toFixed(1) }} KB</span
-                                    >
+                                    <span class="font-medium tabular-nums">{{ (studentsSize / 1024).toFixed(1) }} KB</span>
                                 </div>
                                 <div class="flex flex-col gap-0.5">
                                     <span class="text-xs text-muted-foreground">{{
@@ -311,7 +319,7 @@ async function handleDeleteGroups() {
                             accept=".json"
                             class="hidden"
                             @change="handleGroupsImport"
-                        />
+                        >
                     </div>
 
                     <Separator />
@@ -353,9 +361,7 @@ async function handleDeleteGroups() {
                                     <span class="text-xs text-muted-foreground">{{
                                         $t('organization.settings.storageUsedLabel')
                                     }}</span>
-                                    <span class="font-medium tabular-nums"
-                                        >{{ (groupsSize / 1024).toFixed(1) }} KB</span
-                                    >
+                                    <span class="font-medium tabular-nums">{{ (groupsSize / 1024).toFixed(1) }} KB</span>
                                 </div>
                                 <div class="flex flex-col gap-0.5">
                                     <span class="text-xs text-muted-foreground">{{

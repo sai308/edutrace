@@ -8,14 +8,14 @@ import { convertGradeTo100 } from '@/shared/utils/grades'
  * Determines the 100-point value and isAuto flag to persist for a student's grade.
  * Uses totalRaw directly for auto-assigned grades; converts via convertGradeTo100 for manual.
  */
-function resolveGradeStorageValue(student: StudentSummaryData, format: string): { value: number; isAuto: boolean } {
+function resolveGradeStorageValue(student: StudentSummaryData, format: string): { value: number, isAuto: boolean } {
     const displayGrade = student.examGrade
     const rawTotal = student.totalRaw
     const displayTotal = student.total
 
     const cleanDisplay = String(displayGrade).replace('~', '').trim()
-    const cleanTotal =
-        displayTotal !== null && displayTotal !== undefined ? String(displayTotal).replace('~', '').trim() : ''
+    const cleanTotal
+        = displayTotal !== null && displayTotal !== undefined ? String(displayTotal).replace('~', '').trim() : ''
 
     const isAuto = student.examIsAuto ?? (cleanDisplay === cleanTotal && rawTotal !== null && rawTotal !== undefined)
 
@@ -45,17 +45,19 @@ export function useGradeActions(students: Ref<StudentSummaryData[]>, selectedFor
 
         setTimeout(async () => {
             if (action === 'auto') {
-                const st = students.value.find((s) => s.id === student.id)
+                const st = students.value.find(s => s.id === student.id)
                 if (st) {
                     st.examGrade = st.total
                     st.completedAt = null
                     st.examIsAuto = true
                 }
-            } else if (action === 'manual') {
-                actionTarget.value = students.value.find((s) => s.id === student.id) ?? student
+            }
+            else if (action === 'manual') {
+                actionTarget.value = students.value.find(s => s.id === student.id) ?? student
                 isManualDialogOpen.value = true
-            } else if (action === 'save') {
-                const st = students.value.find((s) => s.id === student.id)
+            }
+            else if (action === 'save') {
+                const st = students.value.find(s => s.id === student.id)
                 if (!st || st.examGrade === null || st.examGrade === undefined || st.examGrade === '') {
                     return
                 }
@@ -69,7 +71,8 @@ export function useGradeActions(students: Ref<StudentSummaryData[]>, selectedFor
                 })
                 st.completedAt = new Date().toISOString()
                 st.examIsAuto = isAuto
-            } else if (action === 'remove') {
+            }
+            else if (action === 'remove') {
                 actionTarget.value = student
                 isDeleteDialogOpen.value = true
             }
@@ -78,11 +81,12 @@ export function useGradeActions(students: Ref<StudentSummaryData[]>, selectedFor
 
     async function handleSaveAll() {
         const unsaved = students.value.filter(
-            (s) => s.examGrade !== null && s.examGrade !== undefined && s.examGrade !== '' && !s.completedAt
+            s => s.examGrade !== null && s.examGrade !== undefined && s.examGrade !== '' && !s.completedAt,
         )
 
         for (const student of unsaved) {
-            if (student.examGrade === null || student.examGrade === undefined) continue
+            if (student.examGrade === null || student.examGrade === undefined)
+                continue
 
             const { value, isAuto } = resolveGradeStorageValue(student, selectedFormat.value)
             await summaryService.saveFinalAssessment({
@@ -99,14 +103,15 @@ export function useGradeActions(students: Ref<StudentSummaryData[]>, selectedFor
     async function handleDeleteConfirm() {
         isDeleteDialogOpen.value = false
         const student = actionTarget.value
-        if (!student) return
+        if (!student)
+            return
 
         const assessment = await summaryService.getFinalAssessmentByStudent(student.id, 'examination')
         if (assessment?.id) {
             await summaryService.deleteFinalAssessment(assessment.id)
         }
 
-        const st = students.value.find((s) => s.id === student.id)
+        const st = students.value.find(s => s.id === student.id)
         if (st) {
             st.examGrade = null
             st.completedAt = null
@@ -117,9 +122,10 @@ export function useGradeActions(students: Ref<StudentSummaryData[]>, selectedFor
     function handleManualConfirm(grade: string) {
         isManualDialogOpen.value = false
         const student = actionTarget.value
-        if (!student || !grade.trim()) return
+        if (!student || !grade.trim())
+            return
 
-        const st = students.value.find((s) => s.id === student.id)
+        const st = students.value.find(s => s.id === student.id)
         if (st) {
             st.examGrade = grade.trim()
             st.completedAt = null

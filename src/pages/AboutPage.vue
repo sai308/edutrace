@@ -168,7 +168,7 @@ const technologies: Technology[] = [
     <div class="max-w-4xl mx-auto space-y-12 pb-12 px-4">
         <div class="text-center space-y-4">
             <div class="flex justify-center mb-2">
-                <img src="/edutrace-logo.svg" class="h-16" alt="EduTrace" />
+                <img src="/edutrace-logo.svg" class="h-16" alt="EduTrace">
             </div>
             <h1 class="text-4xl font-bold tracking-tight">
                 {{ t('about.hero.title') }}

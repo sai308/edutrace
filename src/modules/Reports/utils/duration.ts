@@ -1,7 +1,8 @@
 import type { Meet } from '@/modules/Analytics/types/analytics'
 
 export function calculateMeetDuration(meet: Meet | undefined): number {
-    if (!meet) return 0
+    if (!meet)
+        return 0
 
     // Try to calculate from start/end time first
     if (meet.startTime && meet.endTime) {
@@ -13,6 +14,7 @@ export function calculateMeetDuration(meet: Meet | undefined): number {
     }
 
     // Fallback to sum of participant durations
-    if (!meet.participants) return 0
+    if (!meet.participants)
+        return 0
     return meet.participants.reduce((acc, p) => acc + p.duration, 0)
 }

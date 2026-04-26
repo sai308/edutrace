@@ -29,7 +29,7 @@ const ordinalMap = computed<Map<string, number>>(() => {
     const sorted = [...pool].sort((a, b) =>
         a.studentSnapshot.fullName.localeCompare(b.studentSnapshot.fullName, undefined, {
             sensitivity: 'base',
-        })
+        }),
     )
     return new Map(sorted.map((e, i) => [e.studentId, i + 1]))
 })
@@ -51,10 +51,10 @@ const table = useVueTable({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: (u) => valueUpdater(u, sorting),
-    onRowSelectionChange: (u) => valueUpdater(u, rowSelection),
-    onGlobalFilterChange: (u) => valueUpdater(u, globalFilter),
-    onColumnVisibilityChange: (u) => valueUpdater(u, columnVisibility),
+    onSortingChange: u => valueUpdater(u, sorting),
+    onRowSelectionChange: u => valueUpdater(u, rowSelection),
+    onGlobalFilterChange: u => valueUpdater(u, globalFilter),
+    onColumnVisibilityChange: u => valueUpdater(u, columnVisibility),
     state: {
         get sorting() {
             return sorting.value
@@ -73,7 +73,7 @@ const table = useVueTable({
 
 watch(
     () => props.searchQuery,
-    (q) => table.setGlobalFilter(q ?? '')
+    q => table.setGlobalFilter(q ?? ''),
 )
 
 defineExpose({ table })
@@ -98,10 +98,10 @@ defineExpose({ table })
                                 header.id === 'student'
                                     ? 'w-[120px] min-w-[120px] sm:w-[300px] sm:min-w-[300px] sticky left-0 z-50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
                                     : ['ordinal', 'select'].includes(header.id)
-                                      ? 'w-10'
-                                      : header.id === 'lastUpdate'
-                                        ? 'text-right'
-                                        : ''
+                                        ? 'w-10'
+                                        : header.id === 'lastUpdate'
+                                            ? 'text-right'
+                                            : ''
                             "
                         >
                             <FlexRender
@@ -128,8 +128,8 @@ defineExpose({ table })
                                     cell.column.id === 'student'
                                         ? 'sticky left-0 z-20 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)] max-w-[120px] sm:max-w-[300px]'
                                         : cell.column.id === 'lastUpdate'
-                                          ? 'text-right'
-                                          : ''
+                                            ? 'text-right'
+                                            : ''
                                 "
                             >
                                 <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />

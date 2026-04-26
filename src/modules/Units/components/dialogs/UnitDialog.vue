@@ -38,8 +38,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     'update:isOpen': [value: boolean]
-    close: []
-    save: [unitData: Partial<Unit>]
+    'close': []
+    'save': [unitData: Partial<Unit>]
 }>()
 
 const { t } = useI18n()
@@ -104,7 +104,8 @@ watch(
                     taskCoef: props.unit.taskCoef ?? 1,
                     testCoef: props.unit.testCoef ?? 1,
                 }
-            } else {
+            }
+            else {
                 formData.value = {
                     name: '',
                     description: '',
@@ -116,7 +117,7 @@ watch(
             }
             searchQuery.value = ''
         }
-    }
+    },
 )
 
 function handleTaskToggle(taskId: string, checked: boolean | 'indeterminate') {
@@ -124,7 +125,8 @@ function handleTaskToggle(taskId: string, checked: boolean | 'indeterminate') {
     const index = formData.value.taskIds.indexOf(taskId)
     if (isChecked && index === -1) {
         formData.value.taskIds.push(taskId)
-    } else if (!isChecked && index > -1) {
+    }
+    else if (!isChecked && index > -1) {
         formData.value.taskIds.splice(index, 1)
         if (formData.value.testTaskId === taskId) {
             formData.value.testTaskId = undefined
@@ -137,22 +139,24 @@ const processedTasks = computed(() => {
 
     if (searchQuery.value.trim()) {
         const query = searchQuery.value.toLowerCase()
-        filtered = filtered.filter((task) => task.name.toLowerCase().includes(query))
+        filtered = filtered.filter(task => task.name.toLowerCase().includes(query))
     }
 
     return [...filtered].sort((a, b) => {
         const aSelected = formData.value.taskIds.includes(a.id)
         const bSelected = formData.value.taskIds.includes(b.id)
 
-        if (aSelected && !bSelected) return -1
-        if (!aSelected && bSelected) return 1
+        if (aSelected && !bSelected)
+            return -1
+        if (!aSelected && bSelected)
+            return 1
 
         return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
     })
 })
 
 const availableTestTasks = computed(() => {
-    return props.availableTasks.filter((task) => formData.value.taskIds.includes(task.id))
+    return props.availableTasks.filter(task => formData.value.taskIds.includes(task.id))
 })
 
 const isStep1Valid = computed(() => {
@@ -160,7 +164,8 @@ const isStep1Valid = computed(() => {
 })
 
 const canProceed = computed(() => {
-    if (stepIndex.value === 1) return isStep1Valid.value
+    if (stepIndex.value === 1)
+        return isStep1Valid.value
     return true // Other steps are technically always physically valid as they have defaults
 })
 
@@ -177,11 +182,12 @@ function prevStep() {
 }
 
 function handleSave() {
-    if (!isStep1Valid.value) return
+    if (!isStep1Valid.value)
+        return
 
     const taskIds = [...formData.value.taskIds]
-    const testTaskId =
-        formData.value.testTaskId && formData.value.testTaskId !== 'none' ? formData.value.testTaskId : null
+    const testTaskId
+        = formData.value.testTaskId && formData.value.testTaskId !== 'none' ? formData.value.testTaskId : null
 
     emit('save', {
         name: formData.value.name.trim(),
@@ -317,8 +323,7 @@ function handleClose() {
                                                     <span
                                                         v-show="task.date"
                                                         class="text-muted-foreground whitespace-nowrap shrink-0 text-xs sm:text-sm"
-                                                        >({{ task.date }})</span
-                                                    >
+                                                    >({{ task.date }})</span>
                                                 </Label>
                                             </div>
                                             <div

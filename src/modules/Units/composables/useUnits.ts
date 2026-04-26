@@ -18,7 +18,8 @@ export function useUnits() {
             const [rawUnits, tasks] = await Promise.all([unitsRepository.getAllUnits(), tasksRepository.getAllTasks()])
             units.value = rawUnits.sort((a, b) => (a.ordinal ?? 0) - (b.ordinal ?? 0))
             availableTasks.value = tasks
-        } catch (e: unknown) {
+        }
+        catch (e: unknown) {
             logger.error('Load units failed', e)
             toast.error(t('modules.toasts.loadError'))
         }
@@ -35,10 +36,12 @@ export function useUnits() {
             await loadData()
             toast.success(isEditing ? t('modules.toasts.updatedSuccess') : t('modules.toasts.createdSuccess'))
             return true
-        } catch (e: unknown) {
+        }
+        catch (e: unknown) {
             if (e instanceof Error && e.name === 'DuplicateUnitError') {
                 toast.error(t('modules.toasts.alreadyExists', { name: formData.name }))
-            } else {
+            }
+            else {
                 logger.error('Save unit failed', e)
                 toast.error(t('modules.toasts.saveError'))
             }
@@ -51,7 +54,8 @@ export function useUnits() {
             await unitsRepository.bulkDelete([unit.id!])
             await loadData()
             toast.success(t('modules.toasts.deletedSuccess', { name: unit.name }))
-        } catch (e: unknown) {
+        }
+        catch (e: unknown) {
             logger.error('Delete unit failed', e)
             toast.error(t('modules.toasts.deleteError'))
         }
@@ -62,7 +66,8 @@ export function useUnits() {
             await unitsRepository.bulkDelete(ids)
             await loadData()
             toast.success(t('modules.toasts.bulkDeletedSuccess', { count: ids.length }))
-        } catch (e: unknown) {
+        }
+        catch (e: unknown) {
             logger.error('Bulk delete units failed', e)
             toast.error(t('modules.toasts.bulkDeleteError'))
         }
@@ -77,7 +82,8 @@ export function useUnits() {
             await unitsRepository.updateOrdinals(updates)
             await loadData()
             toast.success(t('modules.toasts.orderSaved'))
-        } catch (e: unknown) {
+        }
+        catch (e: unknown) {
             logger.error('Save unit order failed', e)
             toast.error(t('modules.toasts.orderError'))
         }

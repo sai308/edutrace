@@ -101,7 +101,7 @@ describe('opfs service', () => {
 
             // Mock the async iterator for entries
             mockDirectoryHandle.entries.mockReturnValue({
-                async *[Symbol.asyncIterator]() {
+                async* [Symbol.asyncIterator]() {
                     for (const entry of entries) {
                         yield entry
                     }

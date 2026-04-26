@@ -23,7 +23,8 @@ watchEffect(() => {
         document.documentElement.style.setProperty('--workspace-color', color)
         document.documentElement.style.setProperty('--primary', color)
         document.documentElement.style.setProperty('--primary-foreground', contrastForeground(color))
-    } else {
+    }
+    else {
         document.documentElement.style.removeProperty('--workspace-color')
         document.documentElement.style.removeProperty('--primary')
         document.documentElement.style.removeProperty('--primary-foreground')

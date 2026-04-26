@@ -48,6 +48,6 @@ describe('generateTemplateBlob', () => {
         // PizZip archive will contain the compressed document.xml with placeholders
         // We check for at least the PK signature to confirm it's a ZIP
         expect(text.charCodeAt(0)).toBe(0x50) // 'P'
-        expect(text.charCodeAt(1)).toBe(0x4b) // 'K'
+        expect(text.charCodeAt(1)).toBe(0x4B) // 'K'
     })
 })

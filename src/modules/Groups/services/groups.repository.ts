@@ -21,7 +21,8 @@ class GroupsRepository extends BaseRepository<'groups'> {
         if (group.id) {
             await this.put(group)
             id = group.id
-        } else {
+        }
+        else {
             id = await this.add(group)
             group.id = id
         }
@@ -48,7 +49,8 @@ class GroupsRepository extends BaseRepository<'groups'> {
     }
 
     async syncMembersFromMeets(group: Group): Promise<void> {
-        if (!group.meetId) return
+        if (!group.meetId)
+            return
         const meets = await meetsRepository.getMeetsByMeetId(group.meetId)
         await studentsRepository.syncParticipants(meets, group.name)
     }

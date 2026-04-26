@@ -15,7 +15,7 @@ vi.mock('@/i18n', () => ({
 function makeStudent(
     name: string,
     moduleGrades: Record<string, string | number | null> = {},
-    overrides: Partial<StudentSummaryData> = {}
+    overrides: Partial<StudentSummaryData> = {},
 ): StudentSummaryData {
     return {
         id: `id-${name}`,
@@ -158,7 +158,7 @@ describe('exportSummaryCsv', () => {
         const blob = exportSummaryCsv(students, 'G1')
         const text = await readBlob(blob)
         const lines = text.split('\r\n')
-        const dataRows = lines.filter((l) => /^\d+,/.test(l))
+        const dataRows = lines.filter(l => /^\d+,/.test(l))
         expect(dataRows[0]).toMatch(/^1,/)
         expect(dataRows[1]).toMatch(/^2,/)
     })
@@ -174,7 +174,7 @@ describe('exportSummaryCsv', () => {
         const students = [makeStudent('Alice', { 'Mod Y': null })]
         const blob = exportSummaryCsv(students, 'G1')
         const text = await readBlob(blob)
-        const dataLine = text.split('\r\n').find((l) => l.includes('Alice'))!
+        const dataLine = text.split('\r\n').find(l => l.includes('Alice'))!
         // null → cellValue → '' → adjacent commas
         expect(dataLine).toContain(',,')
     })
@@ -209,7 +209,7 @@ describe('exportSummaryDocx', () => {
         const empty = exportSummaryDocx([], 'G1')
         const withStudents = exportSummaryDocx(
             [makeStudent('Alice', { 'Mod 1': 4 }), makeStudent('Bob', { 'Mod 1': 5 })],
-            'G1'
+            'G1',
         )
         expect(withStudents.size).toBeGreaterThan(empty.size)
     })

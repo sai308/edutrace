@@ -13,16 +13,19 @@ import type { Group } from '@/modules/Groups/types/groups'
  * @returns The canonical group name if a match exists, otherwise the original input.
  */
 export function normalizeGroupName(input: string, existingGroups: Group[]): string {
-    if (!input || !input.trim()) return input ? input.trim() : input
+    if (!input || !input.trim())
+        return input ? input.trim() : input
 
     // eslint-disable-next-line regexp/no-obscure-range
     const normalizedInput = input.replace(/[^a-zA-Zа-яА-Я0-9]/g, '').toLowerCase()
 
     // Quick exit if normalization strips everything away
-    if (normalizedInput.length === 0) return input.trim()
+    if (normalizedInput.length === 0)
+        return input.trim()
 
     for (const group of existingGroups) {
-        if (!group.name) continue
+        if (!group.name)
+            continue
         // eslint-disable-next-line regexp/no-obscure-range
         const normalizedExisting = group.name.replace(/[^a-zA-Zа-яА-Я0-9]/g, '').toLowerCase()
 

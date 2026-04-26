@@ -41,7 +41,8 @@ function handleDeleteMeet(id: string): void {
 }
 
 function confirmBulkDelete(ids: string[]): void {
-    if (!ids.length) return
+    if (!ids.length)
+        return
     meetIdsToDelete.value = ids
     showDeleteConfirm.value = true
 }
@@ -125,7 +126,7 @@ function getMeetActions(meet: Meet): RowActionItem[] {
                                 class="h-9 gap-2 w-full"
                                 @click="
                                     confirmBulkDelete(
-                                        table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id)
+                                        table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id),
                                     )
                                 "
                             >
@@ -177,7 +178,7 @@ function getMeetActions(meet: Meet): RowActionItem[] {
                                 class="h-8 gap-2 shrink-0"
                                 @click="
                                     confirmBulkDelete(
-                                        table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id)
+                                        table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id),
                                     )
                                 "
                             >

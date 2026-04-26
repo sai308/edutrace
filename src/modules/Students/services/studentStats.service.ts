@@ -38,11 +38,12 @@ class StudentStatsService {
         let members: Member[]
         if (groupName) {
             members = await studentsRepository.getMembersByGroup(groupName)
-        } else {
+        }
+        else {
             members = await studentsRepository.getAllMembers()
         }
 
-        const studentIds = members.map((m) => m.id)
+        const studentIds = members.map(m => m.id)
 
         // 2. Fetch Dependent Data in Parallel
         const promises: [
@@ -93,8 +94,10 @@ class StudentStatsService {
 
         // Initialize members
         members.forEach((m) => {
-            if (m.role === 'teacher') return
-            if (teachers.has(m.name)) return
+            if (m.role === 'teacher')
+                return
+            if (teachers.has(m.name))
+                return
 
             studentMap.set(m.name, {
                 id: m.id,
@@ -134,17 +137,17 @@ class StudentStatsService {
                 return
             }
 
-            const durations = (meet.participants || []).map((p) => p.duration).sort((a, b) => a - b)
+            const durations = (meet.participants || []).map(p => p.duration).sort((a, b) => a - b)
             let calculatedDuration = 0
 
             if (durations.length > 0) {
                 const mid = Math.floor(durations.length / 2)
-                const median =
-                    durations.length % 2 !== 0
+                const median
+                    = durations.length % 2 !== 0
                         ? durations[mid]
                         : ((durations[mid - 1] ?? 0) + (durations[mid] ?? 0)) / 2
 
-                const validDurations = durations.filter((d) => d <= (median ?? 0) * 2)
+                const validDurations = durations.filter(d => d <= (median ?? 0) * 2)
                 calculatedDuration = Math.max(...validDurations)
             }
 
@@ -162,7 +165,8 @@ class StudentStatsService {
         const nameToStudent = new Map<string, StudentDashboardRaw>()
         studentMap.forEach((s) => {
             nameToStudent.set(s.name, s)
-            if (s.aliases) s.aliases.forEach((a: string) => nameToStudent.set(a, s))
+            if (s.aliases)
+                s.aliases.forEach((a: string) => nameToStudent.set(a, s))
         })
 
         meets.forEach((meet) => {
@@ -192,14 +196,16 @@ class StudentStatsService {
             const studentNames = new Set([student.name, ...(student.aliases || [])])
 
             statsGroups.forEach((groupName) => {
-                if (targetGroupName && groupName !== targetGroupName) return
+                if (targetGroupName && groupName !== targetGroupName)
+                    return
 
                 const groupMeets = meetsByGroup[groupName] || new Set()
                 groupMeets.forEach((meet) => {
                     const meetDuration = meetDurations[meet.id]
-                    if (!meetDuration || meetDuration <= 0) return
+                    if (!meetDuration || meetDuration <= 0)
+                        return
 
-                    const participant = (meet.participants || []).find((p) => studentNames.has(p.name))
+                    const participant = (meet.participants || []).find(p => studentNames.has(p.name))
                     const studentDuration = participant ? participant.duration : 0
 
                     student.possibleDuration += meetDuration
@@ -209,22 +215,22 @@ class StudentStatsService {
                 })
             })
 
-            student.totalAttendancePercent =
-                student.possibleDuration > 0 ? (student.attendedDuration / student.possibleDuration) * 100 : 0
+            student.totalAttendancePercent
+                = student.possibleDuration > 0 ? (student.attendedDuration / student.possibleDuration) * 100 : 0
 
-            student.averageAttendancePercent =
-                student.attendancePercentages.length > 0
-                    ? student.attendancePercentages.reduce((a: number, b: number) => a + b, 0) /
-                      student.attendancePercentages.length
+            student.averageAttendancePercent
+                = student.attendancePercentages.length > 0
+                    ? student.attendancePercentages.reduce((a: number, b: number) => a + b, 0)
+                    / student.attendancePercentages.length
                     : 0
         })
 
         // 4. Marks
         const taskMap = new Map<string, Task>()
-        tasks.forEach((task) => taskMap.set(task.id, task))
+        tasks.forEach(task => taskMap.set(task.id, task))
 
         studentMap.forEach((student) => {
-            const studentMarks = marks.filter((mark) => mark.studentId === student.id)
+            const studentMarks = marks.filter(mark => mark.studentId === student.id)
             student.marks = studentMarks
 
             if (studentMarks.length > 0) {
@@ -242,17 +248,17 @@ class StudentStatsService {
             }
 
             // Count total tasks from the student's own marks (marks are already group-scoped)
-            const groupTasksSet = new Set<string>(studentMarks.map((mark) => mark.taskId))
+            const groupTasksSet = new Set<string>(studentMarks.map(mark => mark.taskId))
             student.totalTasks = groupTasksSet.size
 
-            const completedTaskIds = new Set(studentMarks.map((mark) => mark.taskId))
+            const completedTaskIds = new Set(studentMarks.map(mark => mark.taskId))
             student.completedTasks = completedTaskIds.size
 
             student.completionPercent = student.totalTasks > 0 ? (student.completedTasks / student.totalTasks) * 100 : 0
         })
 
         // Convert Sets to sorted arrays for the final result
-        const students = Array.from(studentMap.values()).map((s) => ({
+        const students = Array.from(studentMap.values()).map(s => ({
             ...s,
             groups: Array.from(s.groups).sort(),
             meetIds: Array.from(s.meetIds).sort(),

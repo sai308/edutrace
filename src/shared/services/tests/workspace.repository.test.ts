@@ -21,7 +21,7 @@ const MAINTENANCE_STORES = [
 ] as const
 
 // Empty data payload keyed by MAINTENANCE_STORES
-const EMPTY_DATA: Record<string, any[]> = Object.fromEntries(MAINTENANCE_STORES.map((s) => [s, []]))
+const EMPTY_DATA: Record<string, any[]> = Object.fromEntries(MAINTENANCE_STORES.map(s => [s, []]))
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -36,7 +36,7 @@ function seedWorkspaces(entries: WorkspaceSeed[]) {
     localStorage.setItem('edutrace_current_workspace', entries[0]!.id)
     localStorage.setItem(
         'edutrace_workspaces',
-        JSON.stringify(entries.map((e) => ({ ...e, createdAt: new Date().toISOString() })))
+        JSON.stringify(entries.map(e => ({ ...e, createdAt: new Date().toISOString() }))),
     )
 }
 
@@ -86,7 +86,7 @@ describe('getWorkspaces', () => {
         ])
         const result = workspaceRepository.getWorkspaces()
         expect(result).toHaveLength(2)
-        expect(result.map((w) => w.id)).toEqual(['ws-1', 'ws-2'])
+        expect(result.map(w => w.id)).toEqual(['ws-1', 'ws-2'])
     })
 })
 
@@ -109,7 +109,7 @@ describe('createWorkspace', () => {
     it('adds a new workspace entry with a generated UUID', async () => {
         const id = await workspaceRepository.createWorkspace('Spring 2025')
         const list = workspaceRepository.getWorkspaces()
-        const created = list.find((w) => w.id === id)
+        const created = list.find(w => w.id === id)
         expect(created).toBeDefined()
         expect(created!.name).toBe('Spring 2025')
         expect(created!.dbName).toMatch(/meet-attendance-db-/)
@@ -117,7 +117,7 @@ describe('createWorkspace', () => {
 
     it('assigns the provided icon', async () => {
         const id = await workspaceRepository.createWorkspace('Autumn', { icon: 'BookOpen' })
-        const created = workspaceRepository.getWorkspaces().find((w) => w.id === id)
+        const created = workspaceRepository.getWorkspaces().find(w => w.id === id)
         expect(created!.icon).toBe('BookOpen')
     })
 
@@ -154,7 +154,7 @@ describe('updateWorkspace', () => {
     it('renames a workspace without changing its ID or dbName', async () => {
         seedWorkspaces([{ id: 'ws-1', name: 'Old Name', dbName: DB_WS_A }])
         await workspaceRepository.updateWorkspace('ws-1', { name: 'New Name' })
-        const updated = workspaceRepository.getWorkspaces().find((w) => w.id === 'ws-1')
+        const updated = workspaceRepository.getWorkspaces().find(w => w.id === 'ws-1')
         expect(updated!.name).toBe('New Name')
         expect(updated!.dbName).toBe(DB_WS_A)
     })
@@ -170,7 +170,7 @@ describe('updateWorkspace', () => {
             dbName: 'injected-db',
             name: 'Renamed',
         })
-        const ws = workspaceRepository.getWorkspaces().find((w) => w.id === 'ws-1')
+        const ws = workspaceRepository.getWorkspaces().find(w => w.id === 'ws-1')
         expect(ws!.id).toBe('ws-1')
         expect(ws!.dbName).toBe(DB_WS_A)
     })
@@ -190,7 +190,7 @@ describe('deleteWorkspace', () => {
         ])
         await workspaceRepository.deleteWorkspace('ws-del')
         const list = workspaceRepository.getWorkspaces()
-        expect(list.find((w) => w.id === 'ws-del')).toBeUndefined()
+        expect(list.find(w => w.id === 'ws-del')).toBeUndefined()
     })
 
     it('falls back to default workspace when the active workspace is deleted', async () => {
@@ -210,7 +210,7 @@ describe('deleteWorkspace', () => {
             { id: 'ws-del', name: 'Delete', dbName: DB_WS_C },
         ])
         await workspaceRepository.deleteWorkspace('ws-del')
-        expect(workspaceRepository.getWorkspaces().find((w) => w.id === 'ws-keep')).toBeDefined()
+        expect(workspaceRepository.getWorkspaces().find(w => w.id === 'ws-keep')).toBeDefined()
     })
 })
 
@@ -297,8 +297,8 @@ describe('exportWorkspaces', () => {
 
         const result = await workspaceRepository.exportWorkspaces(['ws-ms'])
         const data = result.workspaces[0]!.data
-        expect((data.groups as any[]).find((g) => g.id === 'g1')).toBeDefined()
-        expect((data.meets as any[]).find((m) => m.id === 'm1')).toBeDefined()
+        expect((data.groups as any[]).find(g => g.id === 'g1')).toBeDefined()
+        expect((data.meets as any[]).find(m => m.id === 'm1')).toBeDefined()
     })
 
     it('exports multiple workspaces in one call', async () => {
@@ -317,10 +317,10 @@ describe('exportWorkspaces', () => {
 
         const result = await workspaceRepository.exportWorkspaces(['ws-m1', 'ws-m2'])
         expect(result.workspaces).toHaveLength(2)
-        expect(result.workspaces.map((w) => w.id)).toEqual(expect.arrayContaining(['ws-m1', 'ws-m2']))
+        expect(result.workspaces.map(w => w.id)).toEqual(expect.arrayContaining(['ws-m1', 'ws-m2']))
 
-        const ws1Groups = result.workspaces.find((w) => w.id === 'ws-m1')!.data.groups as any[]
-        const ws2Groups = result.workspaces.find((w) => w.id === 'ws-m2')!.data.groups as any[]
+        const ws1Groups = result.workspaces.find(w => w.id === 'ws-m1')!.data.groups as any[]
+        const ws2Groups = result.workspaces.find(w => w.id === 'ws-m2')!.data.groups as any[]
         expect(ws1Groups[0]!.id).toBe('g-m1')
         expect(ws2Groups[0]!.id).toBe('g-m2')
     })
@@ -346,7 +346,7 @@ describe('importWorkspaces', () => {
     it('registers a new workspace entry in localStorage', async () => {
         const payload = buildPayload({ id: 'ws-imported', name: 'Imported', dbName: DB_WS_B })
         await workspaceRepository.importWorkspaces(payload, ['ws-imported'])
-        const found = workspaceRepository.getWorkspaces().find((w) => w.id === 'ws-imported')
+        const found = workspaceRepository.getWorkspaces().find(w => w.id === 'ws-imported')
         expect(found).toBeDefined()
         expect(found!.name).toBe('Imported')
     })
@@ -430,7 +430,7 @@ describe('importWorkspaces', () => {
         const payload = buildPayload({ id: 'ws-dup', name: 'Dup', dbName: DB_WS_A })
         await workspaceRepository.importWorkspaces(payload, ['ws-dup'])
 
-        const dupEntries = workspaceRepository.getWorkspaces().filter((w) => w.id === 'ws-dup')
+        const dupEntries = workspaceRepository.getWorkspaces().filter(w => w.id === 'ws-dup')
         expect(dupEntries).toHaveLength(1)
     })
 
@@ -447,8 +447,8 @@ describe('importWorkspaces', () => {
         await workspaceRepository.importWorkspaces(payload, ['ws-ia', 'ws-ib'])
 
         const list = workspaceRepository.getWorkspaces()
-        expect(list.find((w) => w.id === 'ws-ia')).toBeDefined()
-        expect(list.find((w) => w.id === 'ws-ib')).toBeDefined()
+        expect(list.find(w => w.id === 'ws-ia')).toBeDefined()
+        expect(list.find(w => w.id === 'ws-ib')).toBeDefined()
     })
 
     it('falls back to "Database" icon when icon is absent in the payload', async () => {
@@ -456,7 +456,7 @@ describe('importWorkspaces', () => {
         // payload.workspaces[0].icon is undefined
         await workspaceRepository.importWorkspaces(payload, ['ws-noicon'])
 
-        const ws = workspaceRepository.getWorkspaces().find((w) => w.id === 'ws-noicon')
+        const ws = workspaceRepository.getWorkspaces().find(w => w.id === 'ws-noicon')
         expect(ws!.icon).toBe('Database')
     })
 
@@ -471,7 +471,7 @@ describe('importWorkspaces', () => {
             ],
         }
         await workspaceRepository.importWorkspaces(payload, ['ws-yes'])
-        expect(workspaceRepository.getWorkspaces().find((w) => w.id === 'ws-no')).toBeUndefined()
+        expect(workspaceRepository.getWorkspaces().find(w => w.id === 'ws-no')).toBeUndefined()
     })
 
     it('full round-trip: exported data is faithfully restored after wipe', async () => {
@@ -526,7 +526,7 @@ describe('deleteWorkspacesData', () => {
 
         await workspaceRepository.deleteWorkspacesData(['ws-entry'])
 
-        const ws = workspaceRepository.getWorkspaces().find((w) => w.id === 'ws-entry')
+        const ws = workspaceRepository.getWorkspaces().find(w => w.id === 'ws-entry')
         expect(ws).toBeDefined()
         expect(ws!.name).toBe('Entry')
     })

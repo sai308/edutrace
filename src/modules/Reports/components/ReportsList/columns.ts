@@ -16,7 +16,7 @@ interface Formatters {
 export function createColumns(
     rowActions: (meet: Meet) => RowActionItem[],
     t: ComposerTranslation,
-    formatters: Formatters
+    formatters: Formatters,
 ): ColumnDef<Meet>[] {
     return [
         {
@@ -25,18 +25,18 @@ export function createColumns(
             enableHiding: false,
             header: ({ table }) =>
                 h(Checkbox, {
-                    modelValue:
+                    'modelValue':
                         table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
                     'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
                         table.toggleAllPageRowsSelected(!!value),
-                    ariaLabel: t('common.selectAll'),
+                    'ariaLabel': t('common.selectAll'),
                 }),
             cell: ({ row }) =>
                 h(Checkbox, {
-                    modelValue: row.getIsSelected(),
-                    disabled: !row.getCanSelect(),
+                    'modelValue': row.getIsSelected(),
+                    'disabled': !row.getCanSelect(),
                     'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
-                    ariaLabel: t('common.selectRow'),
+                    'ariaLabel': t('common.selectRow'),
                 }),
         },
         {
@@ -67,13 +67,13 @@ export function createColumns(
         },
         {
             id: 'participants',
-            accessorFn: (row) => row.participants?.length ?? 0,
+            accessorFn: row => row.participants?.length ?? 0,
             meta: { label: t('reports.table.participants') },
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('reports.table.participants') }),
         },
         {
             id: 'duration',
-            accessorFn: (row) => (row.participants?.length ? Math.max(...row.participants.map((p) => p.duration)) : 0),
+            accessorFn: row => (row.participants?.length ? Math.max(...row.participants.map(p => p.duration)) : 0),
             meta: { label: t('reports.table.duration') },
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('reports.table.duration') }),
             cell: ({ row }) => {
@@ -93,7 +93,8 @@ export function createColumns(
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('reports.table.uploadedAt') }),
             cell: ({ row }) => {
                 const isoStr = row.getValue('uploadedAt') as string
-                if (!isoStr) return h('span', { class: 'text-muted-foreground' }, '-')
+                if (!isoStr)
+                    return h('span', { class: 'text-muted-foreground' }, '-')
                 return h('div', { class: 'text-xs text-muted-foreground' }, [
                     h('div', { class: 'flex flex-col gap-1' }, [
                         h('div', { class: 'flex items-center gap-1' }, [

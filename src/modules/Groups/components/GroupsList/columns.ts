@@ -10,41 +10,47 @@ import DataTableColumnHeader from '@/shared/components/DataTableColumnHeader.vue
 import DataTableRowActions from '@/shared/components/DataTableRowActions.vue'
 
 function completionClass(v: number): string {
-    if (v >= COMPLETION_THRESHOLDS.GREAT) return 'text-green-500'
-    if (v >= COMPLETION_THRESHOLDS.GOOD) return 'text-yellow-500'
-    if (v > 0) return 'text-red-500'
+    if (v >= COMPLETION_THRESHOLDS.GREAT)
+        return 'text-green-500'
+    if (v >= COMPLETION_THRESHOLDS.GOOD)
+        return 'text-yellow-500'
+    if (v > 0)
+        return 'text-red-500'
     return ''
 }
 
 function markClass(v: number): string {
-    if (v >= MARK_THRESHOLDS.GREAT) return 'text-green-500'
-    if (v >= MARK_THRESHOLDS.GOOD) return 'text-yellow-500'
-    if (v > 0) return 'text-red-500'
+    if (v >= MARK_THRESHOLDS.GREAT)
+        return 'text-green-500'
+    if (v >= MARK_THRESHOLDS.GOOD)
+        return 'text-yellow-500'
+    if (v > 0)
+        return 'text-red-500'
     return ''
 }
 
 export function createColumns(
     rowActions: (group: EnrichedGroup) => RowActionItem[],
     t: ComposerTranslation,
-    getMemberCount: (name: string) => number
+    getMemberCount: (name: string) => number,
 ): ColumnDef<EnrichedGroup>[] {
     return [
         {
             id: 'select',
             header: ({ table }) =>
                 h(Checkbox, {
-                    modelValue:
+                    'modelValue':
                         table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
                     'onUpdate:modelValue': (v: boolean | 'indeterminate') => table.toggleAllPageRowsSelected(!!v),
-                    ariaLabel: t('common.selectAll'),
-                    class: 'translate-y-[2px]',
+                    'ariaLabel': t('common.selectAll'),
+                    'class': 'translate-y-[2px]',
                 }),
             cell: ({ row }) =>
                 h(Checkbox, {
-                    modelValue: row.getIsSelected(),
+                    'modelValue': row.getIsSelected(),
                     'onUpdate:modelValue': (v: boolean | 'indeterminate') => row.toggleSelected(!!v),
-                    ariaLabel: t('common.selectRow'),
-                    class: 'translate-y-[2px]',
+                    'ariaLabel': t('common.selectRow'),
+                    'class': 'translate-y-[2px]',
                 }),
             enableSorting: false,
             enableHiding: false,
@@ -69,7 +75,7 @@ export function createColumns(
         },
         {
             id: 'members',
-            accessorFn: (row) => getMemberCount(row.name),
+            accessorFn: row => getMemberCount(row.name),
             meta: { label: t('groups.table.members') },
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('groups.table.members') }),
             cell: ({ row }) => h('span', { class: 'text-muted-foreground' }, getMemberCount(row.original.name)),
@@ -94,7 +100,7 @@ export function createColumns(
                     [
                         h(DataTableColumnHeader, { column, title: t('groups.table.avg') }),
                         h(PieChart, { class: 'w-3 h-3' }),
-                    ]
+                    ],
                 ),
             cell: ({ row }) => {
                 const v = row.original.avgTaskCompletion
@@ -112,7 +118,7 @@ export function createColumns(
                         class: 'flex items-center justify-center gap-1',
                         title: t('groups.table.avgMark'),
                     },
-                    [h(DataTableColumnHeader, { column, title: t('groups.table.avg') }), h(Star, { class: 'w-3 h-3' })]
+                    [h(DataTableColumnHeader, { column, title: t('groups.table.avg') }), h(Star, { class: 'w-3 h-3' })],
                 ),
             cell: ({ row }) => {
                 const v = row.original.avgMark
@@ -130,7 +136,7 @@ export function createColumns(
                         class: 'flex items-center justify-center gap-1',
                         title: t('groups.table.modeMark'),
                     },
-                    [h(DataTableColumnHeader, { column, title: t('groups.table.mode') }), h(Star, { class: 'w-3 h-3' })]
+                    [h(DataTableColumnHeader, { column, title: t('groups.table.mode') }), h(Star, { class: 'w-3 h-3' })],
                 ),
             cell: ({ row }) => h('div', { class: 'text-center text-muted-foreground' }, row.original.modeMark || '-'),
         },
@@ -148,7 +154,7 @@ export function createColumns(
                     [
                         h(DataTableColumnHeader, { column, title: t('groups.table.median') }),
                         h(Star, { class: 'w-3 h-3' }),
-                    ]
+                    ],
                 ),
             cell: ({ row }) => h('div', { class: 'text-center text-muted-foreground' }, row.original.medianMark || '-'),
         },

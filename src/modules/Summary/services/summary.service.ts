@@ -36,7 +36,7 @@ interface SummaryWorkerAPI {
             durationLimitSeconds: number
             gradeFormat: string
             requiredTasks: number
-        }
+        },
     ) => Promise<WorkerSummaryResult[]>
 }
 
@@ -53,9 +53,10 @@ export class SummaryService {
 
     async loadExamData(
         group: Group,
-        options: SummaryLoadOptions
-    ): Promise<{ students: StudentSummaryData[]; context: any }> {
-        if (!group) return { students: [], context: {} }
+        options: SummaryLoadOptions,
+    ): Promise<{ students: StudentSummaryData[], context: any }> {
+        if (!group)
+            return { students: [], context: {} }
 
         const {
             modules = [],
@@ -69,8 +70,8 @@ export class SummaryService {
         } = options
 
         logger.log('[SummaryService] Fetching data for group:', group.name)
-        const [members, allTasks, allMarks, allMeets, allGroupsMap, durationLimitMinutes, allAssessments] =
-            await Promise.all([
+        const [members, allTasks, allMarks, allMeets, allGroupsMap, durationLimitMinutes, allAssessments]
+            = await Promise.all([
                 studentsRepository.getMembersByGroup(group.name),
                 tasksRepository.getAllTasks(),
                 marksRepository.getMarksByGroup(group.name),
@@ -89,7 +90,7 @@ export class SummaryService {
 
         // Auto-repair missing or incorrect group names on members based on their marks
         if (allMarks.length > 0) {
-            const studentIdsWithMarks = [...new Set(allMarks.map((m) => m.studentId))]
+            const studentIdsWithMarks = [...new Set(allMarks.map(m => m.studentId))]
             let fixedCount = 0
 
             for (const sid of studentIdsWithMarks) {
@@ -97,11 +98,12 @@ export class SummaryService {
                 if (member && member.groupName !== group.name) {
                     member.groupName = group.name
                     await studentsRepository.put(member)
-                    if (!members.some((x) => x.id === member.id)) {
+                    if (!members.some(x => x.id === member.id)) {
                         members.push(member)
                     }
                     fixedCount++
-                } else if (member && member.groupName === group.name && !members.some((x) => x.id === member.id)) {
+                }
+                else if (member && member.groupName === group.name && !members.some(x => x.id === member.id)) {
                     members.push(member) // Was missing from index somehow
                 }
             }
@@ -111,7 +113,7 @@ export class SummaryService {
         }
 
         const durationLimitSeconds = durationLimitMinutes > 0 ? durationLimitMinutes * 60 : Infinity
-        const activeMembers = members.filter((m) => m.role !== 'teacher' && !m.hidden)
+        const activeMembers = members.filter(m => m.role !== 'teacher' && !m.hidden)
 
         let workerResults
         try {
@@ -126,11 +128,12 @@ export class SummaryService {
                         durationLimitSeconds,
                         gradeFormat,
                         requiredTasks,
-                    }
+                    },
                 ),
-                SUMMARY_TIMEOUT_MS
+                SUMMARY_TIMEOUT_MS,
             )
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Summary worker error:', e)
             throw classifyWorkerError(e)
         }
@@ -141,19 +144,21 @@ export class SummaryService {
         }
 
         const statsMap = new Map<string, SummaryStats>()
-        workerResults.forEach((r) => statsMap.set(r.id, r.stats))
+        workerResults.forEach(r => statsMap.set(r.id, r.stats))
 
         const marksByStudent = new Map<string, Mark[]>()
         for (const mark of allMarks) {
             const sid = mark.studentId
-            if (!marksByStudent.has(sid)) marksByStudent.set(sid, [])
+            if (!marksByStudent.has(sid))
+                marksByStudent.set(sid, [])
             marksByStudent.get(sid)!.push(mark)
         }
 
         const studentsData: StudentSummaryData[] = activeMembers
             .map((member) => {
                 const stats = statsMap.get(member.id)
-                if (!stats) return null
+                if (!stats)
+                    return null
 
                 const {
                     completionExact,
@@ -172,14 +177,15 @@ export class SummaryService {
 
                 // --- Status determination ---
                 // Check if all modules are fully complete (no partial, no empty)
-                const allModulesComplete =
-                    modules.length > 0 && Object.values(moduleDetailsData).every((d: any) => d.type === 'complete')
+                const allModulesComplete
+                    = modules.length > 0 && Object.values(moduleDetailsData).every((d: any) => d.type === 'complete')
 
                 let status: 'automatic' | 'allowed' | 'notAllowed' = 'notAllowed'
 
                 if (completionExact >= 100 && allModulesComplete) {
                     status = 'automatic'
-                } else if (completionExact >= completionThreshold) {
+                }
+                else if (completionExact >= completionThreshold) {
                     status = 'allowed'
                 }
 
@@ -192,7 +198,7 @@ export class SummaryService {
                             t('summary.data.reasons.completion', {
                                 percentage: Math.round(completionExact),
                                 threshold: completionThreshold,
-                            })
+                            }),
                         )
                     }
                     if (attendanceEnabled && attendancePercent < attendanceThreshold) {
@@ -200,7 +206,7 @@ export class SummaryService {
                             t('summary.data.reasons.attendance', {
                                 percentage: Math.round(attendancePercent),
                                 threshold: attendanceThreshold,
-                            })
+                            }),
                         )
                     }
                     // List incomplete modules
@@ -210,13 +216,14 @@ export class SummaryService {
                     if (incompleteModules.length > 0) {
                         reasons.push(`${t('summary.data.reasons.modulesIncomplete')}: ${incompleteModules.join(', ')}`)
                     }
-                    statusCause =
-                        reasons.length === 0
+                    statusCause
+                        = reasons.length === 0
                             ? t('summary.data.cause.criteriaNotMet')
                             : t('summary.data.cause.requirementsNotMet', {
-                                  reasons: reasons.join('; '),
-                              })
-                } else if (status === 'allowed') {
+                                    reasons: reasons.join('; '),
+                                })
+                }
+                else if (status === 'allowed') {
                     const incompleteModules = Object.entries(moduleDetailsData)
                         .filter(([, d]: [string, any]) => d.type !== 'complete')
                         .map(([name]) => name)
@@ -225,13 +232,15 @@ export class SummaryService {
                             attendanceThreshold,
                             completionThreshold,
                         })}. ${t('summary.data.status.allowedMissing', { modules: incompleteModules.join(', ') })}`
-                    } else {
+                    }
+                    else {
                         statusCause = t('summary.data.cause.admitted', {
                             attendanceThreshold,
                             completionThreshold,
                         })
                     }
-                } else if (status === 'automatic') {
+                }
+                else if (status === 'automatic') {
                     statusCause = t('summary.data.cause.excellentPerformance', {
                         completion: Math.round(completionExact),
                     })
@@ -286,7 +295,7 @@ export class SummaryService {
                                 count: detail.missingTasks.length,
                                 names: '',
                             },
-                            detail.missingTasks.length
+                            detail.missingTasks.length,
                         )
                             .replace(/:[ \t]*$/, '')
                             .replace(':', '')
@@ -397,7 +406,7 @@ export class SummaryService {
     }
 
     async saveFinalAssessment(
-        assessment: Partial<FinalAssessment> & { studentId: string; assessmentType: string }
+        assessment: Partial<FinalAssessment> & { studentId: string, assessmentType: string },
     ): Promise<any> {
         return finalAssessmentsRepository.saveFinalAssessment(assessment)
     }

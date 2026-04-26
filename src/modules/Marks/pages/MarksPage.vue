@@ -48,10 +48,10 @@ watch(
     () => route.query.group,
     async (newGroup) => {
         await loadMarksData(newGroup as string | null)
-    }
+    },
 )
 
-async function handleProcessFile(payload: { file: File; groupName: string }): Promise<void> {
+async function handleProcessFile(payload: { file: File, groupName: string }): Promise<void> {
     await processFile(payload.file, payload.groupName)
 }
 
@@ -82,7 +82,7 @@ function handleRefresh() {
     loadMarksData(route.query.group as string | null)
 }
 
-async function handleSaveManualMark(data: { groupName: string; studentId: string; taskId: string; score: number }) {
+async function handleSaveManualMark(data: { groupName: string, studentId: string, taskId: string, score: number }) {
     await saveManualMark(data)
 }
 </script>

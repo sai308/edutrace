@@ -18,25 +18,25 @@ interface Formatters {
 export function createColumns(
     t: ComposerTranslation,
     { formatDate, formatTime, formatSurname }: Formatters,
-    ordinalMap: Map<string, number>
+    ordinalMap: Map<string, number>,
 ): ColumnDef<SessionEntry>[] {
     return [
         {
             id: 'select',
             header: ({ table }) =>
                 h(Checkbox, {
-                    modelValue:
+                    'modelValue':
                         table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
                     'onUpdate:modelValue': (v: boolean | 'indeterminate') => table.toggleAllPageRowsSelected(!!v),
-                    ariaLabel: t('common.selectAll'),
-                    class: 'translate-y-[2px]',
+                    'ariaLabel': t('common.selectAll'),
+                    'class': 'translate-y-[2px]',
                 }),
             cell: ({ row }) =>
                 h(Checkbox, {
-                    modelValue: row.getIsSelected(),
+                    'modelValue': row.getIsSelected(),
                     'onUpdate:modelValue': (v: boolean | 'indeterminate') => row.toggleSelected(!!v),
-                    ariaLabel: t('common.selectRow'),
-                    class: 'translate-y-[2px]',
+                    'ariaLabel': t('common.selectRow'),
+                    'class': 'translate-y-[2px]',
                 }),
             enableSorting: false,
             enableHiding: false,
@@ -51,13 +51,13 @@ export function createColumns(
                 return h(
                     'div',
                     { class: 'text-center tabular-nums text-muted-foreground text-xs font-mono' },
-                    n != null ? String(n) : ''
+                    n != null ? String(n) : '',
                 )
             },
         },
         {
             id: 'student',
-            accessorFn: (row) => row.studentSnapshot.fullName,
+            accessorFn: row => row.studentSnapshot.fullName,
             meta: { label: t('sessions.table.student') },
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('sessions.table.student') }),
             cell: ({ row }) => {
@@ -71,17 +71,17 @@ export function createColumns(
         },
         {
             id: 'gradeType',
-            accessorFn: (row) => row.gradeType,
+            accessorFn: row => row.gradeType,
             meta: { label: t('sessions.table.gradeType') },
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('sessions.table.gradeType') }),
             cell: ({ row }) => {
                 const { grade, gradeType } = row.original
-                const tooltip =
-                    grade === null
+                const tooltip
+                    = grade === null
                         ? t('sessions.grades.absentTooltip')
                         : gradeType === GradeTypeEnum.AUTO
-                          ? t('sessions.grades.auto')
-                          : t('sessions.grades.manual')
+                            ? t('sessions.grades.auto')
+                            : t('sessions.grades.manual')
 
                 return h(
                     Badge,
@@ -94,15 +94,15 @@ export function createColumns(
                         grade === null
                             ? h(UserX, { class: 'w-4 h-4 text-muted-foreground opacity-70' })
                             : gradeType === GradeTypeEnum.AUTO
-                              ? h(Wand2, { class: 'w-4 h-4 text-purple-500' })
-                              : h(PenTool, { class: 'w-4 h-4 text-emerald-600' }),
-                    ]
+                                ? h(Wand2, { class: 'w-4 h-4 text-purple-500' })
+                                : h(PenTool, { class: 'w-4 h-4 text-emerald-600' }),
+                    ],
                 )
             },
         },
         {
             id: 'nationalScale',
-            accessorFn: (row) => row.grade,
+            accessorFn: row => row.grade,
             meta: { label: t('sessions.table.nationalScale') },
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('sessions.table.nationalScale') }),
             cell: ({ row }) => {
@@ -113,13 +113,13 @@ export function createColumns(
                     {
                         class: ['font-medium', grade === null ? 'italic font-normal text-muted-foreground' : ''],
                     },
-                    label
+                    label,
                 )
             },
         },
         {
             id: 'score',
-            accessorFn: (row) => row.grade,
+            accessorFn: row => row.grade,
             meta: { label: t('sessions.table.score') },
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('sessions.table.score') }),
             cell: ({ row }) => {
@@ -131,25 +131,26 @@ export function createColumns(
         },
         {
             id: 'ectsScale',
-            accessorFn: (row) => row.grade,
+            accessorFn: row => row.grade,
             meta: { label: t('sessions.table.ectsScale') },
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('sessions.table.ectsScale') }),
             cell: ({ row }) => {
                 const grade = row.original.grade
-                if (grade === null) return null
+                if (grade === null)
+                    return null
                 const ects = toECTS(grade)
                 return h(
                     'span',
                     {
                         class: ['font-mono bg-muted px-2 py-1 rounded text-sm', getECTSColorClass(ects)],
                     },
-                    ects
+                    ects,
                 )
             },
         },
         {
             id: 'lastUpdate',
-            accessorFn: (row) => row.updatedAt,
+            accessorFn: row => row.updatedAt,
             meta: { label: t('sessions.table.lastUpdate') },
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('sessions.table.lastUpdate') }),
             cell: ({ row }) => {
@@ -170,9 +171,13 @@ export function createColumns(
 }
 
 function toNationalScale(grade: number | null, t: ComposerTranslation): string {
-    if (grade === null) return t('sessions.grades.absent')
-    if (grade >= 90) return t('sessions.grades.excellent')
-    if (grade >= 75) return t('sessions.grades.good')
-    if (grade >= 60) return t('sessions.grades.satisfactory')
+    if (grade === null)
+        return t('sessions.grades.absent')
+    if (grade >= 90)
+        return t('sessions.grades.excellent')
+    if (grade >= 75)
+        return t('sessions.grades.good')
+    if (grade >= 60)
+        return t('sessions.grades.satisfactory')
     return t('sessions.grades.unsatisfactory')
 }

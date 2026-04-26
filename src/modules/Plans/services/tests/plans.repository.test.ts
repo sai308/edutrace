@@ -56,25 +56,25 @@ describe('plansRepository', () => {
 
         it('throws when id is empty', async () => {
             await expect(plansRepository.savePlan(makePlan({ id: '' }))).rejects.toThrow(
-                'plan must have a non-empty id'
+                'plan must have a non-empty id',
             )
         })
 
         it('throws when id is whitespace only', async () => {
             await expect(plansRepository.savePlan(makePlan({ id: '   ' }))).rejects.toThrow(
-                'plan must have a non-empty id'
+                'plan must have a non-empty id',
             )
         })
 
         it('throws when studentId is empty', async () => {
             await expect(plansRepository.savePlan(makePlan({ studentId: '' }))).rejects.toThrow(
-                'plan must have a non-empty studentId'
+                'plan must have a non-empty studentId',
             )
         })
 
         it('throws when iep is empty', async () => {
             await expect(plansRepository.savePlan(makePlan({ iep: '' }))).rejects.toThrow(
-                'plan must have a non-empty iep'
+                'plan must have a non-empty iep',
             )
         })
 
@@ -111,7 +111,7 @@ describe('plansRepository', () => {
 
             const result = await plansRepository.getPlansByStudentId('stu-A')
             expect(result).toHaveLength(2)
-            expect(result.every((p) => p.studentId === 'stu-A')).toBe(true)
+            expect(result.every(p => p.studentId === 'stu-A')).toBe(true)
         })
 
         it('does not return plans from other students', async () => {

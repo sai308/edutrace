@@ -44,18 +44,20 @@ watch(
         if (isOpen) {
             gradeInput.value = props.currentGrade ?? ''
         }
-    }
+    },
 )
 
 /** Strip the partial marker (~) and return just the numeric/letter value */
 function cleanedHint(): string {
-    if (props.hintGrade === null || props.hintGrade === undefined) return ''
+    if (props.hintGrade === null || props.hintGrade === undefined)
+        return ''
     return String(props.hintGrade).replace('~', '').trim()
 }
 
 function applyHint() {
     const hint = cleanedHint()
-    if (hint) gradeInput.value = hint
+    if (hint)
+        gradeInput.value = hint
 }
 
 function handleConfirm() {
@@ -67,7 +69,8 @@ function handleConfirm() {
 }
 
 function handleKeydown(event: KeyboardEvent) {
-    if (event.key === 'Enter') handleConfirm()
+    if (event.key === 'Enter')
+        handleConfirm()
 }
 </script>
 
@@ -78,8 +81,7 @@ function handleKeydown(event: KeyboardEvent) {
                 <DialogTitle>{{ t('summary.modal.setManualTitle') }}</DialogTitle>
                 <DialogDescription>
                     {{ t('summary.modal.setManualDescription') }}
-                    <span class="font-semibold text-foreground">{{ studentName }}</span
-                    >.
+                    <span class="font-semibold text-foreground">{{ studentName }}</span>.
                 </DialogDescription>
             </DialogHeader>
 

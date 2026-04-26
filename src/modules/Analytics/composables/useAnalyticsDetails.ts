@@ -14,11 +14,13 @@ export function useAnalyticsDetails(meetId: string) {
         error.value = null
         try {
             stats.value = await analyticsService.getDetailedStats(meetId, teacherName)
-        } catch (err) {
+        }
+        catch (err) {
             logger.error('Failed to load detailed stats:', err)
             error.value = err
             toast.error('Failed to load analytics details')
-        } finally {
+        }
+        finally {
             loading.value = false
         }
     }

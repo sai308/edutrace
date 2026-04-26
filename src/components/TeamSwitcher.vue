@@ -40,29 +40,34 @@ function fadeOutAndReload() {
 }
 
 async function handleSwitch(id: string) {
-    if (id === currentWorkspaceId.value || isSwitching.value) return
+    if (id === currentWorkspaceId.value || isSwitching.value)
+        return
     try {
         isSwitching.value = true
         await workspaceRepository.switchWorkspace(id, () => {})
         fadeOutAndReload()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Failed to switch workspace', e)
         isSwitching.value = false
     }
 }
 
 function handleOpenCreateModal() {
-    if (isMobile.value) setOpenMobile(false)
+    if (isMobile.value)
+        setOpenMobile(false)
     openCreateModal()
 }
 
 function goToGuide() {
     router.push('/guide#workspaces')
-    if (isMobile.value) setOpenMobile(false)
+    if (isMobile.value)
+        setOpenMobile(false)
 }
 
 function getIcon(name?: string) {
-    if (!name) return Database
+    if (!name)
+        return Database
     return ((LucideIcons as Record<string, unknown>)[name] as typeof Database) ?? Database
 }
 </script>

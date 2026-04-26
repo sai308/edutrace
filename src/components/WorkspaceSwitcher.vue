@@ -37,7 +37,7 @@ const selectedWorkspace = ref<Workspace | null>(null)
 
 // --- Computed ---
 const activeWorkspace = computed(
-    () => workspaces.value.find((ws) => ws.id === currentWorkspaceId.value) || workspaces.value[0]
+    () => workspaces.value.find(ws => ws.id === currentWorkspaceId.value) || workspaces.value[0],
 )
 
 const sortedWorkspaces = computed(() => {
@@ -63,7 +63,8 @@ function fadeOutAndReload() {
 }
 
 async function handleSwitch(id: string) {
-    if (id === currentWorkspaceId.value || isSwitching.value) return
+    if (id === currentWorkspaceId.value || isSwitching.value)
+        return
 
     try {
         isSwitching.value = true
@@ -71,7 +72,8 @@ async function handleSwitch(id: string) {
             // Optional loading callback
         })
         fadeOutAndReload()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Failed to switch workspace', e)
         isSwitching.value = false
     }
@@ -79,10 +81,11 @@ async function handleSwitch(id: string) {
 
 function openCreateModal() {
     showCreateModal.value = true
-    if (isMobile.value) setOpenMobile(false)
+    if (isMobile.value)
+        setOpenMobile(false)
 }
 
-async function handleCreate(data: { name: string; icon: string; copySettings?: boolean }) {
+async function handleCreate(data: { name: string, icon: string, copySettings?: boolean }) {
     try {
         const options: any = { icon: data.icon }
 
@@ -97,18 +100,24 @@ async function handleCreate(data: { name: string; icon: string; copySettings?: b
             })
             // We use the same repository to save to the NEW workspace context
             options.saveSettings = async (settings: any) => {
-                if (settings.durationLimit) await settingsRepository.saveDurationLimit(settings.durationLimit)
-                if (settings.defaultTeacher) await settingsRepository.saveDefaultTeacher(settings.defaultTeacher)
-                if (settings.ignoredUsers) await settingsRepository.saveIgnoredUsers(settings.ignoredUsers)
-                if (settings.teachers) await settingsRepository.saveTeachers(settings.teachers)
-                if (settings.examSettings) await settingsRepository.saveExamSettings(settings.examSettings)
+                if (settings.durationLimit)
+                    await settingsRepository.saveDurationLimit(settings.durationLimit)
+                if (settings.defaultTeacher)
+                    await settingsRepository.saveDefaultTeacher(settings.defaultTeacher)
+                if (settings.ignoredUsers)
+                    await settingsRepository.saveIgnoredUsers(settings.ignoredUsers)
+                if (settings.teachers)
+                    await settingsRepository.saveTeachers(settings.teachers)
+                if (settings.examSettings)
+                    await settingsRepository.saveExamSettings(settings.examSettings)
             }
         }
 
         await workspaceRepository.createWorkspace(data.name, options)
         loadWorkspaces()
         showCreateModal.value = false
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Failed to create workspace', e)
     }
 }
@@ -117,11 +126,13 @@ function openEditModal(e: Event, ws: Workspace) {
     e.stopPropagation() // Prevent dropdown item click
     selectedWorkspace.value = ws
     showEditModal.value = true
-    if (isMobile.value) setOpenMobile(false)
+    if (isMobile.value)
+        setOpenMobile(false)
 }
 
-async function handleUpdate(data: { name: string; icon: string }) {
-    if (!selectedWorkspace.value) return
+async function handleUpdate(data: { name: string, icon: string }) {
+    if (!selectedWorkspace.value)
+        return
     try {
         await workspaceRepository.updateWorkspace(selectedWorkspace.value.id, {
             name: data.name,
@@ -130,7 +141,8 @@ async function handleUpdate(data: { name: string; icon: string }) {
         loadWorkspaces()
         showEditModal.value = false
         selectedWorkspace.value = null
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Failed to update workspace', e)
     }
 }
@@ -139,11 +151,13 @@ function openDeleteConfirm(e: Event, ws: Workspace) {
     e.stopPropagation()
     selectedWorkspace.value = ws
     showDeleteConfirm.value = true
-    if (isMobile.value) setOpenMobile(false)
+    if (isMobile.value)
+        setOpenMobile(false)
 }
 
 async function handleDelete() {
-    if (!selectedWorkspace.value) return
+    if (!selectedWorkspace.value)
+        return
     const id = selectedWorkspace.value.id
     try {
         await workspaceRepository.deleteWorkspace(id)
@@ -151,24 +165,28 @@ async function handleDelete() {
         // If we deleted the active workspace (handled by repo, but we need to reload UI)
         if (currentWorkspaceId.value === id) {
             fadeOutAndReload()
-        } else {
+        }
+        else {
             loadWorkspaces()
         }
 
         showDeleteConfirm.value = false
         selectedWorkspace.value = null
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Failed to delete workspace', e)
     }
 }
 
 function goToGuide() {
     router.push('/guide#workspaces')
-    if (isMobile.value) setOpenMobile(false)
+    if (isMobile.value)
+        setOpenMobile(false)
 }
 
 function getIcon(name?: string) {
-    if (!name) return Database
+    if (!name)
+        return Database
     return ((LucideIcons as Record<string, unknown>)[name] as typeof Database) ?? Database
 }
 

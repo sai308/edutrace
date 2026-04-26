@@ -33,10 +33,12 @@ export function useMarks() {
         flatMarks.value = []
         try {
             flatMarks.value = await marksService.loadMarksData(groupName)
-        } catch (error) {
+        }
+        catch (error) {
             logger.error('Failed to load marks data:', error)
             toast.error('Failed to load data')
-        } finally {
+        }
+        finally {
             isLoading.value = false
         }
     }
@@ -54,7 +56,7 @@ export function useMarks() {
         try {
             const { newMarksCount, skippedMarksCount, updatedMarksCount } = await marksService.processFile(
                 file,
-                groupName
+                groupName,
             )
 
             if (newMarksCount > 0) {
@@ -70,20 +72,25 @@ export function useMarks() {
                 toast.info('No marks found in file.')
             }
             // Table reload is triggered once after the full queue drains, not per-file.
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Error processing marks:', e)
             reportWorkerError()
             if (e instanceof WorkerError && e.code === 'PARSE_ERROR') {
                 toast.error(e.message)
-            } else if (e instanceof WorkerError && e.code === 'WORKER_TIMEOUT') {
+            }
+            else if (e instanceof WorkerError && e.code === 'WORKER_TIMEOUT') {
                 toast.error(t('workerErrors.timeout'))
-            } else if (e instanceof WorkerError && e.code === 'SERIALIZATION_ERROR') {
+            }
+            else if (e instanceof WorkerError && e.code === 'SERIALIZATION_ERROR') {
                 toast.error(t('workerErrors.serialization'))
-            } else {
+            }
+            else {
                 toast.error(t('workerErrors.unknown'))
             }
             throw e
-        } finally {
+        }
+        finally {
             isProcessing.value = false
             activeWorkerTasks.value = Math.max(0, activeWorkerTasks.value - 1)
         }
@@ -92,7 +99,8 @@ export function useMarks() {
     const pendingToggleIds = new Set<string | number>()
 
     async function toggleSynced(mark: FlatMark, silent = false) {
-        if (!mark?.id || pendingToggleIds.has(mark.id)) return
+        if (!mark?.id || pendingToggleIds.has(mark.id))
+            return
         pendingToggleIds.add(mark.id)
         try {
             const newSynced = await marksService.toggleSynced(mark)
@@ -103,10 +111,12 @@ export function useMarks() {
                     fn: () => toggleSynced(mark, true),
                 })
             }
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Error toggling sync:', e)
             toast.error('Failed to update sync status')
-        } finally {
+        }
+        finally {
             setTimeout(() => pendingToggleIds.delete(mark.id), 400)
         }
     }
@@ -114,29 +124,34 @@ export function useMarks() {
     async function deleteMark(id: string | number) {
         try {
             await marksService.deleteMark(id)
-            flatMarks.value = flatMarks.value.filter((m) => m.id !== id)
+            flatMarks.value = flatMarks.value.filter(m => m.id !== id)
             toast.success('Mark deleted')
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Error deleting mark:', e)
             toast.error('Failed to delete mark')
             throw e
         }
     }
 
-    async function saveManualMark(data: { groupName: string; studentId: string; taskId: string; score: number }) {
+    async function saveManualMark(data: { groupName: string, studentId: string, taskId: string, score: number }) {
         try {
             const result = await marksService.saveManualMark(data)
             if (result.skipped) {
                 toast.info('Mark is already synced — not overwritten')
-            } else if (result.isNew) {
+            }
+            else if (result.isNew) {
                 toast.success('Mark saved')
-            } else if (result.updated) {
+            }
+            else if (result.updated) {
                 toast.success('Mark updated')
-            } else {
+            }
+            else {
                 toast.info('Mark is already up to date')
             }
             await loadMarksData(data.groupName)
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Error saving manual mark:', e)
             toast.error('Failed to save mark')
             throw e
@@ -147,9 +162,10 @@ export function useMarks() {
         try {
             await marksService.deleteMarks(ids)
             const idsSet = new Set(ids)
-            flatMarks.value = flatMarks.value.filter((m) => !idsSet.has(m.id))
+            flatMarks.value = flatMarks.value.filter(m => !idsSet.has(m.id))
             toast.success(`${ids.length} marks deleted`)
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Error deleting marks:', e)
             toast.error('Failed to delete marks')
             throw e

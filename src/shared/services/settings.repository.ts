@@ -36,8 +36,10 @@ class SettingsRepository {
 
         // Case 2: Handle boolean coercion
         if (key === 'sessionSquash') {
-            if (val === 'true') return true as SettingsMap[K]
-            if (val === 'false') return false as SettingsMap[K]
+            if (val === 'true')
+                return true as SettingsMap[K]
+            if (val === 'false')
+                return false as SettingsMap[K]
             return (typeof val === 'boolean' ? val : defaultValue) as SettingsMap[K]
         }
 
@@ -72,7 +74,8 @@ class SettingsRepository {
     async saveDefaultTeacher(teacher: string | null): Promise<void> {
         if (teacher) {
             this._saveSetting('defaultTeacher', teacher)
-        } else {
+        }
+        else {
             const wsKey = this._getWorkspaceKey('defaultTeacher')
             storage.remove(wsKey)
         }
@@ -111,7 +114,8 @@ class SettingsRepository {
                 if (isTeacher && currentRole !== 'teacher') {
                     member.role = 'teacher'
                     needsUpdate = true
-                } else if (!isTeacher && currentRole === 'teacher') {
+                }
+                else if (!isTeacher && currentRole === 'teacher') {
                     member.role = 'student'
                     needsUpdate = true
                 }
@@ -121,7 +125,8 @@ class SettingsRepository {
                 }
             }
             await tx.done
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Error syncing member roles after saving teachers.', e)
         }
     }

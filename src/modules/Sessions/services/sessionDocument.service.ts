@@ -61,13 +61,13 @@ export const sessionDocumentService = {
     async generateDocument(
         session: SessionReport,
         group: Group | null,
-        formData: PrintFormData
-    ): Promise<{ blob: Blob; filename: string }> {
+        formData: PrintFormData,
+    ): Promise<{ blob: Blob, filename: string }> {
         const iepMap = await studentsRepository.getIepMap({ includeHidden: true })
         const t = i18n.global.t.bind(i18n.global)
 
         const sortedEntries = [...session.entries].sort((a, b) =>
-            a.studentSnapshot.fullName.localeCompare(b.studentSnapshot.fullName, 'uk')
+            a.studentSnapshot.fullName.localeCompare(b.studentSnapshot.fullName, 'uk'),
         )
 
         const entries = sortedEntries.map((entry, idx) => ({
@@ -79,7 +79,7 @@ export const sessionDocumentService = {
             ects: entry.grade !== null ? toECTS(entry.grade) : '',
         }))
 
-        const stats = computeECTSStats(session.entries.map((e) => e.grade))
+        const stats = computeECTSStats(session.entries.map(e => e.grade))
 
         const data = {
             // Document header

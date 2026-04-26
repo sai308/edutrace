@@ -79,7 +79,7 @@ describe('modulesRepository', () => {
             const result = await modulesRepository.getAllModules()
 
             expect(result).toHaveLength(2)
-            expect(result.map((m) => m.id)).toEqual(expect.arrayContaining([20, 21]))
+            expect(result.map(m => m.id)).toEqual(expect.arrayContaining([20, 21]))
         })
 
         it('returns modules with all stored fields', async () => {
@@ -93,7 +93,7 @@ describe('modulesRepository', () => {
             })
 
             const modules = await modulesRepository.getAllModules()
-            const m = modules.find((x) => x.id === 22) as any
+            const m = modules.find(x => x.id === 22) as any
 
             expect(m.groupName).toBe('Group C')
             expect(m.extraField).toBe('extra')
@@ -132,7 +132,7 @@ describe('modulesRepository', () => {
             const result = await modulesRepository.getModulesByGroup('Target Group')
 
             expect(result).toHaveLength(2)
-            expect(result.every((m) => m.groupName === 'Target Group')).toBe(true)
+            expect(result.every(m => m.groupName === 'Target Group')).toBe(true)
         })
 
         it('does not return modules from other groups', async () => {
@@ -145,7 +145,7 @@ describe('modulesRepository', () => {
             })
 
             const result = await modulesRepository.getModulesByGroup('Group F')
-            expect(result.some((m) => m.id === 33)).toBe(false)
+            expect(result.some(m => m.id === 33)).toBe(false)
         })
     })
 
@@ -202,7 +202,7 @@ describe('modulesRepository', () => {
             await modulesRepository.deleteModule(50)
 
             const remaining = await modulesRepository.getAllModules()
-            expect(remaining.some((m) => m.id === 50)).toBe(false)
+            expect(remaining.some(m => m.id === 50)).toBe(false)
         })
 
         it('does not affect other modules', async () => {
@@ -223,8 +223,8 @@ describe('modulesRepository', () => {
             await modulesRepository.deleteModule(52)
 
             const remaining = await modulesRepository.getAllModules()
-            expect(remaining.some((m) => m.id === 51)).toBe(true)
-            expect(remaining.some((m) => m.id === 52)).toBe(false)
+            expect(remaining.some(m => m.id === 51)).toBe(true)
+            expect(remaining.some(m => m.id === 52)).toBe(false)
         })
 
         it('does not throw when id does not exist', async () => {

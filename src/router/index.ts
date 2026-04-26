@@ -219,11 +219,13 @@ const router = createRouter({
 const DB_DEPENDENT_PREFIX = /^\/(?:attendance|org|control|documents)/
 
 router.beforeEach(async (to) => {
-    if (!DB_DEPENDENT_PREFIX.test(to.path)) return true
+    if (!DB_DEPENDENT_PREFIX.test(to.path))
+        return true
     try {
         await databaseService.getDb()
         return true
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Database unavailable during navigation:', e)
         return false
     }

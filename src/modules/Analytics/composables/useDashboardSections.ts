@@ -18,7 +18,8 @@ export function useDashboardSections() {
                     collapsedSections.value = new Set(ids)
                 }
             }
-        } catch {
+        }
+        catch {
             // Corrupt or inaccessible sessionStorage — start with all sections expanded.
         }
     })
@@ -26,12 +27,14 @@ export function useDashboardSections() {
     function toggleSection(id: string): void {
         if (collapsedSections.value.has(id)) {
             collapsedSections.value.delete(id)
-        } else {
+        }
+        else {
             collapsedSections.value.add(id)
         }
         try {
             sessionStorage.setItem(STORAGE_KEY, JSON.stringify([...collapsedSections.value]))
-        } catch {
+        }
+        catch {
             // sessionStorage quota exceeded or blocked — in-memory state still works.
         }
     }

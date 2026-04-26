@@ -44,10 +44,10 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const columns = createColumns(props.rowActions ?? (() => []), t, (name) => props.memberCounts[name] ?? 0)
+const columns = createColumns(props.rowActions ?? (() => []), t, name => props.memberCounts[name] ?? 0)
 
 const sorting = ref<SortingState>(
-    props.sortField ? [{ id: props.sortField, desc: props.sortOrder === 'desc' }] : [{ id: 'name', desc: false }]
+    props.sortField ? [{ id: props.sortField, desc: props.sortOrder === 'desc' }] : [{ id: 'name', desc: false }],
 )
 const rowSelection = ref<RowSelectionState>({})
 const globalFilter = ref(props.searchQuery ?? '')
@@ -63,16 +63,16 @@ const table = useVueTable({
         return props.groups
     },
     columns,
-    getRowId: (row) => String(row.meetId),
+    getRowId: row => String(row.meetId),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: (u) => valueUpdater(u, sorting),
-    onRowSelectionChange: (u) => valueUpdater(u, rowSelection),
-    onGlobalFilterChange: (u) => valueUpdater(u, globalFilter),
-    onColumnVisibilityChange: (u) => valueUpdater(u, columnVisibility),
-    onPaginationChange: (u) => valueUpdater(u, pagination),
+    onSortingChange: u => valueUpdater(u, sorting),
+    onRowSelectionChange: u => valueUpdater(u, rowSelection),
+    onGlobalFilterChange: u => valueUpdater(u, globalFilter),
+    onColumnVisibilityChange: u => valueUpdater(u, columnVisibility),
+    onPaginationChange: u => valueUpdater(u, pagination),
     state: {
         get sorting() {
             return sorting.value
@@ -94,22 +94,24 @@ const table = useVueTable({
 
 watch(
     () => props.searchQuery,
-    (q) => table.setGlobalFilter(q ?? '')
+    q => table.setGlobalFilter(q ?? ''),
 )
 
 watch(
     () => props.bulkMode,
     (enabled) => {
-        table.setColumnVisibility((prev) => ({ ...prev, select: !!enabled }))
-        if (!enabled) table.toggleAllRowsSelected(false)
+        table.setColumnVisibility(prev => ({ ...prev, select: !!enabled }))
+        if (!enabled)
+            table.toggleAllRowsSelected(false)
     },
-    { immediate: true }
+    { immediate: true },
 )
 
 // Emit sort changes so the parent can sync them to the URL
 watch(sorting, (s) => {
     const current = s[0]
-    if (!current) return
+    if (!current)
+        return
     const newOrder = current.desc ? 'desc' : 'asc'
     if (current.id !== props.sortField || newOrder !== props.sortOrder) {
         emit('update:sort', current.id, newOrder)
@@ -120,13 +122,14 @@ watch(sorting, (s) => {
 watch(
     () => [props.sortField, props.sortOrder] as const,
     ([field, order]) => {
-        if (!field) return
+        if (!field)
+            return
         const current = sorting.value[0]
         const newDesc = order === 'desc'
         if (!current || current.id !== field || current.desc !== newDesc) {
             sorting.value = [{ id: field, desc: newDesc }]
         }
-    }
+    },
 )
 
 defineExpose({ table })
@@ -150,10 +153,10 @@ defineExpose({ table })
                                 header.id === 'name'
                                     ? 'sticky left-0 z-40 w-[180px] bg-card shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
                                     : header.id === 'actions'
-                                      ? 'w-10'
-                                      : !['select'].includes(header.id)
-                                        ? 'min-w-[100px]'
-                                        : '',
+                                        ? 'w-10'
+                                        : !['select'].includes(header.id)
+                                            ? 'min-w-[100px]'
+                                            : '',
                             ]"
                         >
                             <FlexRender

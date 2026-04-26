@@ -29,10 +29,12 @@ export function useTasks() {
             await loadTasks()
             toast.success(isEditing ? t('tasks.saveSuccess') : t('tasks.addSuccess'))
             return true
-        } catch (e: unknown) {
+        }
+        catch (e: unknown) {
             if (e instanceof Error && e.name === 'ConstraintError') {
                 toast.error(t('tasks.duplicateError', { name: String(formData.name) }))
-            } else {
+            }
+            else {
                 logger.error('Save task failed', e)
                 toast.error(t('tasks.saveError'))
             }

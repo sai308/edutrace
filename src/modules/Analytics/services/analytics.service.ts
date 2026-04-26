@@ -24,7 +24,7 @@ function buildMemberLookups(allMembers: Member[]) {
     allMembers.forEach((s) => {
         nameToMember.set(s.name, s)
         if (s.aliases) {
-            s.aliases.forEach((a) => nameToMember.set(a, s))
+            s.aliases.forEach(a => nameToMember.set(a, s))
         }
         if (s.groupName) {
             if (!groupToMembers[s.groupName]) {
@@ -44,7 +44,7 @@ async function fetchCommonData() {
         studentsRepository.getAllMembers(),
     ])
 
-    const teacherNames = allStudents.filter((m) => m.role === 'teacher').map((m) => m.name)
+    const teacherNames = allStudents.filter(m => m.role === 'teacher').map(m => m.name)
 
     const ignoredSet = new Set([...ignoredUsers, ...teacherNames])
     return { ignoredSet, groupsMap, allStudents }
@@ -52,10 +52,14 @@ async function fetchCommonData() {
 
 // Exported so views can map percentage → Tailwind class without duplicating thresholds.
 export function getStatusColor(percentage: number): string {
-    if (percentage <= STATUS_COLOR_THRESHOLDS.VERY_LOW) return 'bg-red-500 text-white'
-    if (percentage <= STATUS_COLOR_THRESHOLDS.LOW) return 'bg-red-400 text-white'
-    if (percentage <= STATUS_COLOR_THRESHOLDS.MEDIUM) return 'bg-yellow-200 text-black'
-    if (percentage <= STATUS_COLOR_THRESHOLDS.HIGH) return 'bg-yellow-400 text-black'
+    if (percentage <= STATUS_COLOR_THRESHOLDS.VERY_LOW)
+        return 'bg-red-500 text-white'
+    if (percentage <= STATUS_COLOR_THRESHOLDS.LOW)
+        return 'bg-red-400 text-white'
+    if (percentage <= STATUS_COLOR_THRESHOLDS.MEDIUM)
+        return 'bg-yellow-200 text-black'
+    if (percentage <= STATUS_COLOR_THRESHOLDS.HIGH)
+        return 'bg-yellow-400 text-black'
     return 'bg-green-500 text-white'
 }
 
@@ -89,7 +93,8 @@ export class AnalyticsService {
 
         meets.forEach((meet: Meet) => {
             const meetId = meet.meetId
-            if (!meetId) return // skip malformed records
+            if (!meetId)
+                return // skip malformed records
 
             if (!grouped[meetId]) {
                 grouped[meetId] = {
@@ -114,9 +119,10 @@ export class AnalyticsService {
             let sessionMaxDuration = 0
 
             meet.participants.forEach((p) => {
-                if (!p.name || ignoredSet.has(p.name)) return
-                const duration =
-                    typeof p.duration === 'number' && isFinite(p.duration) && p.duration >= 0 ? p.duration : 0
+                if (!p.name || ignoredSet.has(p.name))
+                    return
+                const duration
+                    = typeof p.duration === 'number' && isFinite(p.duration) && p.duration >= 0 ? p.duration : 0
 
                 const member = nameToMember.get(p.name)
                 const shouldCountParticipant = targetGroupMembers ? !!(member && targetGroupMembers.has(member)) : true
@@ -125,8 +131,10 @@ export class AnalyticsService {
                     const uniqueId = member?.id || p.name
                     stats.participants.add(uniqueId)
                     stats.totalParticipantAppearances++
-                    if (member) stats.activeMemberIds.add(member.id)
-                    if (duration > sessionMaxDuration) sessionMaxDuration = duration
+                    if (member)
+                        stats.activeMemberIds.add(member.id)
+                    if (duration > sessionMaxDuration)
+                        sessionMaxDuration = duration
                 }
             })
 
@@ -142,18 +150,20 @@ export class AnalyticsService {
                 const groupMembers = groupToMembers[group.name]!
                 let validMembersCount = 0
                 groupMembers.forEach((m) => {
-                    if (!ignoredSet.has(m.name)) validMembersCount++
+                    if (!ignoredSet.has(m.name))
+                        validMembersCount++
                 })
                 uniqueParticipantsCount = validMembersCount
                 activeParticipantsCount = g.activeMemberIds.size
-            } else {
+            }
+            else {
                 uniqueParticipantsCount = g.participants.size
                 activeParticipantsCount = g.participants.size
             }
 
             const totalPossibleAppearances = g.totalSessions * uniqueParticipantsCount
-            const attendancePercentage =
-                totalPossibleAppearances > 0
+            const attendancePercentage
+                = totalPossibleAppearances > 0
                     ? Math.round((g.totalParticipantAppearances / totalPossibleAppearances) * 100)
                     : 0
 
@@ -210,7 +220,8 @@ export class AnalyticsService {
         const groupStudents = new Set<string>()
         if (group) {
             allStudents.forEach((s) => {
-                if (s.groupName === group.name) groupStudents.add(s.name)
+                if (s.groupName === group.name)
+                    groupStudents.add(s.name)
             })
         }
 
@@ -227,10 +238,11 @@ export class AnalyticsService {
                     startTime: meet.startTime || null,
                     endTime: meet.endTime || null,
                 }
-            } else {
+            }
+            else {
                 if (
-                    meet.startTime &&
-                    (!sessionsByDate[date]!.startTime || meet.startTime < sessionsByDate[date]!.startTime!)
+                    meet.startTime
+                    && (!sessionsByDate[date]!.startTime || meet.startTime < sessionsByDate[date]!.startTime!)
                 ) {
                     sessionsByDate[date]!.startTime = meet.startTime
                 }
@@ -240,7 +252,8 @@ export class AnalyticsService {
             }
 
             meet.participants.forEach((p) => {
-                if (!p.name || localIgnoredSet.has(p.name)) return
+                if (!p.name || localIgnoredSet.has(p.name))
+                    return
                 allParticipants.add(p.name)
 
                 if (!sessionsByDate[date]!.participants[p.name]) {
@@ -251,7 +264,8 @@ export class AnalyticsService {
         })
 
         groupStudents.forEach((name) => {
-            if (!localIgnoredSet.has(name)) allParticipants.add(name)
+            if (!localIgnoredSet.has(name))
+                allParticipants.add(name)
         })
 
         Object.values(sessionsByDate).forEach((session) => {
@@ -272,7 +286,8 @@ export class AnalyticsService {
 
             dates.forEach((date) => {
                 const session = sessionsByDate[date]
-                if (!session) return
+                if (!session)
+                    return
 
                 const duration = session.participants[name] || 0
                 const max = session.maxDuration || 1
@@ -297,7 +312,7 @@ export class AnalyticsService {
                     acc[meet.date] = meet.id
                     return acc
                 },
-                {} as Record<string, string>
+                {} as Record<string, string>,
             ),
         }
     }
@@ -315,18 +330,21 @@ export class AnalyticsService {
         const { ignoredSet, allStudents } = await fetchCommonData()
         const meet = await meetPromise
 
-        if (!meet) throw new Error('Meet not found')
+        if (!meet)
+            throw new Error('Meet not found')
 
         const { nameToMember: memberGroupMap } = buildMemberLookups(allStudents)
 
         const date = meet.date
-        const participants = (meet.participants ?? []).filter((p) => p.name && !ignoredSet.has(p.name))
+        const participants = (meet.participants ?? []).filter(p => p.name && !ignoredSet.has(p.name))
 
         let maxDuration = 0
         participants.forEach((p) => {
-            if (p.duration > maxDuration) maxDuration = p.duration
+            if (p.duration > maxDuration)
+                maxDuration = p.duration
         })
-        if (maxDuration === 0) maxDuration = 1
+        if (maxDuration === 0)
+            maxDuration = 1
 
         const matrix = participants
             .map((p) => {
@@ -353,7 +371,7 @@ export class AnalyticsService {
                 date,
                 participants: participants.reduce(
                     (acc, p) => ({ ...acc, [p.name]: p.duration }),
-                    {} as Record<string, number>
+                    {} as Record<string, number>,
                 ),
                 maxDuration,
                 startTime: meet.startTime || '',

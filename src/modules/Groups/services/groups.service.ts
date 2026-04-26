@@ -22,7 +22,8 @@ import { groupsRepository } from './groups.repository'
  */
 export function suggestCourseFromName(name: string): number | undefined {
     const match = name.match(/\d/)
-    if (!match) return undefined
+    if (!match)
+        return undefined
     const course = Number.parseInt(match[0], 10)
     return course >= COURSE_MIN && course <= COURSE_MAX ? course : undefined
 }
@@ -34,7 +35,7 @@ interface IGroupsWorker {
         members: Member[],
         teacherList: string[],
         allTasks: Task[],
-        allMarks: Mark[]
+        allMarks: Mark[],
     ) => Promise<GroupsData & { teacherSet: Set<string> }>
 }
 

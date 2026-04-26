@@ -25,7 +25,7 @@ export function useSessionsPage() {
     const activeTab = ref<string>(SessionTypeEnum.MAIN)
 
     const currentGroup = computed(
-        () => groups.value.find((g) => g.id!.toString() === selectedGroupId.value) ?? undefined
+        () => groups.value.find(g => g.id!.toString() === selectedGroupId.value) ?? undefined,
     )
 
     /**
@@ -39,88 +39,103 @@ export function useSessionsPage() {
     })
 
     async function loadSessions() {
-        if (!selectedGroupId.value) return
+        if (!selectedGroupId.value)
+            return
 
         const allSessions = await sessionRepository.getByGroupId(selectedGroupId.value)
 
-        let main = allSessions.find((s) => s.sessionType === SessionTypeEnum.MAIN) ?? null
+        let main = allSessions.find(s => s.sessionType === SessionTypeEnum.MAIN) ?? null
         if (main && main.status === SessionStatusEnum.OPEN && currentGroup.value) {
             try {
                 main = await sessionsService.syncMainSession(currentGroup.value, main.id)
-            } catch (e) {
+            }
+            catch (e) {
                 logger.error('Failed to sync main session', e)
             }
         }
         mainSession.value = main
 
-        let firstRetake = allSessions.find((s) => s.sessionType === SessionTypeEnum.FIRST_RETAKE) ?? null
+        let firstRetake = allSessions.find(s => s.sessionType === SessionTypeEnum.FIRST_RETAKE) ?? null
         if (firstRetake && firstRetake.status === SessionStatusEnum.OPEN && currentGroup.value) {
             try {
                 firstRetake = await sessionsService.syncRetakeSession(currentGroup.value, firstRetake.id)
-            } catch (e) {
+            }
+            catch (e) {
                 logger.error('Failed to sync first retake session', e)
             }
         }
         firstRetakeSession.value = firstRetake
 
-        let secondRetake = allSessions.find((s) => s.sessionType === SessionTypeEnum.SECOND_RETAKE) ?? null
+        let secondRetake = allSessions.find(s => s.sessionType === SessionTypeEnum.SECOND_RETAKE) ?? null
         if (secondRetake && secondRetake.status === SessionStatusEnum.OPEN && currentGroup.value) {
             try {
                 secondRetake = await sessionsService.syncRetakeSession(currentGroup.value, secondRetake.id)
-            } catch (e) {
+            }
+            catch (e) {
                 logger.error('Failed to sync second retake session', e)
             }
         }
         secondRetakeSession.value = secondRetake
 
         // Default active tab to the furthest available session
-        if (secondRetakeSession.value) activeTab.value = SessionTypeEnum.SECOND_RETAKE
-        else if (firstRetakeSession.value) activeTab.value = SessionTypeEnum.FIRST_RETAKE
+        if (secondRetakeSession.value)
+            activeTab.value = SessionTypeEnum.SECOND_RETAKE
+        else if (firstRetakeSession.value)
+            activeTab.value = SessionTypeEnum.FIRST_RETAKE
         else activeTab.value = SessionTypeEnum.MAIN
     }
 
     async function handleCreateMainSession() {
-        if (!currentGroup.value) return
+        if (!currentGroup.value)
+            return
         try {
             isInitializing.value = true
             mainSession.value = await sessionsService.initializeMainSession(currentGroup.value)
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Failed to create main session', e)
-        } finally {
+        }
+        finally {
             isInitializing.value = false
         }
     }
 
     async function handleCreateFirstRetake() {
-        if (!currentGroup.value || !mainSession.value) return
+        if (!currentGroup.value || !mainSession.value)
+            return
         try {
             isInitializing.value = true
             firstRetakeSession.value = await sessionsService.initializeRetakeSession(
                 currentGroup.value,
                 mainSession.value.id,
-                SessionTypeEnum.FIRST_RETAKE
+                SessionTypeEnum.FIRST_RETAKE,
             )
             activeTab.value = SessionTypeEnum.FIRST_RETAKE
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Failed to create First Retake', e)
-        } finally {
+        }
+        finally {
             isInitializing.value = false
         }
     }
 
     async function handleCreateSecondRetake() {
-        if (!currentGroup.value || !firstRetakeSession.value) return
+        if (!currentGroup.value || !firstRetakeSession.value)
+            return
         try {
             isInitializing.value = true
             secondRetakeSession.value = await sessionsService.initializeRetakeSession(
                 currentGroup.value,
                 firstRetakeSession.value.id,
-                SessionTypeEnum.SECOND_RETAKE
+                SessionTypeEnum.SECOND_RETAKE,
             )
             activeTab.value = SessionTypeEnum.SECOND_RETAKE
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Failed to create Second Retake', e)
-        } finally {
+        }
+        finally {
             isInitializing.value = false
         }
     }
@@ -133,7 +148,8 @@ export function useSessionsPage() {
         try {
             isSyncing.value = true
             await loadSessions()
-        } finally {
+        }
+        finally {
             isSyncing.value = false
         }
     }

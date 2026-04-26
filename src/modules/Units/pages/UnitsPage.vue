@@ -54,7 +54,8 @@ function confirmDeleteUnit(unit: Unit) {
 }
 
 async function handleDeleteConfirm() {
-    if (!unitToDelete.value) return
+    if (!unitToDelete.value)
+        return
     await deleteUnit(unitToDelete.value)
     isDeleteDialogOpen.value = false
     unitToDelete.value = null
@@ -62,7 +63,8 @@ async function handleDeleteConfirm() {
 
 async function handleSaveUnit(formData: Partial<Unit>) {
     const saved = await saveUnit(formData, currentUnit.value)
-    if (saved) isDialogOpen.value = false
+    if (saved)
+        isDialogOpen.value = false
 }
 
 function handleUpdateOrder(newData: Unit[]) {
@@ -77,7 +79,7 @@ async function toggleReordering() {
 }
 
 function handleBulkDelete(table: InstanceType<typeof UnitsListDataTable>['table']) {
-    const ids = table.getFilteredSelectedRowModel().rows.map((r) => r.original.id as number)
+    const ids = table.getFilteredSelectedRowModel().rows.map(r => r.original.id as number)
     bulkDeleteUnits(ids)
     table.resetRowSelection()
 }

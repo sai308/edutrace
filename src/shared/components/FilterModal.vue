@@ -24,7 +24,7 @@ const props = withDefaults(
     {
         allUsers: () => [],
         mode: 'teachers',
-    }
+    },
 )
 
 const emit = defineEmits<{
@@ -40,7 +40,7 @@ const items = ref<string[]>([])
 async function loadData() {
     if (props.mode === 'teachers') {
         const members = await studentsRepository.getAllMembers()
-        items.value = members.map((m) => m.name).sort()
+        items.value = members.map(m => m.name).sort()
         const selected = await settingsRepository.getTeachers()
         selectedItems.value = new Set(selected)
     }
@@ -51,8 +51,9 @@ onMounted(loadData)
 watch(
     () => props.open,
     (isOpen) => {
-        if (isOpen) loadData()
-    }
+        if (isOpen)
+            loadData()
+    },
 )
 
 watch(
@@ -62,27 +63,30 @@ watch(
         await settingsRepository.saveTeachers(list)
         emit('update:items', list)
     },
-    { deep: true }
+    { deep: true },
 )
 
 const sortedSelected = computed(() => {
     const list = Array.from(selectedItems.value).sort()
-    if (!searchQuery.value) return list
+    if (!searchQuery.value)
+        return list
     const q = searchQuery.value.toLowerCase()
-    return list.filter((u) => u.toLowerCase().includes(q))
+    return list.filter(u => u.toLowerCase().includes(q))
 })
 
 const sortedAvailable = computed(() => {
-    const available = (props.allUsers ?? items.value).filter((u) => !selectedItems.value.has(u)).sort()
-    if (!searchQuery.value) return available
+    const available = (props.allUsers ?? items.value).filter(u => !selectedItems.value.has(u)).sort()
+    if (!searchQuery.value)
+        return available
     const q = searchQuery.value.toLowerCase()
-    return available.filter((u) => u.toLowerCase().includes(q))
+    return available.filter(u => u.toLowerCase().includes(q))
 })
 
 function toggleUser(user: string) {
     if (selectedItems.value.has(user)) {
         selectedItems.value.delete(user)
-    } else {
+    }
+    else {
         selectedItems.value.add(user)
     }
 }
@@ -220,11 +224,11 @@ function clearAll() {
                     {{
                         mode === 'teachers'
                             ? $t('settings.general.teachers.modal.teachersCount', {
-                                  count: selectedItems.size,
-                              })
+                                count: selectedItems.size,
+                            })
                             : $t('settings.general.teachers.modal.ignoredCount', {
-                                  count: selectedItems.size,
-                              })
+                                count: selectedItems.size,
+                            })
                     }}
                 </span>
                 <div class="flex gap-2">

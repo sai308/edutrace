@@ -36,7 +36,8 @@ export class ReportsService {
         const text = await file.text()
         try {
             return await withTimeout(this.parser.parseMeetReport(text, file.name), PARSER_TIMEOUT_MS)
-        } catch (e) {
+        }
+        catch (e) {
             throw classifyWorkerError(e)
         }
     }
@@ -47,7 +48,8 @@ export class ReportsService {
     async processFiles(files: File[], filterMode: 'all' | 'related' = 'all'): Promise<ReportProcessingStats> {
         const stats: ReportProcessingStats = { saved: 0, skipped: 0, unrecognized: 0 }
 
-        if (!files || files.length === 0) return stats
+        if (!files || files.length === 0)
+            return stats
 
         // Load dependencies in parallel
         const [groupsMap, limitMinutes] = await Promise.all([
@@ -58,11 +60,12 @@ export class ReportsService {
         const limitSeconds = limitMinutes > 0 ? limitMinutes * 60 : 0
 
         // Parse all files first
-        const parsePromises = files.map((f) => this.parseFile(f))
+        const parsePromises = files.map(f => this.parseFile(f))
         let results: Meet[] = []
         try {
             results = await Promise.all(parsePromises)
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Parsing error:', e)
             throw e
         }
@@ -103,7 +106,7 @@ export class ReportsService {
             const normalizedGroupName = group ? normalizeGroupName(group.name, allGroups) : 'Unknown'
 
             // Always process students, use 'Unknown' if group missing
-            const rawStudents = result.participants.map((p) => ({
+            const rawStudents = result.participants.map(p => ({
                 name: p.name,
                 email: p.email || '',
                 groupName: normalizedGroupName,
@@ -114,15 +117,15 @@ export class ReportsService {
 
             // Add required fields for storage if new
             const studentsToSave: Member[] = reconciledIdentities.map(
-                (s) =>
+                s =>
                     ({
                         ...s,
                         role: s.role || 'student',
-                    }) as Member
+                    }) as Member,
             )
 
             // Deduplicate by ID before saving
-            const uniqueStudentsToSave = Array.from(new Map(studentsToSave.map((s) => [s.id, s])).values())
+            const uniqueStudentsToSave = Array.from(new Map(studentsToSave.map(s => [s.id, s])).values())
 
             // Bulk save students
             await studentsRepository.bulkPut(uniqueStudentsToSave)

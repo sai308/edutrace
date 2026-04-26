@@ -55,13 +55,14 @@ const { getScoreColor } = useColors()
 // Stable computed so TanStack sees the same array reference when data hasn't changed.
 // The inline `get data()` getter always returns a new Array.filter result, which makes
 // TanStack think the data changed on every render and rebuild all Row objects.
-const tableData = computed(() => props.students.filter((s) => !props.teachers.has(s.name)))
+const tableData = computed(() => props.students.filter(s => !props.teachers.has(s.name)))
 
 // Ordinal map: 1-based position of each student in A-Z name sort within the active group.
 // Empty when no group filter is active — ordinal is only meaningful within a single group.
 const ordinalMap = computed<Map<string, number>>(() => {
-    if (!props.groupFilter) return new Map()
-    const inGroup = tableData.value.filter((s) => s.groups.includes(props.groupFilter!))
+    if (!props.groupFilter)
+        return new Map()
+    const inGroup = tableData.value.filter(s => s.groups.includes(props.groupFilter!))
     const sorted = [...inGroup].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
     return new Map(sorted.map((s, i) => [s.id, i + 1]))
 })
@@ -85,16 +86,16 @@ const table = useVueTable({
     get columns() {
         return columns.value
     },
-    getRowId: (row) => row.id ?? row.name,
+    getRowId: row => row.id ?? row.name,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: (u) => valueUpdater(u, sorting),
-    onColumnVisibilityChange: (u) => valueUpdater(u, columnVisibility),
-    onRowSelectionChange: (u) => valueUpdater(u, rowSelection),
-    onColumnFiltersChange: (u) => valueUpdater(u, columnFilters),
-    onPaginationChange: (u) => valueUpdater(u, pagination),
+    onSortingChange: u => valueUpdater(u, sorting),
+    onColumnVisibilityChange: u => valueUpdater(u, columnVisibility),
+    onRowSelectionChange: u => valueUpdater(u, rowSelection),
+    onColumnFiltersChange: u => valueUpdater(u, columnFilters),
+    onPaginationChange: u => valueUpdater(u, pagination),
     state: {
         get sorting() {
             return sorting.value
@@ -123,18 +124,19 @@ watchEffect(() => {
 watch(
     () => props.bulkMode,
     (enabled) => {
-        table.setColumnVisibility((prev) => ({ ...prev, select: !!enabled }))
-        if (!enabled) table.toggleAllRowsSelected(false)
+        table.setColumnVisibility(prev => ({ ...prev, select: !!enabled }))
+        if (!enabled)
+            table.toggleAllRowsSelected(false)
     },
-    { immediate: true }
+    { immediate: true },
 )
 
 watch(
     () => props.groupFilter,
     (group) => {
-        table.setColumnVisibility((prev) => ({ ...prev, ordinal: !!group }))
+        table.setColumnVisibility(prev => ({ ...prev, ordinal: !!group }))
     },
-    { immediate: true }
+    { immediate: true },
 )
 
 defineExpose({ table })
@@ -158,10 +160,10 @@ defineExpose({ table })
                                 header.id === 'name'
                                     ? 'sticky left-0 z-40 w-[200px] bg-muted/50 backdrop-blur supports-backdrop-filter:bg-muted/40 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
                                     : header.id === 'actions'
-                                      ? 'w-10'
-                                      : !['select', 'ordinal'].includes(header.id)
-                                        ? 'min-w-[100px]'
-                                        : '',
+                                        ? 'w-10'
+                                        : !['select', 'ordinal'].includes(header.id)
+                                            ? 'min-w-[100px]'
+                                            : '',
                             ]"
                         >
                             <FlexRender

@@ -7,17 +7,19 @@ class FinalAssessmentsRepository extends BaseRepository<'finalAssessments'> {
     }
 
     private _validateAssessment(
-        assessment: Partial<FinalAssessment> & { studentId?: string; assessmentType?: string }
+        assessment: Partial<FinalAssessment> & { studentId?: string, assessmentType?: string },
     ): void {
-        if (!assessment.studentId) throw new Error('FinalAssessment.studentId is required')
-        if (!assessment.assessmentType) throw new Error('FinalAssessment.assessmentType is required')
+        if (!assessment.studentId)
+            throw new Error('FinalAssessment.studentId is required')
+        if (!assessment.assessmentType)
+            throw new Error('FinalAssessment.assessmentType is required')
         if (assessment.value === undefined || assessment.value === null) {
             throw new Error('FinalAssessment.value is required')
         }
     }
 
     async saveFinalAssessment(
-        assessment: Partial<FinalAssessment> & { studentId: string; assessmentType: string }
+        assessment: Partial<FinalAssessment> & { studentId: string, assessmentType: string },
     ): Promise<SaveFinalAssessmentResult> {
         this._validateAssessment(assessment)
 

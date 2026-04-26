@@ -43,7 +43,7 @@ export const sections: GuideSection[] = [
                     {
                         title: 'No Account Required',
                         description:
-                            "There's no need to create an account, remember passwords, or worry about subscription fees. Just open the app and start using it.",
+                            'There\'s no need to create an account, remember passwords, or worry about subscription fees. Just open the app and start using it.',
                     },
                     {
                         title: 'Fast and Responsive',
@@ -58,17 +58,17 @@ export const sections: GuideSection[] = [
                     {
                         title: 'Browser-Specific Data',
                         description:
-                            "Your data is stored in your browser's local storage. This means if you use EduTrace in Chrome, your data won't automatically appear in Firefox or Safari. Each browser keeps its own separate data.",
+                            'Your data is stored in your browser\'s local storage. This means if you use EduTrace in Chrome, your data won\'t automatically appear in Firefox or Safari. Each browser keeps its own separate data.',
                     },
                     {
                         title: 'Device-Specific Data',
                         description:
-                            "Similarly, data on your laptop won't automatically sync to your phone or tablet. Each device maintains its own independent copy.",
+                            'Similarly, data on your laptop won\'t automatically sync to your phone or tablet. Each device maintains its own independent copy.',
                     },
                     {
                         title: 'Backup Regularly',
                         description:
-                            "Since data is stored locally, it's important to regularly export your data (via Settings → Advanced → Export All) to create backups. If you clear your browser data or uninstall the browser, your EduTrace data will be lost.",
+                            'Since data is stored locally, it\'s important to regularly export your data (via Settings → Advanced → Export All) to create backups. If you clear your browser data or uninstall the browser, your EduTrace data will be lost.',
                     },
                     {
                         title: 'Sharing Between Devices',
@@ -233,12 +233,12 @@ export const sections: GuideSection[] = [
                     {
                         title: 'Generate QR Codes',
                         description:
-                            "Click the QR code icon to generate a shareable QR code for the group's Meet ID, making it easy for students to join sessions.",
+                            'Click the QR code icon to generate a shareable QR code for the group\'s Meet ID, making it easy for students to join sessions.',
                     },
                     {
                         title: 'Delete Groups',
                         description:
-                            "Use the trash icon to remove groups that are no longer needed. You'll be asked to confirm before deletion.",
+                            'Use the trash icon to remove groups that are no longer needed. You\'ll be asked to confirm before deletion.',
                     },
                 ],
             },
@@ -512,7 +512,7 @@ export const sections: GuideSection[] = [
                     {
                         title: 'Import Data',
                         description:
-                            "When importing, you'll be asked to confirm as it will replace existing data. Make sure you have a backup before importing.",
+                            'When importing, you\'ll be asked to confirm as it will replace existing data. Make sure you have a backup before importing.',
                     },
                 ],
             },
@@ -591,12 +591,12 @@ export const sections: GuideSection[] = [
                     {
                         title: 'Copy Settings',
                         description:
-                            "When creating a new workspace, you can optionally copy your current workspace's settings (duration limit, default teacher, ignored users).",
+                            'When creating a new workspace, you can optionally copy your current workspace\'s settings (duration limit, default teacher, ignored users).',
                     },
                     {
                         title: 'Delete Workspace',
                         description:
-                            "Hover over a workspace in the switcher and click the trash icon. You'll need to type the workspace name to confirm deletion. The default workspace cannot be deleted.",
+                            'Hover over a workspace in the switcher and click the trash icon. You\'ll need to type the workspace name to confirm deletion. The default workspace cannot be deleted.',
                     },
                 ],
             },
@@ -606,12 +606,12 @@ export const sections: GuideSection[] = [
                     {
                         title: 'Complete Data Isolation',
                         description:
-                            "Each workspace maintains completely separate data. Reports, groups, students, and marks in one workspace don't affect or appear in another.",
+                            'Each workspace maintains completely separate data. Reports, groups, students, and marks in one workspace don\'t affect or appear in another.',
                     },
                     {
                         title: 'Settings Isolation',
                         description:
-                            "Each workspace has its own settings for duration limits, default teacher, and ignored users. Changes in one workspace don't affect others.",
+                            'Each workspace has its own settings for duration limits, default teacher, and ignored users. Changes in one workspace don\'t affect others.',
                     },
                     {
                         title: 'Multi-Semester Management',
@@ -631,7 +631,7 @@ export const sections: GuideSection[] = [
                     {
                         title: 'Visual Identification',
                         description:
-                            "Custom icons and colors make it easy to identify which workspace you're currently working in at a glance.",
+                            'Custom icons and colors make it easy to identify which workspace you\'re currently working in at a glance.',
                     },
                     {
                         title: 'Flexible Organization',

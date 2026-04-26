@@ -23,7 +23,7 @@ export type CourseNumber = (typeof COURSE_NUMBERS)[number]
 
 // Section definitions for the dashboard grouped view.
 // The `key` maps to analytics.sections.<key> in i18n.
-export const COURSE_SECTIONS = COURSE_NUMBERS.map((n) => ({
+export const COURSE_SECTIONS = COURSE_NUMBERS.map(n => ({
     course: n,
     id: `course-${n}`,
     key: `course${n}` as const,

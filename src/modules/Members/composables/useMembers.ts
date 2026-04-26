@@ -27,7 +27,8 @@ export function useMembers() {
     const allGroups = computed<string[]>(() => {
         const groups = new Set<string>()
         members.value.forEach((m) => {
-            if (m.groupName) groups.add(m.groupName)
+            if (m.groupName)
+                groups.add(m.groupName)
         })
         return Array.from(groups).sort()
     })
@@ -36,10 +37,12 @@ export function useMembers() {
         isLoading.value = true
         try {
             members.value = await studentsRepository.getAllMembers({ includeHidden: true })
-        } catch (error) {
+        }
+        catch (error) {
             logger.error('Failed to load members:', error)
             toast.error(t('members.toasts.loadError'))
-        } finally {
+        }
+        finally {
             isLoading.value = false
         }
     }
@@ -60,7 +63,8 @@ export function useMembers() {
             toast.success(selectedMember.value ? t('members.toasts.saveSuccess') : t('members.toasts.addSuccess'))
             isDialogOpen.value = false
             await loadMembers()
-        } catch (error) {
+        }
+        catch (error) {
             logger.error('Failed to save member:', error)
             toast.error(t('members.toasts.saveError'))
         }
@@ -72,13 +76,15 @@ export function useMembers() {
     }
 
     async function executeSoftDelete(): Promise<void> {
-        if (!memberToDelete.value) return
+        if (!memberToDelete.value)
+            return
         try {
             await studentsRepository.hideMember(memberToDelete.value.id)
             toast.success(t('members.toasts.trashSuccess'))
             isDeleteDialogOpen.value = false
             await loadMembers()
-        } catch (error) {
+        }
+        catch (error) {
             logger.error('Failed to delete member:', error)
             toast.error(t('members.toasts.deleteError'))
         }
@@ -89,7 +95,8 @@ export function useMembers() {
             await studentsRepository.restoreMember(member.id)
             toast.success(t('members.toasts.restoreSuccess'))
             await loadMembers()
-        } catch (error) {
+        }
+        catch (error) {
             logger.error('Failed to restore member:', error)
             toast.error(t('members.toasts.restoreError'))
         }
@@ -101,14 +108,16 @@ export function useMembers() {
     }
 
     async function executeBulkDelete(): Promise<void> {
-        if (!bulkMemberIds.value.length) return
+        if (!bulkMemberIds.value.length)
+            return
         try {
             await studentsRepository.hideMembers(bulkMemberIds.value)
             toast.success(t('members.toasts.trashSuccess'))
             isBulkDeleteDialogOpen.value = false
             bulkMemberIds.value = []
             await loadMembers()
-        } catch (error) {
+        }
+        catch (error) {
             logger.error('Failed to bulk delete members:', error)
             toast.error(t('members.toasts.deleteError'))
         }
@@ -120,13 +129,15 @@ export function useMembers() {
     }
 
     async function executeHardDelete(): Promise<void> {
-        if (!memberToDelete.value) return
+        if (!memberToDelete.value)
+            return
         try {
             await studentsRepository.deleteMembers([memberToDelete.value.id])
             toast.success(t('members.toasts.hardDeleteSuccess'))
             isHardDeleteDialogOpen.value = false
             await loadMembers()
-        } catch (error) {
+        }
+        catch (error) {
             logger.error('Failed to permanently delete member:', error)
             toast.error(t('members.toasts.deleteError'))
         }

@@ -8,7 +8,7 @@ import { localeService } from './services/locale'
 const messages = {
     'en-US': enUS,
     'uk-UA': ukUA,
-    uk: ukUA,
+    'uk': ukUA,
 }
 
 const i18n = createI18n({

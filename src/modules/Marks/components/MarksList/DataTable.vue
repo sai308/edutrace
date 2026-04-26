@@ -35,7 +35,7 @@ const props = defineProps<{
 const emit = defineEmits<{
     'toggle-synced': [mark: UIMark]
     'delete-mark': [mark: UIMark]
-    upload: []
+    'upload': []
 }>()
 
 const { t } = useI18n()
@@ -79,17 +79,17 @@ const table = useVueTable({
     get columns() {
         return columns.value
     },
-    getRowId: (row) => String(row.id),
+    getRowId: row => String(row.id),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
-    onRowSelectionChange: (updaterOrValue) => valueUpdater(updaterOrValue, rowSelection),
-    onGlobalFilterChange: (updaterOrValue) => valueUpdater(updaterOrValue, globalFilter),
-    onColumnFiltersChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnFilters),
-    onColumnVisibilityChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnVisibility),
-    onPaginationChange: (updaterOrValue) => valueUpdater(updaterOrValue, pagination),
+    onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
+    onRowSelectionChange: updaterOrValue => valueUpdater(updaterOrValue, rowSelection),
+    onGlobalFilterChange: updaterOrValue => valueUpdater(updaterOrValue, globalFilter),
+    onColumnFiltersChange: updaterOrValue => valueUpdater(updaterOrValue, columnFilters),
+    onColumnVisibilityChange: updaterOrValue => valueUpdater(updaterOrValue, columnVisibility),
+    onPaginationChange: updaterOrValue => valueUpdater(updaterOrValue, pagination),
     state: {
         get sorting() {
             return sorting.value
@@ -116,7 +116,7 @@ watch(
     () => props.searchQuery,
     (q) => {
         table.setGlobalFilter(q)
-    }
+    },
 )
 
 watch(
@@ -130,7 +130,7 @@ watch(
         }
         table.setColumnFilters([{ id: '_filters', value: filters ?? defaultFilters }])
     },
-    { immediate: true, deep: true }
+    { immediate: true, deep: true },
 )
 
 // Reveal/hide the select column in response to bulk mode toggle (Rule 9).
@@ -140,10 +140,11 @@ watch(
 watch(
     () => props.bulkMode,
     (enabled) => {
-        table.setColumnVisibility((prev) => ({ ...prev, select: !!enabled }))
-        if (!enabled) table.toggleAllRowsSelected(false)
+        table.setColumnVisibility(prev => ({ ...prev, select: !!enabled }))
+        if (!enabled)
+            table.toggleAllRowsSelected(false)
     },
-    { immediate: true }
+    { immediate: true },
 )
 
 defineExpose({ table })

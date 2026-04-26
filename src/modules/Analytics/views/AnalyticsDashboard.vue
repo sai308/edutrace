@@ -38,13 +38,14 @@ useQuerySync({ search: searchQuery })
 const { toggleSection, isSectionCollapsed } = useDashboardSections()
 
 const filteredStats = computed<EnrichedStat[]>(() => {
-    if (!searchQuery.value) return props.stats
+    if (!searchQuery.value)
+        return props.stats
     const query = searchQuery.value.toLowerCase()
     return props.stats.filter(
-        (stat) =>
-            stat.meetId.toLowerCase().includes(query) ||
-            stat.displayName.toLowerCase().includes(query) ||
-            (stat.teacherName && stat.teacherName.toLowerCase().includes(query))
+        stat =>
+            stat.meetId.toLowerCase().includes(query)
+            || stat.displayName.toLowerCase().includes(query)
+            || (stat.teacherName && stat.teacherName.toLowerCase().includes(query)),
     )
 })
 
@@ -68,7 +69,8 @@ const groupedStats = computed<GroupedSection[]>(() => {
         const course = stat.course
         if (course && course >= 1 && course <= 4) {
             buckets[course as 1 | 2 | 3 | 4]!.push(stat)
-        } else {
+        }
+        else {
             buckets.other.push(stat)
         }
     })
@@ -82,7 +84,7 @@ const groupedStats = computed<GroupedSection[]>(() => {
     const sections: GroupedSection[] = COURSE_SECTIONS.map((s) => {
         const items = (buckets[s.course] ?? []).sort(sortByName)
         return { title: '', items, id: s.id, key: s.key }
-    }).filter((s) => s.items.length > 0)
+    }).filter(s => s.items.length > 0)
 
     const otherItems = buckets.other.sort(sortByName)
     if (otherItems.length > 0) {

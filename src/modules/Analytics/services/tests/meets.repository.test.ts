@@ -8,7 +8,7 @@ describe('meetsRepository', () => {
         // Clear all stored meets between tests
         const all = await meetsRepository.getAllMeets()
         if (all.length > 0) {
-            await meetsRepository.deleteMeets(all.map((m) => m.id))
+            await meetsRepository.deleteMeets(all.map(m => m.id))
         }
     })
 
@@ -17,7 +17,7 @@ describe('meetsRepository', () => {
     describe('saveMeet', () => {
         it('throws if meetData has no meetId', async () => {
             await expect(meetsRepository.saveMeet({ id: '1' } as any)).rejects.toThrow(
-                'saveMeet: meetData must have a meetId'
+                'saveMeet: meetData must have a meetId',
             )
         })
 

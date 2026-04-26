@@ -34,7 +34,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
     'update:open': [value: boolean]
-    save: [payload: { formData: unknown; originalStudent: unknown }]
+    'save': [payload: { formData: unknown, originalStudent: unknown }]
 }>()
 
 const { t } = useI18n()
@@ -45,7 +45,7 @@ interface Props {
     meets: ProfileMeet[]
     groupsMap: Record<string, { name?: string }>
     tasks: ProfileTask[]
-    allStudents?: Array<{ id: string | number; iep?: string }>
+    allStudents?: Array<{ id: string | number, iep?: string }>
     allGroups?: string[]
     defaultView?: ProfileView
 }
@@ -55,8 +55,9 @@ const viewMode = ref<ProfileView>(props.defaultView)
 watch(
     () => [props.open, props.defaultView] as const,
     ([open, tab]) => {
-        if (open) viewMode.value = tab ?? 'attendance'
-    }
+        if (open)
+            viewMode.value = tab ?? 'attendance'
+    },
 )
 
 const {
@@ -83,14 +84,15 @@ const {
     () => props.meets,
     () => props.groupsMap,
     () => props.tasks,
-    () => props.allStudents ?? []
+    () => props.allStudents ?? [],
 )
 
 function onSave() {
     handleSave((event, ...args) => {
         if (event === 'save') {
-            emit('save', args[0] as { formData: unknown; originalStudent: unknown })
-        } else if (event === 'update:open') {
+            emit('save', args[0] as { formData: unknown, originalStudent: unknown })
+        }
+        else if (event === 'update:open') {
             emit('update:open', args[0] as boolean)
         }
     })
@@ -226,7 +228,7 @@ function handleCancel() {
                                             :triggers="{
                                                 [StackedBar.selectors.bar]: componentToString(
                                                     attendanceChartConfig,
-                                                    ChartTooltipContent
+                                                    ChartTooltipContent,
                                                 )!,
                                             }"
                                         />
@@ -262,7 +264,9 @@ function handleCancel() {
                                         </CardTitle>
                                     </CardHeader>
                                     <CardContent class="px-3 pb-3">
-                                        <div class="text-xl font-bold">{{ attendanceStats.averagePercent }}%</div>
+                                        <div class="text-xl font-bold">
+                                            {{ attendanceStats.averagePercent }}%
+                                        </div>
                                     </CardContent>
                                 </Card>
                                 <Card>
@@ -344,8 +348,8 @@ function handleCancel() {
                                                                     parseFloat(meet.percentage) >= 75
                                                                         ? '#22c55e'
                                                                         : parseFloat(meet.percentage) >= 50
-                                                                          ? '#eab308'
-                                                                          : '#ef4444',
+                                                                            ? '#eab308'
+                                                                            : '#ef4444',
                                                             }"
                                                             :title="meet.joinTime ? formatTime(meet.joinTime) : ''"
                                                         >
@@ -429,7 +433,7 @@ function handleCancel() {
                                                                     },
                                                                 },
                                                                 ChartTooltipContent,
-                                                                { labelKey: 'grade' }
+                                                                { labelKey: 'grade' },
                                                             )!,
                                                         }"
                                                     />
@@ -487,7 +491,7 @@ function handleCancel() {
                                                                     },
                                                                 },
                                                                 ChartTooltipContent,
-                                                                { labelKey: 'status' }
+                                                                { labelKey: 'status' },
                                                             )!,
                                                         }"
                                                     />
@@ -535,9 +539,7 @@ function handleCancel() {
                                                 </TableCell>
                                                 <TableCell class="text-center font-mono">
                                                     {{ mark.score }}
-                                                    <span class="text-muted-foreground text-xs"
-                                                        >/ {{ mark.maxPoints }}</span
-                                                    >
+                                                    <span class="text-muted-foreground text-xs">/ {{ mark.maxPoints }}</span>
                                                 </TableCell>
                                                 <TableCell
                                                     class="text-center font-bold"

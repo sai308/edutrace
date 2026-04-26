@@ -7,9 +7,12 @@ class PlansRepository extends BaseRepository<'plans'> {
     }
 
     async savePlan(plan: Plan): Promise<string> {
-        if (!plan.id?.trim()) throw new Error('savePlan: plan must have a non-empty id')
-        if (!plan.studentId?.trim()) throw new Error('savePlan: plan must have a non-empty studentId')
-        if (!plan.iep?.trim()) throw new Error('savePlan: plan must have a non-empty iep')
+        if (!plan.id?.trim())
+            throw new Error('savePlan: plan must have a non-empty id')
+        if (!plan.studentId?.trim())
+            throw new Error('savePlan: plan must have a non-empty studentId')
+        if (!plan.iep?.trim())
+            throw new Error('savePlan: plan must have a non-empty iep')
 
         await this.put(plan)
         return plan.id

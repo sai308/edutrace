@@ -11,7 +11,7 @@ export type ProfileView = 'attendance' | 'marks' | 'edit'
 export interface ProfileMeet {
     meetId: string
     date: string
-    participants: Array<{ name: string; duration: number; joinTime?: string }>
+    participants: Array<{ name: string, duration: number, joinTime?: string }>
     startTime?: string
     endTime?: string
 }
@@ -27,7 +27,7 @@ export function useStudentProfile(
     meets: () => ProfileMeet[],
     groupsMap: () => Record<string, { name?: string }>,
     tasks: () => ProfileTask[],
-    allStudents: () => Array<{ id: string | number; iep?: string }>
+    allStudents: () => Array<{ id: string | number, iep?: string }>,
 ) {
     const { t } = useI18n()
     const { formatDuration, formatTime } = useFormatters()
@@ -40,7 +40,8 @@ export function useStudentProfile(
 
     function copyEmail() {
         const email = student()?.email
-        if (!email) return
+        if (!email)
+            return
         navigator.clipboard.writeText(email)
         showCopyCheck.value = true
         toast.success(t('toast.emailCopied'))
@@ -54,7 +55,8 @@ export function useStudentProfile(
 
     function resetForm() {
         const s = student()
-        if (!s) return
+        if (!s)
+            return
         formData.value = {
             name: s.name ?? '',
             groupName: (s.groups ?? []).join(', '),
@@ -66,15 +68,16 @@ export function useStudentProfile(
     watch(
         student,
         (s) => {
-            if (s) resetForm()
+            if (s)
+                resetForm()
         },
-        { immediate: true }
+        { immediate: true },
     )
 
     function handleSave(emit: (event: 'update:open' | 'save', ...args: unknown[]) => void) {
         const iep = formData.value.iep?.trim()
         if (iep) {
-            const isDuplicate = allStudents().some((s) => s.iep === iep && s.id !== student()?.id)
+            const isDuplicate = allStudents().some(s => s.iep === iep && s.id !== student()?.id)
             if (isDuplicate) {
                 toast.error(t('students.editModal.iepNotUnique'))
                 return
@@ -85,17 +88,19 @@ export function useStudentProfile(
 
     // ---- Helpers ----
     function calculateMeetDuration(meet: ProfileMeet): number {
-        const durations = meet.participants.map((p) => p.duration).sort((a, b) => a - b)
-        if (durations.length === 0) return 0
+        const durations = meet.participants.map(p => p.duration).sort((a, b) => a - b)
+        if (durations.length === 0)
+            return 0
         const mid = Math.floor(durations.length / 2)
         const median = durations.length % 2 !== 0 ? durations[mid]! : (durations[mid - 1]! + durations[mid]!) / 2
-        const valid = durations.filter((d) => d <= median * 2)
+        const valid = durations.filter(d => d <= median * 2)
         return valid.length === 0 ? 0 : Math.max(...valid)
     }
 
     function studentGroups() {
         const s = student()
-        if (!s) return []
+        if (!s)
+            return []
         return s.groups ?? []
     }
 
@@ -109,12 +114,13 @@ export function useStudentProfile(
 
     // ---- Attendance chart ----
     const attendanceChartData = computed(() => {
-        if (!student()) return []
+        if (!student())
+            return []
         return studentMeets()
             .map((meet) => {
                 const s = student()!
                 const participant = meet.participants.find(
-                    (p) => p.name === s.name || (s.aliases ?? []).includes(p.name)
+                    p => p.name === s.name || (s.aliases ?? []).includes(p.name),
                 )
                 return {
                     date: new Date(meet.date).getTime(),
@@ -132,8 +138,9 @@ export function useStudentProfile(
     }))
 
     const attendanceYDomain = computed(() => {
-        if (!attendanceChartData.value.length) return [0, 60]
-        const maxVal = Math.max(...attendanceChartData.value.map((d) => d.duration))
+        if (!attendanceChartData.value.length)
+            return [0, 60]
+        const maxVal = Math.max(...attendanceChartData.value.map(d => d.duration))
         const roundedMax = Math.ceil(maxVal / 10) * 10 || 10
         return [0, roundedMax]
     })
@@ -160,12 +167,13 @@ export function useStudentProfile(
     })
 
     const attendedMeets = computed(() => {
-        if (!student()) return []
+        if (!student())
+            return []
         const s = student()!
         return studentMeets()
             .map((meet) => {
                 const participant = meet.participants.find(
-                    (p) => p.name === s.name || (s.aliases ?? []).includes(p.name)
+                    p => p.name === s.name || (s.aliases ?? []).includes(p.name),
                 )
                 const duration = participant?.duration ?? 0
                 const meetDuration = calculateMeetDuration(meet)
@@ -186,12 +194,14 @@ export function useStudentProfile(
                         joinTime.setHours(timeComponent.getHours())
                         joinTime.setMinutes(timeComponent.getMinutes())
                         joinTime.setSeconds(timeComponent.getSeconds())
-                    } else {
+                    }
+                    else {
                         joinTime = new Date(participant.joinTime)
                     }
 
                     const leaveTime = new Date(joinTime.getTime() + duration * 1000)
-                    if (joinTime < sessionStart) sessionStart = joinTime
+                    if (joinTime < sessionStart)
+                        sessionStart = joinTime
 
                     const safeDuration = calculateMeetDuration(meet)
                     const metadataDuration = (sessionEnd.getTime() - sessionStart.getTime()) / 1000
@@ -202,7 +212,8 @@ export function useStudentProfile(
                         sessionEnd = new Date(sessionEnd.getTime() + safeDuration * 0.1 * 1000)
                     }
 
-                    if (leaveTime > sessionEnd) sessionEnd = leaveTime
+                    if (leaveTime > sessionEnd)
+                        sessionEnd = leaveTime
 
                     const totalSessionDuration = (sessionEnd.getTime() - sessionStart.getTime()) / 1000
                     if (totalSessionDuration > 0) {
@@ -210,7 +221,7 @@ export function useStudentProfile(
                         offsetPercent = Math.max(0, Math.min(100, (offsetSeconds / totalSessionDuration) * 100))
                         durationPercent = Math.max(
                             0,
-                            Math.min(100 - offsetPercent, (duration / totalSessionDuration) * 100)
+                            Math.min(100 - offsetPercent, (duration / totalSessionDuration) * 100),
                         )
                     }
                     startTime = sessionStart
@@ -235,10 +246,11 @@ export function useStudentProfile(
     // ---- Grade distribution ----
     const gradeDistributionData = computed(() => {
         const s = student()
-        if (!s?.marks) return []
+        if (!s?.marks)
+            return []
         const grades: Record<string, number> = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
-        const taskMap = new Map(tasks().map((t) => [t.id, t]))
-        s.marks.forEach((mark: { taskId: string | number; score: number }) => {
+        const taskMap = new Map(tasks().map(t => [t.id, t]))
+        s.marks.forEach((mark: { taskId: string | number, score: number }) => {
             const task = taskMap.get(mark.taskId)
             if (task?.maxPoints && task.maxPoints > 0) {
                 const grade = formatMarkToFiveScale({
@@ -255,8 +267,8 @@ export function useStudentProfile(
                 { grade: '3', count: grades['3'], fill: 'var(--color-grade3)' },
                 { grade: '2', count: grades['2'], fill: 'var(--color-grade2)' },
                 { grade: '1', count: grades['1'], fill: 'var(--color-grade1)' },
-            ] as { grade: string; count: number; fill: string }[]
-        ).filter((d) => d.count > 0)
+            ] as { grade: string, count: number, fill: string }[]
+        ).filter(d => d.count > 0)
     })
 
     const gradeDistributionConfig = {
@@ -271,14 +283,16 @@ export function useStudentProfile(
     // ---- Task completion ----
     const taskCompletionData = computed(() => {
         const s = student()
-        if (!s) return []
+        if (!s)
+            return []
         const completed = s.completedTasks ?? 0
         const pending = Math.max(0, (s.totalTasks ?? 0) - completed)
-        if (completed === 0 && pending === 0) return []
+        if (completed === 0 && pending === 0)
+            return []
         return [
             { status: 'completed', count: completed, fill: 'var(--color-completed)' },
             { status: 'pending', count: pending, fill: 'var(--color-pending)' },
-        ] as { status: string; count: number; fill: string }[]
+        ] as { status: string, count: number, fill: string }[]
     })
 
     const taskCompletionConfig = computed(() => ({
@@ -290,7 +304,8 @@ export function useStudentProfile(
     // ---- Marks stats + history ----
     const marksStats = computed(() => {
         const s = student()
-        if (!s) return { averageGrade: '0', completedTasks: 0, totalTasks: 0, completionPercent: '0' }
+        if (!s)
+            return { averageGrade: '0', completedTasks: 0, totalTasks: 0, completionPercent: '0' }
         return {
             averageGrade: s.averageMark?.toFixed(2) ?? '0',
             completedTasks: s.completedTasks ?? 0,
@@ -301,10 +316,11 @@ export function useStudentProfile(
 
     const studentMarks = computed(() => {
         const s = student()
-        if (!s?.marks) return []
-        const taskMap = new Map(tasks().map((t) => [t.id, t]))
+        if (!s?.marks)
+            return []
+        const taskMap = new Map(tasks().map(t => [t.id, t]))
         return s.marks
-            .map((mark: { id: string | number; taskId: string | number; score: number; createdAt: string }) => {
+            .map((mark: { id: string | number, taskId: string | number, score: number, createdAt: string }) => {
                 const task = taskMap.get(mark.taskId)
                 const maxPoints = task?.maxPoints ?? 0
                 const grade = maxPoints > 0 ? formatMarkToFiveScale({ score: mark.score, maxPoints }) : '-'

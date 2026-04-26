@@ -8,9 +8,12 @@ export function useAppStatus() {
     const isOnline = useOnline()
 
     const status = computed<AppStatus>(() => {
-        if (!isOnline.value) return 'offline'
-        if (activeWorkerTasks.value > 0) return 'working'
-        if (hasRecentError.value) return 'error'
+        if (!isOnline.value)
+            return 'offline'
+        if (activeWorkerTasks.value > 0)
+            return 'working'
+        if (hasRecentError.value)
+            return 'error'
         return 'idle'
     })
 

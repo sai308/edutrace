@@ -62,19 +62,19 @@ describe('sessionRepository', () => {
 
         it('throws when sessionType is invalid', async () => {
             await expect(sessionRepository.create(makeSession({ sessionType: 'INVALID' as any }))).rejects.toThrow(
-                'sessionType must be one of'
+                'sessionType must be one of',
             )
         })
 
         it('throws when status is invalid', async () => {
             await expect(sessionRepository.create(makeSession({ status: 'PENDING' as any }))).rejects.toThrow(
-                'status must be one of'
+                'status must be one of',
             )
         })
 
         it('throws when entries is not an array', async () => {
             await expect(sessionRepository.create(makeSession({ entries: 'not-array' as any }))).rejects.toThrow(
-                'entries must be an array'
+                'entries must be an array',
             )
         })
 
@@ -83,7 +83,7 @@ describe('sessionRepository', () => {
             async (sessionType) => {
                 const result = await sessionRepository.create(makeSession({ sessionType }))
                 expect(result.sessionType).toBe(sessionType)
-            }
+            },
         )
 
         it('persists entries correctly', async () => {
@@ -112,7 +112,7 @@ describe('sessionRepository', () => {
 
             const result = await sessionRepository.getByGroupId('g1')
             expect(result).toHaveLength(2)
-            expect(result.every((s) => s.groupId === 'g1')).toBe(true)
+            expect(result.every(s => s.groupId === 'g1')).toBe(true)
         })
 
         it('does not return sessions from other groups', async () => {
@@ -133,7 +133,7 @@ describe('sessionRepository', () => {
 
         it('returns the matching session for group + type', async () => {
             const created = await sessionRepository.create(
-                makeSession({ groupId: 'g1', sessionType: SessionTypeEnum.MAIN })
+                makeSession({ groupId: 'g1', sessionType: SessionTypeEnum.MAIN }),
             )
 
             const result = await sessionRepository.getGroupSession('g1', SessionTypeEnum.MAIN)
@@ -157,7 +157,7 @@ describe('sessionRepository', () => {
 
         it('returns the correct session when multiple groups/types exist', async () => {
             const target = await sessionRepository.create(
-                makeSession({ groupId: 'g1', sessionType: SessionTypeEnum.SECOND_RETAKE })
+                makeSession({ groupId: 'g1', sessionType: SessionTypeEnum.SECOND_RETAKE }),
             )
             await sessionRepository.create(makeSession({ groupId: 'g1', sessionType: SessionTypeEnum.MAIN }))
             await sessionRepository.create(makeSession({ groupId: 'g2', sessionType: SessionTypeEnum.SECOND_RETAKE }))

@@ -16,7 +16,7 @@ describe('unitsRepository', () => {
                     testTaskId: null,
                     taskCoef: 1,
                     testCoef: 1,
-                })
+                }),
             ).rejects.toThrow('Unit name is required')
         })
 
@@ -29,7 +29,7 @@ describe('unitsRepository', () => {
                     testTaskId: null,
                     taskCoef: 1,
                     testCoef: 1,
-                })
+                }),
             ).rejects.toThrow('Unit name is required')
         })
 
@@ -42,7 +42,7 @@ describe('unitsRepository', () => {
                     testTaskId: null,
                     taskCoef: 1,
                     testCoef: 1,
-                })
+                }),
             ).rejects.toThrow('Unit normalizedName is required')
         })
 
@@ -127,7 +127,7 @@ describe('unitsRepository', () => {
             const result = await unitsRepository.getAllUnits()
 
             expect(result).toHaveLength(2)
-            expect(result.map((u) => u.name)).toEqual(expect.arrayContaining(['Unit Alpha', 'Unit Beta']))
+            expect(result.map(u => u.name)).toEqual(expect.arrayContaining(['Unit Alpha', 'Unit Beta']))
         })
 
         it('includes all unit fields in the result', async () => {
@@ -145,7 +145,7 @@ describe('unitsRepository', () => {
             })
 
             const units = await unitsRepository.getAllUnits()
-            const unit = units.find((u) => u.id === 3) as any
+            const unit = units.find(u => u.id === 3) as any
 
             expect(unit.taskIds).toEqual(['t1', 't2'])
             expect(unit.testTaskId).toBe('t3')
@@ -285,8 +285,8 @@ describe('unitsRepository', () => {
             ])
 
             const units = await unitsRepository.getAllUnits()
-            const a = units.find((u) => u.id === 9)!
-            const b = units.find((u) => u.id === 10)!
+            const a = units.find(u => u.id === 9)!
+            const b = units.find(u => u.id === 10)!
             expect(a.ordinal).toBe(5)
             expect(b.ordinal).toBe(3)
         })
@@ -311,7 +311,7 @@ describe('unitsRepository', () => {
             await unitsRepository.updateOrdinals([{ id: 11, ordinal: 99 }])
 
             const units = await unitsRepository.getAllUnits()
-            const u = units.find((x) => x.id === 11)!
+            const u = units.find(x => x.id === 11)!
             expect(u.ordinal).toBe(99)
             expect(u.taskIds).toEqual(['t1'])
             expect(u.taskCoef).toBe(2)

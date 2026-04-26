@@ -17,7 +17,8 @@ export function normalizeTaskName(name: string): string {
  */
 export function buildTask(formData: Partial<Task>, existingId?: string): Task {
     const name = formData.name?.trim() ?? ''
-    if (!name) throw new Error('Task name is required')
+    if (!name)
+        throw new Error('Task name is required')
     return {
         id: existingId ?? uuidv4(),
         name,

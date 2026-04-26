@@ -29,19 +29,21 @@ function scrollToSection(id: string) {
 function setupScrollObserver() {
     observer = new IntersectionObserver(
         (entries) => {
-            const visible = entries.filter((e) => e.isIntersecting)
+            const visible = entries.filter(e => e.isIntersecting)
             if (visible.length > 0) {
                 visible.sort((a, b) => b.intersectionRatio - a.intersectionRatio)
                 const id = visible[0]?.target.id
-                if (id) activeSection.value = id
+                if (id)
+                    activeSection.value = id
             }
         },
-        { rootMargin: '-20% 0px -70% 0px', threshold: 0 }
+        { rootMargin: '-20% 0px -70% 0px', threshold: 0 },
     )
 
     sections.value.forEach((s) => {
         const el = document.getElementById(s.id)
-        if (el) observer?.observe(el)
+        if (el)
+            observer?.observe(el)
     })
 }
 
@@ -146,9 +148,7 @@ onUnmounted(() => observer?.disconnect())
                             />
                         </div>
                         <span class="font-bold text-foreground">Screenshot: {{ s.title }}</span>
-                        <span class="text-xs opacity-75 mt-2 uppercase tracking-widest"
-                            >Image implementation pending</span
-                        >
+                        <span class="text-xs opacity-75 mt-2 uppercase tracking-widest">Image implementation pending</span>
                     </div>
                 </section>
             </div>

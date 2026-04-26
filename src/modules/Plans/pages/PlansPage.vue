@@ -36,9 +36,7 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
                 <DropdownMenu>
                     <DropdownMenuTrigger as-child>
                         <Button variant="outline" size="sm" class="h-9 gap-1 w-full sm:w-[200px] mx-auto sm:mx-0">
-                            <span class="text-xs text-muted-foreground mr-1 whitespace-nowrap"
-                                >{{ t('marks.table.group') }}:</span
-                            >
+                            <span class="text-xs text-muted-foreground mr-1 whitespace-nowrap">{{ t('marks.table.group') }}:</span>
                             <span class="font-medium truncate max-w-[100px]">{{
                                 filterGroup || t('marks.filterModal.allGroups')
                             }}</span>
@@ -107,32 +105,25 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
                     class="flex items-center gap-3 sm:gap-6 text-xs bg-muted/30 border px-4 py-2 rounded-lg shadow-sm min-w-max"
                 >
                     <div class="flex flex-col items-center">
-                        <span class="font-bold text-green-600 dark:text-green-400">A</span
-                        ><span :class="stats.A === 0 ? 'opacity-30' : 'font-medium'">{{ stats.A }}</span>
+                        <span class="font-bold text-green-600 dark:text-green-400">A</span><span :class="stats.A === 0 ? 'opacity-30' : 'font-medium'">{{ stats.A }}</span>
                     </div>
                     <div class="flex flex-col items-center">
-                        <span class="font-semibold text-emerald-500 dark:text-emerald-400">B</span
-                        ><span :class="stats.B === 0 ? 'opacity-30' : 'font-medium'">{{ stats.B }}</span>
+                        <span class="font-semibold text-emerald-500 dark:text-emerald-400">B</span><span :class="stats.B === 0 ? 'opacity-30' : 'font-medium'">{{ stats.B }}</span>
                     </div>
                     <div class="flex flex-col items-center">
-                        <span class="font-semibold text-yellow-600 dark:text-yellow-500">C</span
-                        ><span :class="stats.C === 0 ? 'opacity-30' : 'font-medium'">{{ stats.C }}</span>
+                        <span class="font-semibold text-yellow-600 dark:text-yellow-500">C</span><span :class="stats.C === 0 ? 'opacity-30' : 'font-medium'">{{ stats.C }}</span>
                     </div>
                     <div class="flex flex-col items-center">
-                        <span class="font-medium text-orange-500 dark:text-orange-400">D</span
-                        ><span :class="stats.D === 0 ? 'opacity-30' : 'font-medium'">{{ stats.D }}</span>
+                        <span class="font-medium text-orange-500 dark:text-orange-400">D</span><span :class="stats.D === 0 ? 'opacity-30' : 'font-medium'">{{ stats.D }}</span>
                     </div>
                     <div class="flex flex-col items-center">
-                        <span class="font-medium text-orange-600 dark:text-orange-500">E</span
-                        ><span :class="stats.E === 0 ? 'opacity-30' : 'font-medium'">{{ stats.E }}</span>
+                        <span class="font-medium text-orange-600 dark:text-orange-500">E</span><span :class="stats.E === 0 ? 'opacity-30' : 'font-medium'">{{ stats.E }}</span>
                     </div>
                     <div class="flex flex-col items-center">
-                        <span class="font-bold text-red-500 dark:text-red-400">FX</span
-                        ><span :class="stats.FX === 0 ? 'opacity-30' : 'font-medium'">{{ stats.FX }}</span>
+                        <span class="font-bold text-red-500 dark:text-red-400">FX</span><span :class="stats.FX === 0 ? 'opacity-30' : 'font-medium'">{{ stats.FX }}</span>
                     </div>
                     <div class="flex flex-col items-center">
-                        <span class="font-bold text-red-600 dark:text-red-500">F</span
-                        ><span :class="stats.F === 0 ? 'opacity-30' : 'font-medium'">{{ stats.F }}</span>
+                        <span class="font-bold text-red-600 dark:text-red-500">F</span><span :class="stats.F === 0 ? 'opacity-30' : 'font-medium'">{{ stats.F }}</span>
                     </div>
 
                     <div class="w-px h-6 bg-border mx-1" />
@@ -202,7 +193,9 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
                                             {{ toECTS(item.plan.grade) }}
                                         </span>
                                     </div>
-                                    <div v-else class="text-muted-foreground">-</div>
+                                    <div v-else class="text-muted-foreground">
+                                        -
+                                    </div>
                                 </TableCell>
                                 <TableCell class="border-b">
                                     <div v-if="item.plan" class="flex flex-col gap-1">
@@ -219,7 +212,9 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
                                             }}</span>
                                         </div>
                                     </div>
-                                    <div v-else class="text-muted-foreground">-</div>
+                                    <div v-else class="text-muted-foreground">
+                                        -
+                                    </div>
                                 </TableCell>
                                 <TableCell class="border-b">
                                     <Switch
@@ -231,7 +226,7 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
                                                     item.student.iep!,
                                                     val,
                                                     item.hasPlan,
-                                                    item.plan
+                                                    item.plan,
                                                 )
                                         "
                                     />
@@ -247,7 +242,9 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
                                             <span>{{ formatTime(item.plan.syncedAt) }}</span>
                                         </div>
                                     </div>
-                                    <div v-else class="text-muted-foreground">-</div>
+                                    <div v-else class="text-muted-foreground">
+                                        -
+                                    </div>
                                 </TableCell>
                             </TableRow>
                             <TableRow v-if="studentPlans.length === 0">

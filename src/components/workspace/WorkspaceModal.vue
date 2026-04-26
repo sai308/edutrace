@@ -28,7 +28,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     (e: 'update:open', value: boolean): void
-    (e: 'submit', data: { name: string; icon: string; color?: string; copySettings?: boolean }): void
+    (e: 'submit', data: { name: string, icon: string, color?: string, copySettings?: boolean }): void
 }>()
 
 // --- State ---
@@ -61,10 +61,11 @@ const workspaceColors = [
 
 // --- Icons Handling ---
 const filteredIcons = computed(() => {
-    if (!iconSearch.value) return allSelectionIcons
+    if (!iconSearch.value)
+        return allSelectionIcons
     const search = iconSearch.value.toLowerCase()
     return allSelectionIcons.filter(
-        (icon) => icon.toLowerCase().includes(search) || getIconTitle(icon).toLowerCase().includes(search)
+        icon => icon.toLowerCase().includes(search) || getIconTitle(icon).toLowerCase().includes(search),
     )
 })
 
@@ -78,7 +79,8 @@ watch(
                 selectedIcon.value = props.workspaceData.icon || 'Database'
                 selectedColor.value = props.workspaceData.color
                 copySettings.value = false
-            } else {
+            }
+            else {
                 // Create Mode Defaults
                 name.value = ''
                 selectedIcon.value = 'Database'
@@ -87,11 +89,12 @@ watch(
             }
             iconSearch.value = ''
         }
-    }
+    },
 )
 
 function handleSubmit() {
-    if (!name.value.trim()) return
+    if (!name.value.trim())
+        return
 
     emit('submit', {
         name: name.value.trim(),
@@ -250,7 +253,9 @@ function handleSubmit() {
                     v-if="mode === 'edit' && workspaceData?.dbName"
                     class="rounded-md border border-dashed p-3 bg-muted/20 space-y-1.5"
                 >
-                    <p class="text-xs font-medium text-muted-foreground uppercase tracking-wide">Storage Info</p>
+                    <p class="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        Storage Info
+                    </p>
                     <div class="flex items-center gap-2">
                         <span class="text-xs text-muted-foreground">DB Name:</span>
                         <code class="text-xs font-mono bg-muted px-1.5 py-0.5 rounded select-all">{{

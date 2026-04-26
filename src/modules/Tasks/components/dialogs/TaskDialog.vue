@@ -20,8 +20,8 @@ const props = defineProps<{
 
 const emit = defineEmits<{
     'update:isOpen': [value: boolean]
-    close: []
-    save: [taskData: Partial<Task>]
+    'close': []
+    'save': [taskData: Partial<Task>]
 }>()
 
 const formData = ref({
@@ -42,7 +42,8 @@ watch(
                     maxPoints: props.task.maxPoints || 0,
                     description: props.task.description || '',
                 }
-            } else {
+            }
+            else {
                 formData.value = {
                     name: '',
                     date: '',
@@ -51,11 +52,12 @@ watch(
                 }
             }
         }
-    }
+    },
 )
 
 function handleSave() {
-    if (!formData.value.name.trim()) return
+    if (!formData.value.name.trim())
+        return
 
     emit('save', {
         name: formData.value.name.trim(),

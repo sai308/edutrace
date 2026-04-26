@@ -21,7 +21,8 @@ const RING_BUFFER_SIZE = 100
 const ring: LogEntry[] = []
 
 function push(entry: LogEntry) {
-    if (ring.length >= RING_BUFFER_SIZE) ring.shift()
+    if (ring.length >= RING_BUFFER_SIZE)
+        ring.shift()
     ring.push(entry)
 }
 

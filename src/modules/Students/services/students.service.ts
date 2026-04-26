@@ -29,7 +29,7 @@ export class StudentsService {
 
         if (formData.iep && formData.iep.trim() !== '') {
             const allMembers = await studentsRepository.getAllMembers()
-            const duplicate = allMembers.find((m) => m.iep === formData.iep.trim() && m.id !== currentId)
+            const duplicate = allMembers.find(m => m.iep === formData.iep.trim() && m.id !== currentId)
             if (duplicate) {
                 throw new Error('IEP_NOT_UNIQUE')
             }

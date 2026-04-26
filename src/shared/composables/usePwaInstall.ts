@@ -32,7 +32,8 @@ export function usePwaInstall() {
     })
 
     async function install() {
-        if (!deferredPrompt.value) return
+        if (!deferredPrompt.value)
+            return
         await deferredPrompt.value.prompt()
         const { outcome } = await deferredPrompt.value.userChoice
         if (outcome === 'accepted') {

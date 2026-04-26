@@ -58,30 +58,31 @@ const showTaskList = ref(false)
 
 const filteredStudents = computed(() => {
     const q = studentSearch.value.toLowerCase()
-    return q ? students.value.filter((s) => s.name.toLowerCase().includes(q)) : students.value
+    return q ? students.value.filter(s => s.name.toLowerCase().includes(q)) : students.value
 })
 
 const filteredTasks = computed(() => {
     const q = taskSearch.value.toLowerCase()
-    return q ? tasks.value.filter((t) => t.name.toLowerCase().includes(q)) : tasks.value
+    return q ? tasks.value.filter(t => t.name.toLowerCase().includes(q)) : tasks.value
 })
 
 const maxScore = computed(() => selectedTask.value?.maxPoints ?? 100)
 
 const isValid = computed(
     () =>
-        !!selectedGroupName.value &&
-        !!selectedStudent.value &&
-        !!selectedTask.value &&
-        score.value >= 0 &&
-        score.value <= maxScore.value
+        !!selectedGroupName.value
+        && !!selectedStudent.value
+        && !!selectedTask.value
+        && score.value >= 0
+        && score.value <= maxScore.value,
 )
 
 // Load tasks on open; reset form
 watch(
     () => props.open,
     async (open) => {
-        if (!open) return
+        if (!open)
+            return
         tasks.value = await tasksRepository.getAllTasks()
         selectedGroupName.value = ''
         selectedStudent.value = null
@@ -90,7 +91,7 @@ watch(
         studentSearch.value = ''
         taskSearch.value = ''
         students.value = []
-    }
+    },
 )
 
 // Load students when group changes
@@ -123,13 +124,16 @@ function selectTask(task: Task) {
 
 function handleBlur(type: 'student' | 'task') {
     setTimeout(() => {
-        if (type === 'student') showStudentList.value = false
-        if (type === 'task') showTaskList.value = false
+        if (type === 'student')
+            showStudentList.value = false
+        if (type === 'task')
+            showTaskList.value = false
     }, 200)
 }
 
 function handleSave() {
-    if (!isValid.value || !selectedStudent.value || !selectedTask.value) return
+    if (!isValid.value || !selectedStudent.value || !selectedTask.value)
+        return
     emit('confirm', {
         groupName: selectedGroupName.value,
         studentId: selectedStudent.value.id,

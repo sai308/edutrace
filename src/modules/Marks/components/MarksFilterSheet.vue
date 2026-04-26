@@ -43,7 +43,7 @@ watch(
                 localFilters.value.hideFailed = true
             }
         }
-    }
+    },
 )
 
 function handleOpenUpdate(val: boolean) {

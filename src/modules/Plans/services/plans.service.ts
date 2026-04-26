@@ -16,10 +16,14 @@ export class PlansService {
     }
 
     async savePlan(plan: Plan): Promise<Plan> {
-        if (!plan.id?.trim()) throw new Error('Plan id is required')
-        if (!plan.studentId?.trim()) throw new Error('Plan studentId is required')
-        if (!plan.iep?.trim()) throw new Error('Plan iep is required')
-        if (!plan.dateApplied) throw new Error('Plan dateApplied is required')
+        if (!plan.id?.trim())
+            throw new Error('Plan id is required')
+        if (!plan.studentId?.trim())
+            throw new Error('Plan studentId is required')
+        if (!plan.iep?.trim())
+            throw new Error('Plan iep is required')
+        if (!plan.dateApplied)
+            throw new Error('Plan dateApplied is required')
         if (!VALID_SESSION_TYPES.includes(plan.sessionType)) {
             throw new Error(`Invalid sessionType: ${plan.sessionType}`)
         }
@@ -40,7 +44,7 @@ export class PlansService {
         sessionId: string
     } | null> {
         const allSessions = await sessionRepository.getAll()
-        const closedSessions = allSessions.filter((s) => s.status === SessionStatusEnum.CLOSED)
+        const closedSessions = allSessions.filter(s => s.status === SessionStatusEnum.CLOSED)
 
         // Sort by closedAt descending — most recent first
         closedSessions.sort((a, b) => {
@@ -50,7 +54,7 @@ export class PlansService {
         })
 
         for (const session of closedSessions) {
-            const entry = session.entries.find((e) => e.studentId === studentId)
+            const entry = session.entries.find(e => e.studentId === studentId)
             if (entry && entry.grade !== null) {
                 return {
                     grade: entry.grade,
@@ -73,12 +77,15 @@ export class PlansService {
      * If a plan already exists for this student, returns the existing one unchanged.
      */
     async initializePlan(studentId: string, iep: string): Promise<Plan> {
-        if (!studentId?.trim()) throw new Error('initializePlan: studentId is required')
-        if (!iep?.trim()) throw new Error('initializePlan: iep is required')
+        if (!studentId?.trim())
+            throw new Error('initializePlan: studentId is required')
+        if (!iep?.trim())
+            throw new Error('initializePlan: iep is required')
 
         // Ensure single record per student
         const existing = await plansRepository.getPlansByStudentId(studentId)
-        if (existing.length > 0) return existing[0]!
+        if (existing.length > 0)
+            return existing[0]!
 
         const snapshot = await this.getGradeSnapshotFromSessions(studentId)
 
@@ -103,10 +110,12 @@ export class PlansService {
      * is never changed here. Only isSynced and syncedAt are updated.
      */
     async toggleSync(id: string, isSynced: boolean): Promise<Plan | null> {
-        if (!id?.trim()) throw new Error('toggleSync: id is required')
+        if (!id?.trim())
+            throw new Error('toggleSync: id is required')
 
         const plan = await plansRepository.getById(id)
-        if (!plan) return null
+        if (!plan)
+            return null
 
         plan.isSynced = isSynced
         plan.syncedAt = isSynced ? new Date().toISOString() : null

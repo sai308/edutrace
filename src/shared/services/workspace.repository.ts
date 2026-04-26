@@ -29,13 +29,13 @@ export class WorkspaceRepository {
         return Array.isArray(data) && data.length > 0
             ? data
             : [
-                  {
-                      id: 'default',
-                      name: 'Default',
-                      dbName: DEFAULT_DB_NAME,
-                      createdAt: new Date().toISOString(),
-                  },
-              ]
+                    {
+                        id: 'default',
+                        name: 'Default',
+                        dbName: DEFAULT_DB_NAME,
+                        createdAt: new Date().toISOString(),
+                    },
+                ]
     }
 
     saveWorkspaces(workspaces: Workspace[]): void {
@@ -86,9 +86,10 @@ export class WorkspaceRepository {
 
     async updateWorkspace(id: string, updates: Partial<Workspace>): Promise<Workspace> {
         const workspaces = this.getWorkspaces()
-        const index = workspaces.findIndex((w) => w.id === id)
+        const index = workspaces.findIndex(w => w.id === id)
 
-        if (index === -1) throw new Error('Workspace not found')
+        if (index === -1)
+            throw new Error('Workspace not found')
 
         // Prevent overwriting internal identifiers
         const { id: _, dbName: __, ...allowedUpdates } = updates
@@ -106,7 +107,7 @@ export class WorkspaceRepository {
 
     async switchWorkspace(id: string, onLoading: () => void = () => {}): Promise<void> {
         const workspaces = this.getWorkspaces()
-        if (!workspaces.some((w) => w.id === id)) {
+        if (!workspaces.some(w => w.id === id)) {
             throw new Error('Workspace not found')
         }
         this.setCurrentWorkspaceId(id)
@@ -115,24 +116,26 @@ export class WorkspaceRepository {
     }
 
     async deleteWorkspace(id: string): Promise<void> {
-        if (id === 'default') throw new Error('Cannot delete default workspace')
+        if (id === 'default')
+            throw new Error('Cannot delete default workspace')
 
         const workspaces = this.getWorkspaces()
-        const workspace = workspaces.find((w) => w.id === id)
-        if (!workspace) return
+        const workspace = workspaces.find(w => w.id === id)
+        if (!workspace)
+            return
 
         // Native indexedDB deleteDatabase (not the wrapper)
         await new Promise<void>((resolve, reject) => {
             const req = indexedDB.deleteDatabase(workspace.dbName)
             req.onsuccess = () => resolve()
-            req.onerror = (e) => reject(e)
+            req.onerror = e => reject(e)
             req.onblocked = () => {
                 logger.warn(`Deletion of ${workspace.dbName} blocked.`)
                 resolve()
             }
         })
 
-        const newWorkspaces = workspaces.filter((w) => w.id !== id)
+        const newWorkspaces = workspaces.filter(w => w.id !== id)
         this.saveWorkspaces(newWorkspaces)
 
         if (this.getCurrentWorkspaceId() === id) {
@@ -144,8 +147,9 @@ export class WorkspaceRepository {
         const workspaces = this.getWorkspaces()
 
         for (const id of workspaceIds) {
-            const workspace = workspaces.find((w) => w.id === id)
-            if (!workspace) continue
+            const workspace = workspaces.find(w => w.id === id)
+            if (!workspace)
+                continue
 
             let db: IDBPDatabase<IDBCustomSchema> | null = null
             try {
@@ -155,19 +159,22 @@ export class WorkspaceRepository {
                 })
 
                 const tx = db.transaction(MAINTENANCE_STORES, 'readwrite')
-                await Promise.all(MAINTENANCE_STORES.map((name) => tx.objectStore(name).clear()))
+                await Promise.all(MAINTENANCE_STORES.map(name => tx.objectStore(name).clear()))
                 await tx.done
-            } catch (e) {
+            }
+            catch (e) {
                 logger.error(`Error clearing data for workspace ${workspace.name}:`, e)
-            } finally {
-                if (db) db.close()
+            }
+            finally {
+                if (db)
+                    db.close()
             }
         }
     }
 
     async exportWorkspaces(workspaceIds: string[]): Promise<WorkspaceExportData> {
         const allWorkspaces = this.getWorkspaces()
-        const workspacesToExport = allWorkspaces.filter((w) => workspaceIds.includes(w.id))
+        const workspacesToExport = allWorkspaces.filter(w => workspaceIds.includes(w.id))
 
         const exportData: WorkspaceExportData = {
             type: 'multi-workspace-backup',
@@ -181,7 +188,7 @@ export class WorkspaceRepository {
             try {
                 db = await openDB<IDBCustomSchema>(ws.dbName, DB_VERSION)
                 const storeEntries = await Promise.all(
-                    MAINTENANCE_STORES.map(async (name) => [name, await db!.getAll(name)])
+                    MAINTENANCE_STORES.map(async name => [name, await db!.getAll(name)]),
                 )
 
                 exportData.workspaces.push({
@@ -191,21 +198,24 @@ export class WorkspaceRepository {
                     dbName: ws.dbName,
                     data: Object.fromEntries(storeEntries),
                 })
-            } catch (e) {
+            }
+            catch (e) {
                 logger.error(`Error exporting data for workspace ${ws.name}:`, e)
-            } finally {
-                if (db) db.close()
+            }
+            finally {
+                if (db)
+                    db.close()
             }
         }
         return exportData
     }
 
     async importWorkspaces(data: WorkspaceExportData, selectedIds: string[]): Promise<void> {
-        const workspacesToImport = data.workspaces.filter((w) => selectedIds.includes(w.id))
+        const workspacesToImport = data.workspaces.filter(w => selectedIds.includes(w.id))
         const currentWorkspaces = this.getWorkspaces()
 
         for (const wsData of workspacesToImport) {
-            let targetWs = currentWorkspaces.find((w) => w.id === wsData.id)
+            let targetWs = currentWorkspaces.find(w => w.id === wsData.id)
 
             if (!targetWs) {
                 targetWs = {
@@ -228,23 +238,26 @@ export class WorkspaceRepository {
 
                 const tx = db.transaction(MAINTENANCE_STORES, 'readwrite')
                 // Clear existing
-                await Promise.all(MAINTENANCE_STORES.map((name) => tx.objectStore(name).clear()))
+                await Promise.all(MAINTENANCE_STORES.map(name => tx.objectStore(name).clear()))
 
                 // Import new
                 const importPromises: Promise<any>[] = []
                 for (const storeName of MAINTENANCE_STORES) {
                     const items = wsData.data[storeName]
                     if (items && Array.isArray(items)) {
-                        items.forEach((item) => importPromises.push(tx.objectStore(storeName).put(item)))
+                        items.forEach(item => importPromises.push(tx.objectStore(storeName).put(item)))
                     }
                 }
 
                 await Promise.all(importPromises)
                 await tx.done
-            } catch (e) {
+            }
+            catch (e) {
                 logger.error(`Error importing data into workspace ${targetWs?.name}:`, e)
-            } finally {
-                if (db) db.close()
+            }
+            finally {
+                if (db)
+                    db.close()
             }
         }
     }
@@ -261,19 +274,23 @@ export class WorkspaceRepository {
                 // but usually size means byte size.
                 // Since it's for stats, let's try to get estimate.
                 db = await openDB<IDBCustomSchema>(ws.dbName, DB_VERSION)
-                const storeEntries = await Promise.all(MAINTENANCE_STORES.map(async (name) => await db!.getAll(name)))
+                const storeEntries = await Promise.all(MAINTENANCE_STORES.map(async name => await db!.getAll(name)))
 
                 size = storeEntries.reduce((acc, items) => {
                     try {
                         return acc + new Blob([JSON.stringify(items)]).size
-                    } catch {
+                    }
+                    catch {
                         return acc
                     }
                 }, 0)
-            } catch (e) {
+            }
+            catch (e) {
                 logger.error(`Error calculating size for workspace ${ws.name}:`, e)
-            } finally {
-                if (db) db.close()
+            }
+            finally {
+                if (db)
+                    db.close()
             }
             results[ws.id] = size
         }

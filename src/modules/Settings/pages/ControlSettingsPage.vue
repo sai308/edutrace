@@ -101,7 +101,8 @@ async function exportMarks() {
         const data = await backupService.exportMarks()
         downloadJson(data, 'marks')
         toast.success(t('control.settings.exportMarksSuccess'))
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Export marks failed:', e)
         toast.error(t('control.settings.exportMarksFail'))
     }
@@ -111,7 +112,8 @@ function triggerImportMarks() {
 }
 async function handleImportMarks(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0]
-    if (!file) return
+    if (!file)
+        return
 
     try {
         const text = await file.text()
@@ -119,11 +121,13 @@ async function handleImportMarks(event: Event) {
         await backupService.importMarks(data)
         toast.success(t('control.settings.importMarksSuccess'))
         await loadSettings()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Import marks failed:', e)
         toast.error(t('control.settings.importMarksFail'))
     }
-    if (event.target) (event.target as HTMLInputElement).value = ''
+    if (event.target)
+        (event.target as HTMLInputElement).value = ''
 }
 async function handleDeleteMarks() {
     isDeletingMarks.value = true
@@ -131,10 +135,12 @@ async function handleDeleteMarks() {
         await backupService.clearMarks()
         toast.success(t('control.settings.deleteMarksSuccess'))
         await loadSettings()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Delete marks failed:', e)
         toast.error(t('control.settings.deleteMarksFail'))
-    } finally {
+    }
+    finally {
         isDeletingMarks.value = false
         showDeleteMarksConfirm.value = false
     }
@@ -146,7 +152,8 @@ async function exportTasks() {
         const data = await backupService.exportTasks()
         downloadJson(data, 'tasks')
         toast.success(t('control.settings.exportTasksSuccess'))
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Export tasks failed:', e)
         toast.error(t('control.settings.exportTasksFail'))
     }
@@ -156,7 +163,8 @@ function triggerImportTasks() {
 }
 async function handleImportTasks(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0]
-    if (!file) return
+    if (!file)
+        return
 
     try {
         const text = await file.text()
@@ -167,11 +175,13 @@ async function handleImportTasks(event: Event) {
         await backupService.importTasks(data)
         toast.success(t('control.settings.importTasksSuccess'))
         await loadSettings()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Import tasks failed:', e)
         toast.error(t('control.settings.importTasksFail'))
     }
-    if (event.target) (event.target as HTMLInputElement).value = ''
+    if (event.target)
+        (event.target as HTMLInputElement).value = ''
 }
 async function handleDeleteTasks() {
     isDeletingTasks.value = true
@@ -179,10 +189,12 @@ async function handleDeleteTasks() {
         await backupService.clearTasks()
         toast.success(t('control.settings.deleteTasksSuccess'))
         await loadSettings()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Delete tasks failed:', e)
         toast.error(t('control.settings.deleteTasksFail'))
-    } finally {
+    }
+    finally {
         isDeletingTasks.value = false
         showDeleteTasksConfirm.value = false
     }
@@ -190,7 +202,7 @@ async function handleDeleteTasks() {
 
 // --- Summary Export Actions ---
 async function handleExportSummaryAs(format: 'csv' | 'docx') {
-    const group = summaryGroups.value.find((g) => String(g.id) === selectedSummaryGroupId.value)
+    const group = summaryGroups.value.find(g => String(g.id) === selectedSummaryGroupId.value)
     if (!group) {
         toast.error(t('control.settings.summaryExport.noGroup'))
         return
@@ -212,16 +224,19 @@ async function handleExportSummaryAs(format: 'csv' | 'docx') {
         if (format === 'csv') {
             const blob = summaryExportService.exportSummaryCsv(students, group.name)
             downloadBlob(blob, `${filename}.csv`)
-        } else {
+        }
+        else {
             const blob = summaryExportService.exportSummaryDocx(students, group.name)
             downloadBlob(blob, `${filename}.docx`)
         }
 
         toast.success(t('control.settings.summaryExport.exportSuccess'))
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Summary export failed:', e)
         toast.error(t('control.settings.summaryExport.exportFail'))
-    } finally {
+    }
+    finally {
         isSummaryExporting.value = false
     }
 }
@@ -232,7 +247,8 @@ async function exportModules() {
         const data = await backupService.exportSummary()
         downloadJson(data, 'modules')
         toast.success(t('control.settings.exportModulesSuccess'))
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Export modules failed:', e)
         toast.error(t('control.settings.exportModulesFail'))
     }
@@ -242,7 +258,8 @@ function triggerImportModules() {
 }
 async function handleImportModules(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0]
-    if (!file) return
+    if (!file)
+        return
 
     try {
         const text = await file.text()
@@ -250,11 +267,13 @@ async function handleImportModules(event: Event) {
         await backupService.importSummary(data)
         toast.success(t('control.settings.importModulesSuccess'))
         await loadSettings()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Import modules failed:', e)
         toast.error(t('control.settings.importModulesFail'))
     }
-    if (event.target) (event.target as HTMLInputElement).value = ''
+    if (event.target)
+        (event.target as HTMLInputElement).value = ''
 }
 async function handleDeleteModules() {
     isDeletingModules.value = true
@@ -262,10 +281,12 @@ async function handleDeleteModules() {
         await backupService.clearSummary()
         toast.success(t('control.settings.deleteModulesSuccess'))
         await loadSettings()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Delete modules failed:', e)
         toast.error(t('control.settings.deleteModulesFail'))
-    } finally {
+    }
+    finally {
         isDeletingModules.value = false
         showDeleteModulesConfirm.value = false
     }
@@ -314,7 +335,7 @@ async function handleDeleteModules() {
                             accept=".json"
                             class="hidden"
                             @change="handleImportMarks"
-                        />
+                        >
                     </div>
 
                     <Separator />
@@ -409,7 +430,7 @@ async function handleDeleteModules() {
                             accept=".json"
                             class="hidden"
                             @change="handleImportTasks"
-                        />
+                        >
                     </div>
 
                     <Separator />
@@ -510,7 +531,7 @@ async function handleDeleteModules() {
                             accept=".json"
                             class="hidden"
                             @change="handleImportModules"
-                        />
+                        >
                     </div>
 
                     <Separator />
@@ -551,9 +572,7 @@ async function handleDeleteModules() {
                                     <span class="text-xs text-muted-foreground">{{
                                         $t('organization.settings.storageUsedLabel')
                                     }}</span>
-                                    <span class="font-medium tabular-nums"
-                                        >{{ (summarySize / 1024).toFixed(1) }} KB</span
-                                    >
+                                    <span class="font-medium tabular-nums">{{ (summarySize / 1024).toFixed(1) }} KB</span>
                                 </div>
                                 <div class="flex flex-col gap-0.5">
                                     <span class="text-xs text-muted-foreground">{{

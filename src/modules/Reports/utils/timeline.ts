@@ -31,9 +31,10 @@ export function calculateTimelineData(meet: Meet): TimelineData {
     if (meet.startTime && meet.endTime) {
         sessionStart = new Date(meet.startTime)
         sessionEnd = new Date(meet.endTime)
-    } else {
+    }
+    else {
         const joinTimes = meet.participants
-            .map((p) => (p.joinTime ? new Date(p.joinTime).getTime() : null))
+            .map(p => (p.joinTime ? new Date(p.joinTime).getTime() : null))
             .filter((t): t is number => t !== null)
 
         if (joinTimes.length === 0) {

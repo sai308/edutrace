@@ -75,7 +75,8 @@ const deleteTarget = ref<Workspace | null>(null)
 const isDeleting = ref(false)
 
 function getWorkspaceIcon(name?: string) {
-    if (!name) return Database
+    if (!name)
+        return Database
     return ((LucideIcons as Record<string, unknown>)[name] as typeof Database) ?? Database
 }
 
@@ -90,7 +91,8 @@ async function exportWorkspace(ws: Workspace) {
         const slug = ws.name.toLowerCase().replace(/\s+/g, '-')
         downloadJson(data, `edutrace-workspace-${slug}-${getTimestamp()}.json`)
         toast.success(t('globalSettings.workspaces.exportSuccess'))
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Workspace export failed:', e)
         toast.error(t('globalSettings.workspaces.exportFailed'))
     }
@@ -99,21 +101,24 @@ async function exportWorkspace(ws: Workspace) {
 async function exportAllWorkspaces() {
     isExportingAll.value = true
     try {
-        const ids = workspaces.value.map((w) => w.id)
+        const ids = workspaces.value.map(w => w.id)
         const data = await workspaceRepository.exportWorkspaces(ids)
         downloadJson(data, `edutrace-all-workspaces-${getTimestamp()}.json`)
         toast.success(t('globalSettings.workspaces.exportAllSuccess'))
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('All-workspaces export failed:', e)
         toast.error(t('globalSettings.workspaces.exportFailed'))
-    } finally {
+    }
+    finally {
         isExportingAll.value = false
     }
 }
 
 async function handleImportFile(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0]
-    if (!file) return
+    if (!file)
+        return
     try {
         const text = await file.text()
         const data = JSON.parse(text)
@@ -121,29 +126,34 @@ async function handleImportFile(event: Event) {
             toast.error(t('globalSettings.workspaces.importInvalidFormat'))
             return
         }
-        const ids = (data.workspaces as Array<{ id: string }>).map((w) => w.id)
+        const ids = (data.workspaces as Array<{ id: string }>).map(w => w.id)
         await workspaceRepository.importWorkspaces(data, ids)
         toast.success(t('globalSettings.workspaces.importSuccess', { count: ids.length }))
         loadWorkspaces()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Workspace import failed:', e)
         toast.error(t('globalSettings.workspaces.importFailed'))
-    } finally {
+    }
+    finally {
         ;(event.target as HTMLInputElement).value = ''
     }
 }
 
 async function confirmDeleteWorkspace() {
-    if (!deleteTarget.value) return
+    if (!deleteTarget.value)
+        return
     isDeleting.value = true
     try {
         await workspaceRepository.deleteWorkspace(deleteTarget.value.id)
         toast.success(t('globalSettings.workspaces.deleteSuccess'))
         loadWorkspaces()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Workspace delete failed:', e)
         toast.error(t('globalSettings.workspaces.deleteFailed'))
-    } finally {
+    }
+    finally {
         isDeleting.value = false
         deleteTarget.value = null
     }
@@ -319,7 +329,7 @@ function getTimestamp() {
                         </Button>
                     </div>
 
-                    <input ref="importInput" type="file" accept=".json" class="hidden" @change="handleImportFile" />
+                    <input ref="importInput" type="file" accept=".json" class="hidden" @change="handleImportFile">
                 </CardContent>
             </Card>
         </div>
@@ -368,7 +378,9 @@ function getTimestamp() {
                         <dt class="text-[0.75rem] text-muted-foreground">
                             {{ $t('globalSettings.dev.dbVersion') }}
                         </dt>
-                        <dd class="mt-0.5 font-mono text-sm font-medium">v{{ DB_VERSION }}</dd>
+                        <dd class="mt-0.5 font-mono text-sm font-medium">
+                            v{{ DB_VERSION }}
+                        </dd>
                     </div>
                     <div class="rounded-md border bg-muted/30 px-3 py-2 min-w-0">
                         <dt class="text-[0.75rem] text-muted-foreground">

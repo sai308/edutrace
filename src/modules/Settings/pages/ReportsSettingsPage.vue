@@ -85,7 +85,8 @@ async function exportReports() {
         const data = await backupService.exportReports()
         downloadJson(data, 'reports')
         toast.success(t('reports.settings.exportSuccess'))
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Export failed:', e)
         toast.error(t('reports.settings.exportFail'))
     }
@@ -97,7 +98,8 @@ function triggerImport() {
 
 async function handleImport(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0]
-    if (!file) return
+    if (!file)
+        return
 
     try {
         const text = await file.text()
@@ -107,7 +109,8 @@ async function handleImport(event: Event) {
 
         // Refresh counts
         await loadSettings()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Import failed:', e)
         toast.error(t('reports.settings.importFail'))
     }
@@ -125,10 +128,12 @@ async function handleDeleteReports() {
         await backupService.clearReports()
         toast.success(t('reports.settings.deleteSuccess'))
         await loadSettings()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Delete failed:', e)
         toast.error(t('reports.settings.deleteFail'))
-    } finally {
+    }
+    finally {
         isDeleting.value = false
         showDeleteConfirm.value = false
     }
@@ -251,7 +256,7 @@ async function handleDeleteReports() {
                             <HardDriveUpload class="w-6 h-6" />
                             <span>{{ $t('reports.settings.importReports') }}</span>
                         </Button>
-                        <input ref="importInput" type="file" accept=".json" class="hidden" @change="handleImport" />
+                        <input ref="importInput" type="file" accept=".json" class="hidden" @change="handleImport">
                     </div>
 
                     <Separator />
@@ -293,9 +298,7 @@ async function handleDeleteReports() {
                                     <span class="text-xs text-muted-foreground">{{
                                         $t('reports.settings.storageUsedLabel')
                                     }}</span>
-                                    <span class="font-medium tabular-nums"
-                                        >{{ (reportsSize / 1024).toFixed(1) }} KB</span
-                                    >
+                                    <span class="font-medium tabular-nums">{{ (reportsSize / 1024).toFixed(1) }} KB</span>
                                 </div>
                                 <div class="flex flex-col gap-0.5">
                                     <span class="text-xs text-muted-foreground">{{

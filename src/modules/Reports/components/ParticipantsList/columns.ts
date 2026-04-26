@@ -8,7 +8,7 @@ export function createColumns(
     t: (key: string) => string,
     getScoreColor: (score: number) => string,
     formatDuration: (d: number) => string,
-    getAttendancePercentage: (d: number) => number
+    getAttendancePercentage: (d: number) => number,
 ): ColumnDef<Participant>[] {
     return [
         {
@@ -44,7 +44,7 @@ export function createColumns(
                     title: t('reports.session.columns.attendance'),
                     class: 'justify-end',
                 }),
-            accessorFn: (row) => getAttendancePercentage(row.duration),
+            accessorFn: row => getAttendancePercentage(row.duration),
             cell: ({ row }) => {
                 const percentage = row.getValue('attendance') as number
                 return h('div', { class: 'text-right' }, [
@@ -54,7 +54,7 @@ export function createColumns(
                             variant: 'outline',
                             class: getScoreColor(percentage),
                         },
-                        () => `${percentage}%`
+                        () => `${percentage}%`,
                     ),
                 ])
             },

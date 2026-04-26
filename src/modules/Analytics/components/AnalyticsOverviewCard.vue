@@ -29,18 +29,21 @@ useIntersectionObserver(sentinel, ([entry]) => {
 })
 
 const sessionAttendees = computed<number>(() =>
-    props.session?.participants ? Object.keys(props.session.participants).length : 0
+    props.session?.participants ? Object.keys(props.session.participants).length : 0,
 )
 
 const sortedParticipants = computed<[string, number][]>(() => {
-    if (!props.session?.participants) return []
+    if (!props.session?.participants)
+        return []
     return Object.entries(props.session.participants).sort((a, b) => b[1] - a[1])
 })
 
 function getStatusDotColor(duration: number, maxDuration: number): string {
     const percentage = maxDuration > 0 ? (duration / maxDuration) * 100 : 0
-    if (percentage >= ATTENDANCE_BADGE_THRESHOLDS.GREAT) return 'bg-green-500'
-    if (percentage >= ATTENDANCE_BADGE_THRESHOLDS.GOOD) return 'bg-yellow-500'
+    if (percentage >= ATTENDANCE_BADGE_THRESHOLDS.GREAT)
+        return 'bg-green-500'
+    if (percentage >= ATTENDANCE_BADGE_THRESHOLDS.GOOD)
+        return 'bg-yellow-500'
     return 'bg-red-500'
 }
 

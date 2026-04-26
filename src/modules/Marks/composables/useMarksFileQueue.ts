@@ -12,9 +12,9 @@ export interface FileQueueItem {
 }
 
 export interface FileQueueCallbacks {
-    onProcessFile: (payload: { file: File; groupName: string }) => Promise<void>
+    onProcessFile: (payload: { file: File, groupName: string }) => Promise<void>
     onCreateGroup: (groupData: Partial<Group>) => Promise<Group>
-    onQueueComplete?: (stats: { done: number; modeSkipped: number }) => void
+    onQueueComplete?: (stats: { done: number, modeSkipped: number }) => void
     onSuggestMeetIds?: (file: File) => Promise<string[]>
 }
 
@@ -54,10 +54,10 @@ export function useMarksFileQueue(groups: Ref<Group[]>, callbacks: FileQueueCall
     const batchModeSkipped = ref(0)
 
     function _matchGroup(rawPrefix: string): Group | undefined {
-        let matched = groups.value.find((g) => g.name === rawPrefix)
+        let matched = groups.value.find(g => g.name === rawPrefix)
         if (!matched) {
             const normalized = rawPrefix.replace(/-/g, '')
-            matched = groups.value.find((g) => g.name.replace(/-/g, '') === normalized)
+            matched = groups.value.find(g => g.name.replace(/-/g, '') === normalized)
         }
         return matched
     }
@@ -123,7 +123,8 @@ export function useMarksFileQueue(groups: Ref<Group[]>, callbacks: FileQueueCall
                 await callbacks.onProcessFile({ file: item.file, groupName: matchedGroup.name })
                 item.status = 'done'
                 batchDone.value++
-            } catch (e: any) {
+            }
+            catch (e: any) {
                 item.status = 'error'
                 item.error = e?.message ?? 'Processing failed'
                 // Keep going — one bad file does not stop the queue
@@ -134,7 +135,7 @@ export function useMarksFileQueue(groups: Ref<Group[]>, callbacks: FileQueueCall
         // Check saved prefix→group mappings (bypass mode, applies even in known-only)
         const savedGroupName = savedPrefixMappings.value[rawPrefix]
         if (savedGroupName) {
-            const savedGroup = groups.value.find((g) => g.name === savedGroupName)
+            const savedGroup = groups.value.find(g => g.name === savedGroupName)
             if (savedGroup) {
                 item.status = 'processing'
                 _archive(item)
@@ -142,7 +143,8 @@ export function useMarksFileQueue(groups: Ref<Group[]>, callbacks: FileQueueCall
                     await callbacks.onProcessFile({ file: item.file, groupName: savedGroup.name })
                     item.status = 'done'
                     batchDone.value++
-                } catch (e: any) {
+                }
+                catch (e: any) {
                     item.status = 'error'
                     item.error = e?.message ?? 'Processing failed'
                 }
@@ -169,13 +171,14 @@ export function useMarksFileQueue(groups: Ref<Group[]>, callbacks: FileQueueCall
     }
 
     function handleFilesDropped(files: File[]) {
-        if (files.length === 0) return
+        if (files.length === 0)
+            return
         // Reset per-batch state for each new drop
         skippedPrefixes.value = []
         processedItems.value = []
         batchDone.value = 0
         batchModeSkipped.value = 0
-        const items: FileQueueItem[] = Array.from(files).map((f) => ({
+        const items: FileQueueItem[] = Array.from(files).map(f => ({
             file: f,
             status: 'pending' as const,
         }))
@@ -188,7 +191,8 @@ export function useMarksFileQueue(groups: Ref<Group[]>, callbacks: FileQueueCall
 
     function handleConfirmSkip() {
         const prefix = pendingGroup.value?.name
-        if (prefix) skippedPrefixes.value.push(prefix)
+        if (prefix)
+            skippedPrefixes.value.push(prefix)
         const item = _currentItem()
         if (item) {
             item.status = 'skipped'
@@ -205,10 +209,12 @@ export function useMarksFileQueue(groups: Ref<Group[]>, callbacks: FileQueueCall
         if (callbacks.onSuggestMeetIds && pendingFile.value) {
             try {
                 suggestedMeetIds.value = await callbacks.onSuggestMeetIds(pendingFile.value)
-            } catch {
+            }
+            catch {
                 suggestedMeetIds.value = []
             }
-        } else {
+        }
+        else {
             suggestedMeetIds.value = []
         }
         showGroupModal.value = true
@@ -236,7 +242,8 @@ export function useMarksFileQueue(groups: Ref<Group[]>, callbacks: FileQueueCall
                 await callbacks.onProcessFile({ file: fileToProcess, groupName })
                 item.status = 'done'
                 batchDone.value++
-            } catch (e: any) {
+            }
+            catch (e: any) {
                 item.status = 'error'
                 item.error = e?.message ?? 'Processing failed'
             }
@@ -274,7 +281,8 @@ export function useMarksFileQueue(groups: Ref<Group[]>, callbacks: FileQueueCall
                         })
                         itemInQueue.status = 'done'
                         batchDone.value++
-                    } catch (e: any) {
+                    }
+                    catch (e: any) {
                         itemInQueue.status = 'error'
                         itemInQueue.error = e?.message ?? 'Processing failed'
                     }
@@ -283,10 +291,12 @@ export function useMarksFileQueue(groups: Ref<Group[]>, callbacks: FileQueueCall
 
             pendingGroup.value = null
             processNextInQueue()
-        } catch (e: any) {
+        }
+        catch (e: any) {
             if (e?.name === 'ConstraintError') {
                 groupModalError.value = 'duplicate'
-            } else {
+            }
+            else {
                 groupModalError.value = 'error'
             }
             // Keep the modal open so the user can correct and retry

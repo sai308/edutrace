@@ -19,7 +19,7 @@ const {
 
 onMounted(loadData)
 
-function handleSaveStudent(payload: { formData: StudentFormData; originalStudent: any }) {
+function handleSaveStudent(payload: { formData: StudentFormData, originalStudent: any }) {
     saveStudent(payload.formData, payload.originalStudent ?? null)
 }
 

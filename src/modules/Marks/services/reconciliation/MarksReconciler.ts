@@ -15,7 +15,8 @@ export class MarksReconciler {
     }
 
     private _normalizeName(name: string): string {
-        if (!name) return ''
+        if (!name)
+            return ''
         return name.toLowerCase().replace(/\s+/g, '')
     }
 
@@ -26,21 +27,21 @@ export class MarksReconciler {
         // Step A: Resolve Students
         const [allExistingMembers, rawStudents] = await Promise.all([
             studentsRepository.getAllMembers(),
-            parsedData.studentsData.map((d) => d.student),
+            parsedData.studentsData.map(d => d.student),
         ])
 
         const resolvedIdentities = await this.identityReconciler.resolveIdentities(
             rawStudents as any,
-            allExistingMembers
+            allExistingMembers,
         )
 
         // Ensure resolvedIdentities match Member interface (IdentityReconciler returns ReconciledStudent)
         const resolvedStudents: Member[] = resolvedIdentities.map(
-            (ri) =>
+            ri =>
                 ({
                     ...ri,
                     role: ri.role || 'student',
-                }) as Member
+                }) as Member,
         )
 
         // Step B: Reconcile Tasks (globally, no group coupling)
@@ -67,7 +68,8 @@ export class MarksReconciler {
                 }
                 taskMap.set(normalizedName, merged)
                 return merged
-            } else {
+            }
+            else {
                 const newTask: Task = {
                     ...parsedTask,
                     id: uuidv4(),
@@ -84,7 +86,7 @@ export class MarksReconciler {
         // would contain duplicate entries with the same primary key. bulkPut uses Promise.all
         // which fires all puts concurrently — IDB's uniqueness check on 'name' would see
         // the same value in-flight twice and raise a ConstraintError before either put completes.
-        const uniqueTasks = [...new Map(reconciledTasks.map((t) => [t.id, t])).values()]
+        const uniqueTasks = [...new Map(reconciledTasks.map(t => [t.id, t])).values()]
 
         // Step C: Reconcile Marks
         const allMarks = await marksRepository.getAllMarks()
@@ -98,7 +100,8 @@ export class MarksReconciler {
 
         resolvedStudents.forEach((student, index) => {
             const originalData = parsedData.studentsData[index]
-            if (!originalData) return
+            if (!originalData)
+                return
 
             const rawMarks = originalData.marks
 
@@ -120,7 +123,8 @@ export class MarksReconciler {
                             updatedAt: new Date().toISOString(),
                             groupName,
                         })
-                    } else {
+                    }
+                    else {
                         reconciledMarks.push({
                             id: uuidv4(),
                             groupName,

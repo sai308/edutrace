@@ -36,7 +36,7 @@ export function useWorkspaceModals() {
         showDeleteConfirm.value = true
     }
 
-    const handleCreate = async (data: { name: string; icon: string; color?: string; copySettings?: boolean }) => {
+    const handleCreate = async (data: { name: string, icon: string, color?: string, copySettings?: boolean }) => {
         try {
             const options: any = { icon: data.icon, color: data.color }
             if (data.copySettings) {
@@ -49,23 +49,30 @@ export function useWorkspaceModals() {
                     examSettings: await settingsRepository.getExamSettings(),
                 })
                 options.saveSettings = async (settings: any) => {
-                    if (settings.durationLimit) await settingsRepository.saveDurationLimit(settings.durationLimit)
-                    if (settings.defaultTeacher) await settingsRepository.saveDefaultTeacher(settings.defaultTeacher)
-                    if (settings.ignoredUsers) await settingsRepository.saveIgnoredUsers(settings.ignoredUsers)
-                    if (settings.teachers) await settingsRepository.saveTeachers(settings.teachers)
-                    if (settings.examSettings) await settingsRepository.saveExamSettings(settings.examSettings)
+                    if (settings.durationLimit)
+                        await settingsRepository.saveDurationLimit(settings.durationLimit)
+                    if (settings.defaultTeacher)
+                        await settingsRepository.saveDefaultTeacher(settings.defaultTeacher)
+                    if (settings.ignoredUsers)
+                        await settingsRepository.saveIgnoredUsers(settings.ignoredUsers)
+                    if (settings.teachers)
+                        await settingsRepository.saveTeachers(settings.teachers)
+                    if (settings.examSettings)
+                        await settingsRepository.saveExamSettings(settings.examSettings)
                 }
             }
             await workspaceRepository.createWorkspace(data.name, options)
             loadWorkspaces()
             showCreateModal.value = false
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Failed to create workspace', e)
         }
     }
 
-    const handleUpdate = async (data: { name: string; icon: string; color?: string }) => {
-        if (!selectedWorkspace.value) return
+    const handleUpdate = async (data: { name: string, icon: string, color?: string }) => {
+        if (!selectedWorkspace.value)
+            return
         try {
             await workspaceRepository.updateWorkspace(selectedWorkspace.value.id, {
                 name: data.name,
@@ -75,24 +82,28 @@ export function useWorkspaceModals() {
             loadWorkspaces()
             showEditModal.value = false
             selectedWorkspace.value = null
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Failed to update workspace', e)
         }
     }
 
     const handleDelete = async () => {
-        if (!selectedWorkspace.value) return
+        if (!selectedWorkspace.value)
+            return
         const id = selectedWorkspace.value.id
         try {
             await workspaceRepository.deleteWorkspace(id)
             if (currentWorkspaceId.value === id) {
                 fadeOutAndReload()
-            } else {
+            }
+            else {
                 loadWorkspaces()
             }
             showDeleteConfirm.value = false
             selectedWorkspace.value = null
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Failed to delete workspace', e)
         }
     }

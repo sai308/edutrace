@@ -22,14 +22,15 @@ export function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
             (error) => {
                 clearTimeout(timer)
                 reject(error)
-            }
+            },
         )
     })
 }
 
 /** Maps an unknown thrown value to a typed WorkerError. */
 export function classifyWorkerError(e: unknown): WorkerError {
-    if (e instanceof WorkerError) return e
+    if (e instanceof WorkerError)
+        return e
 
     if (e instanceof Error) {
         // postMessage/structuredClone serialization failure

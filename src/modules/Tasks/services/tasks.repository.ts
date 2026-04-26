@@ -7,8 +7,10 @@ class TasksRepository extends BaseRepository<'tasks'> {
     }
 
     async saveTask(task: Task): Promise<string | number> {
-        if (!task.name?.trim()) throw new Error('Task name is required')
-        if (!task.normalizedName?.trim()) throw new Error('Task normalizedName is required')
+        if (!task.name?.trim())
+            throw new Error('Task name is required')
+        if (!task.normalizedName?.trim())
+            throw new Error('Task normalizedName is required')
         if (task.id) {
             return this.put(task)
         }
@@ -27,7 +29,7 @@ class TasksRepository extends BaseRepository<'tasks'> {
         const db = await this.getDb()
         const tx = db.transaction(this.storeName, 'readwrite')
         const store = tx.objectStore(this.storeName)
-        await Promise.all(ids.map((id) => store.delete(id as any)))
+        await Promise.all(ids.map(id => store.delete(id as any)))
         await tx.done
     }
 }

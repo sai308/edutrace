@@ -38,10 +38,10 @@ const table = useVueTable({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onSortingChange: (u) => valueUpdater(u, sorting),
-    onRowSelectionChange: (u) => valueUpdater(u, rowSelection),
-    onGlobalFilterChange: (u) => valueUpdater(u, globalFilter),
-    onColumnVisibilityChange: (u) => valueUpdater(u, columnVisibility),
+    onSortingChange: u => valueUpdater(u, sorting),
+    onRowSelectionChange: u => valueUpdater(u, rowSelection),
+    onGlobalFilterChange: u => valueUpdater(u, globalFilter),
+    onColumnVisibilityChange: u => valueUpdater(u, columnVisibility),
     state: {
         get sorting() {
             return sorting.value
@@ -60,7 +60,7 @@ const table = useVueTable({
 
 watch(
     () => props.searchQuery,
-    (q) => table.setGlobalFilter(q ?? '')
+    q => table.setGlobalFilter(q ?? ''),
 )
 
 defineExpose({ table })

@@ -33,8 +33,9 @@ const local = ref<SummarySettings>({ ...props.settings })
 watch(
     () => props.open,
     (opened) => {
-        if (opened) local.value = { ...props.settings }
-    }
+        if (opened)
+            local.value = { ...props.settings }
+    },
 )
 
 function handleOpenUpdate(val: boolean) {
@@ -103,8 +104,7 @@ function reset() {
                                 for="sheet-attendanceEnabled"
                                 class="text-base font-semibold cursor-pointer"
                                 :class="{ 'opacity-50': !local.attendanceEnabled }"
-                                >{{ t('summary.thresholds.attendance') }}</Label
-                            >
+                            >{{ t('summary.thresholds.attendance') }}</Label>
                         </div>
                         <p class="text-xs text-muted-foreground" :class="{ 'opacity-50': !local.attendanceEnabled }">
                             {{ t('summary.settings.attendanceHint') }}

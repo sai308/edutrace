@@ -19,25 +19,25 @@ export function createColumns(
     emit: EmitFn,
     t: ComposerTranslation,
     getScoreColor: (v: number) => string,
-    ordinalMap: Map<string, number>
+    ordinalMap: Map<string, number>,
 ): ColumnDef<StudentDashboardStats>[] {
     return [
         {
             id: 'select',
             header: ({ table }) =>
                 h(Checkbox, {
-                    modelValue:
+                    'modelValue':
                         table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
                     'onUpdate:modelValue': (v: boolean | 'indeterminate') => table.toggleAllPageRowsSelected(!!v),
-                    ariaLabel: t('common.selectAll'),
-                    class: 'translate-y-[2px]',
+                    'ariaLabel': t('common.selectAll'),
+                    'class': 'translate-y-[2px]',
                 }),
             cell: ({ row }) =>
                 h(Checkbox, {
-                    modelValue: row.getIsSelected(),
+                    'modelValue': row.getIsSelected(),
                     'onUpdate:modelValue': (v: boolean | 'indeterminate') => row.toggleSelected(!!v),
-                    ariaLabel: t('common.selectRow'),
-                    class: 'translate-y-[2px]',
+                    'ariaLabel': t('common.selectRow'),
+                    'class': 'translate-y-[2px]',
                 }),
             enableSorting: false,
             enableHiding: false,
@@ -50,7 +50,7 @@ export function createColumns(
                 return h(
                     'div',
                     { class: 'text-center tabular-nums text-muted-foreground text-xs font-mono' },
-                    n != null ? String(n) : ''
+                    n != null ? String(n) : '',
                 )
             },
             enableSorting: false,
@@ -64,12 +64,12 @@ export function createColumns(
                 h(
                     'div',
                     { class: 'font-medium truncate', title: row.getValue('name') as string },
-                    row.getValue('name') as string
+                    row.getValue('name') as string,
                 ),
         },
         {
             id: 'groups',
-            accessorFn: (row) => row.groups.join(' '),
+            accessorFn: row => row.groups.join(' '),
             meta: { label: t('students.table.groups') },
             filterFn: (row, _id, value: string) => row.original.groups.includes(value),
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('students.table.groups') }),
@@ -78,7 +78,7 @@ export function createColumns(
                 return h(
                     'div',
                     { class: 'flex flex-wrap gap-1 overflow-hidden max-h-8' },
-                    groups.map((group) =>
+                    groups.map(group =>
                         h(
                             Button,
                             {
@@ -91,15 +91,15 @@ export function createColumns(
                                     emit('select-group', group)
                                 },
                             },
-                            () => group
-                        )
-                    )
+                            () => group,
+                        ),
+                    ),
                 )
             },
         },
         {
             id: 'meetIds',
-            accessorFn: (row) => row.meetIds.join(' '),
+            accessorFn: row => row.meetIds.join(' '),
             meta: { label: t('students.table.meetIds') },
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('students.table.meetIds') }),
             cell: ({ row }) => {
@@ -107,7 +107,7 @@ export function createColumns(
                 return h(
                     'div',
                     { class: 'flex flex-wrap gap-1 overflow-hidden max-h-8' },
-                    meetIds.map((meetId) =>
+                    meetIds.map(meetId =>
                         h(
                             Button,
                             {
@@ -120,15 +120,15 @@ export function createColumns(
                                     emit('open-analytics', meetId)
                                 },
                             },
-                            () => meetId
-                        )
-                    )
+                            () => meetId,
+                        ),
+                    ),
                 )
             },
         },
         {
             id: 'sessions',
-            accessorFn: (row) => row.sessionCount,
+            accessorFn: row => row.sessionCount,
             meta: { label: t('students.table.sessions') },
             header: ({ column }) =>
                 h(DataTableColumnHeader, {
@@ -144,7 +144,7 @@ export function createColumns(
         },
         {
             id: 'avgTime',
-            accessorFn: (row) => row.averageAttendancePercent,
+            accessorFn: row => row.averageAttendancePercent,
             meta: { label: `${t('students.table.avg')} %` },
             header: ({ column }) =>
                 h(DataTableColumnHeader, {
@@ -159,7 +159,7 @@ export function createColumns(
         },
         {
             id: 'totalTime',
-            accessorFn: (row) => row.totalAttendancePercent,
+            accessorFn: row => row.totalAttendancePercent,
             meta: { label: `${t('students.table.total')} %` },
             header: ({ column }) =>
                 h(DataTableColumnHeader, {
@@ -174,7 +174,7 @@ export function createColumns(
         },
         {
             id: 'avgMark',
-            accessorFn: (row) => row.averageMark,
+            accessorFn: row => row.averageMark,
             meta: { label: `${t('students.table.avg')} ★` },
             header: ({ column }) =>
                 h(DataTableColumnHeader, {
@@ -189,7 +189,7 @@ export function createColumns(
         },
         {
             id: 'completion',
-            accessorFn: (row) => row.completionPercent,
+            accessorFn: row => row.completionPercent,
             meta: { label: `${t('students.table.total')} ✓` },
             header: ({ column }) =>
                 h(DataTableColumnHeader, {

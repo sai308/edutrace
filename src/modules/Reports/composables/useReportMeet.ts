@@ -22,7 +22,8 @@ export function useReportMeet(meetId: string) {
                 result.participants.sort((a, b) => a.name.localeCompare(b.name))
             }
             meet.value = result
-        } finally {
+        }
+        finally {
             isLoading.value = false
         }
     }
@@ -30,7 +31,8 @@ export function useReportMeet(meetId: string) {
     const totalDuration = computed(() => calculateMeetDuration(meet.value))
 
     const avgDuration = computed(() => {
-        if (!meet.value?.participants?.length) return 0
+        if (!meet.value?.participants?.length)
+            return 0
         const total = meet.value.participants.reduce((acc, p) => acc + p.duration, 0)
         return total / meet.value.participants.length
     })

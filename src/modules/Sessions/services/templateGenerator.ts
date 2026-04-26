@@ -68,8 +68,8 @@ function emptyPara(): string {
 
 // ── Table helpers ──────────────────────────────────────────────────────────
 
-type TcOpts = RProps &
-    PProps & {
+type TcOpts = RProps
+    & PProps & {
         w?: number // cell width in twips (dxa)
         span?: number // horizontal gridSpan
         vm?: 'start' | 'cont' // vMerge: start=restart, cont=continue
@@ -78,7 +78,8 @@ type TcOpts = RProps &
     }
 
 function tcBorders(underline?: boolean): string {
-    if (!underline) return ''
+    if (!underline)
+        return ''
     const none = 'w:val="none"'
     const line = 'w:val="single" w:sz="4" w:space="0" w:color="000000"'
     return `<w:tcBorders><w:top ${none}/><w:left ${none}/><w:bottom ${line}/><w:right ${none}/></w:tcBorders>`
@@ -115,7 +116,7 @@ function tbl(rows: string[], borders: boolean, gridCols: number[]): string {
         <w:insideH ${bVal}/><w:insideV ${bVal}/>
     </w:tblBorders>`
         : ''
-    const grid = gridCols.map((cw) => `<w:gridCol w:w="${cw}"/>`).join('')
+    const grid = gridCols.map(cw => `<w:gridCol w:w="${cw}"/>`).join('')
     return `<w:tbl>
     <w:tblPr>
         <w:tblW w:w="${w}" w:type="dxa"/>
@@ -144,7 +145,13 @@ function buildDocumentXml(): string {
     // ── 2. Top metadata (no-border table) ─────────────────────────────────
     // Columns: label(2200) | value(2500) | spacer(1000) | label(1500) | value(1500) | label(800) | value(1000)
     const META_COLS: [number, number, number, number, number, number, number] = [
-        2200, 2500, 1000, 1500, 1500, 800, 1000,
+        2200,
+        2500,
+        1000,
+        1500,
+        1500,
+        800,
+        1000,
     ]
     parts.push(
         tbl(
@@ -179,8 +186,8 @@ function buildDocumentXml(): string {
                 ]),
             ],
             false,
-            META_COLS
-        )
+            META_COLS,
+        ),
     )
 
     // Date — centered on an underline
@@ -234,8 +241,8 @@ function buildDocumentXml(): string {
                 ]),
             ],
             false,
-            [SUB_COLS[0], SUB_COLS[1], SUB_COLS[2], SUB_COLS[3]]
-        )
+            [SUB_COLS[0], SUB_COLS[1], SUB_COLS[2], SUB_COLS[3]],
+        ),
     )
 
     parts.push(emptyPara())
@@ -314,7 +321,7 @@ function buildDocumentXml(): string {
 
     // Head of department signature
     parts.push(
-        para(`${pt('headOfDepartment')} _________________   _______________________________________`, { size: 18 })
+        para(`${pt('headOfDepartment')} _________________   _______________________________________`, { size: 18 }),
     )
     parts.push(emptyPara())
 
@@ -379,7 +386,7 @@ function buildDocumentXml(): string {
             tc(grade, { w: EW[2], center: true, bold: true, size: 18 }),
             tc(exam, { w: EW[3], center: true, size: 18 }),
             tc(credit, { w: EW[4], center: true, size: 18 }),
-        ])
+        ]),
     )
 
     const ectsAbsent = tr([

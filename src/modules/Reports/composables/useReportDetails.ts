@@ -14,11 +14,13 @@ export function useReportDetails(reportId: string) {
         error.value = null
         try {
             stats.value = await analyticsService.getSingleReportStats(reportId)
-        } catch (err) {
+        }
+        catch (err) {
             logger.error('Failed to load report details:', err)
             error.value = err
             toast.error('Failed to load report details')
-        } finally {
+        }
+        finally {
             loading.value = false
         }
     }

@@ -44,7 +44,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
     <header class="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div class="container mx-auto px-4 h-16 flex items-center justify-between">
             <router-link to="/" class="flex items-center gap-2 font-bold text-xl">
-                <img src="/edutrace-logo.svg" class="h-8" alt="EduTrace" />
+                <img src="/edutrace-logo.svg" class="h-8" alt="EduTrace">
                 EduTrace
             </router-link>
 

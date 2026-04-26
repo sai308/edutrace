@@ -57,7 +57,7 @@ interface Props {
     allMeetIds?: string[]
     allTeachers?: string[]
     isLoading?: boolean
-    processFileFn?: (payload: { file: File; groupName: string }) => Promise<void>
+    processFileFn?: (payload: { file: File, groupName: string }) => Promise<void>
     createGroupFn?: (data: Partial<Group>) => Promise<Group>
 }
 
@@ -79,9 +79,12 @@ const activeFilters = computed<ActiveFilters>(() => ({
 
 const activeFilterCount = computed(() => {
     let count = 0
-    if (activeFilters.value.synced === 'unsynced') count++
-    if (activeFilters.value.dateFrom) count++
-    if (activeFilters.value.hideFailed) count++
+    if (activeFilters.value.synced === 'unsynced')
+        count++
+    if (activeFilters.value.dateFrom)
+        count++
+    if (activeFilters.value.hideFailed)
+        count++
     return count
 })
 
@@ -111,7 +114,8 @@ function confirmDelete(mark: UIMark) {
 }
 
 function confirmBulkDelete(ids: (string | number)[]) {
-    if (!ids || ids.length === 0) return
+    if (!ids || ids.length === 0)
+        return
     meetIdsToDelete.value = ids
     isBulkDelete.value = true
     showDeleteModal.value = true
@@ -121,7 +125,8 @@ function handleDelete() {
     if (isBulkDelete.value) {
         emit('bulk-delete-marks', meetIdsToDelete.value)
         marksTableRef.value?.table.resetRowSelection()
-    } else if (markToDelete.value) {
+    }
+    else if (markToDelete.value) {
         emit('delete-mark', markToDelete.value.id)
     }
     showDeleteModal.value = false
@@ -169,9 +174,7 @@ function applyFilters(filters: MarksFilters) {
                 <DropdownMenu>
                     <DropdownMenuTrigger as-child>
                         <Button variant="outline" size="sm" class="h-9 gap-1" :disabled="groups.length === 0">
-                            <span class="hidden sm:inline text-xs text-muted-foreground mr-1"
-                                >{{ $t('marks.table.group') }}:</span
-                            >
+                            <span class="hidden sm:inline text-xs text-muted-foreground mr-1">{{ $t('marks.table.group') }}:</span>
                             <span class="font-medium max-w-[100px] truncate" :title="filterGroup || undefined">
                                 {{ filterGroup || $t('marks.filterModal.allGroups') }}
                             </span>
@@ -191,18 +194,16 @@ function applyFilters(filters: MarksFilters) {
                 <DropdownMenu>
                     <DropdownMenuTrigger as-child>
                         <Button variant="outline" size="sm" class="h-9 gap-1">
-                            <span class="hidden sm:inline text-xs text-muted-foreground mr-1"
-                                >{{ $t('marks.gradeScale') }}:</span
-                            >
+                            <span class="hidden sm:inline text-xs text-muted-foreground mr-1">{{ $t('marks.gradeScale') }}:</span>
                             <span class="font-medium">
                                 {{
                                     selectedFormat === 'raw' || selectedFormat === ''
                                         ? $t('marks.scales.default')
                                         : selectedFormat === '5-scale'
-                                          ? $t('marks.scales.5point')
-                                          : selectedFormat === '100-scale'
-                                            ? $t('marks.scales.100point')
-                                            : $t('marks.scales.ects')
+                                            ? $t('marks.scales.5point')
+                                            : selectedFormat === '100-scale'
+                                                ? $t('marks.scales.100point')
+                                                : $t('marks.scales.ects')
                                 }}
                             </span>
                             <ChevronDown class="h-3 w-3 opacity-50" />
@@ -272,7 +273,7 @@ function applyFilters(filters: MarksFilters) {
                                 class="h-9 gap-2 w-full"
                                 @click="
                                     confirmBulkDelete(
-                                        table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id)
+                                        table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id),
                                     )
                                 "
                             >
@@ -297,8 +298,7 @@ function applyFilters(filters: MarksFilters) {
                                 @click="showFilterModal = true"
                             >
                                 <Filter class="w-3.5 h-3.5 shrink-0" />
-                                <span v-if="!(bulkMode && table.getFilteredSelectedRowModel().rows.length > 0)"
-                                    >{{ $t('marks.filters') }}
+                                <span v-if="!(bulkMode && table.getFilteredSelectedRowModel().rows.length > 0)">{{ $t('marks.filters') }}
                                 </span>
                                 <Badge
                                     v-if="activeFilterCount > 0"
@@ -343,7 +343,7 @@ function applyFilters(filters: MarksFilters) {
                                 class="h-8 gap-2 shrink-0"
                                 @click="
                                     confirmBulkDelete(
-                                        table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id)
+                                        table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id),
                                     )
                                 "
                             >
@@ -416,8 +416,8 @@ function applyFilters(filters: MarksFilters) {
                         {{
                             isBulkDelete
                                 ? $t('marks.deleteModal.bulkMessage', {
-                                      count: meetIdsToDelete.length,
-                                  })
+                                    count: meetIdsToDelete.length,
+                                })
                                 : $t('marks.deleteModal.message')
                         }}
                     </AlertDialogDescription>

@@ -28,7 +28,7 @@ export function createSummaryColumns(
     rowActions: (student: StudentSummaryData) => RowActionItem[],
     ordinalMap: Map<string, number>,
     formatters: Formatters,
-    t: ComposerTranslation
+    t: ComposerTranslation,
 ): ColumnDef<StudentSummaryData>[] {
     const cols: ColumnDef<StudentSummaryData>[] = []
 
@@ -43,7 +43,7 @@ export function createSummaryColumns(
             return h(
                 'div',
                 { class: 'text-center tabular-nums text-muted-foreground text-xs font-mono' },
-                n != null ? String(n) : ''
+                n != null ? String(n) : '',
             )
         },
     })
@@ -60,7 +60,7 @@ export function createSummaryColumns(
                     class: 'font-medium hover:text-primary transition-colors text-left cursor-pointer border-b border-dotted border-transparent hover:border-current pb-0.5',
                     onClick: () => onStudentClick(row.original),
                 },
-                row.original.name
+                row.original.name,
             ),
         enableSorting: true,
         enableHiding: false,
@@ -68,7 +68,8 @@ export function createSummaryColumns(
     })
 
     const renderGradeTooltipContent = (gradeDetails: any) => {
-        if (!gradeDetails) return null
+        if (!gradeDetails)
+            return null
 
         if (gradeDetails.type === 'empty') {
             return h('div', { class: 'text-sm text-muted-foreground' }, gradeDetails.text)
@@ -91,20 +92,21 @@ export function createSummaryColumns(
                                     h(
                                         'span',
                                         { class: 'text-muted-foreground font-normal ml-0.5' },
-                                        `(${m.completed}/${m.total})`
+                                        `(${m.completed}/${m.total})`,
                                     ),
                                     m.coeff !== 1
                                         ? h(
-                                              'span',
-                                              {
-                                                  class: 'text-muted-foreground text-xs font-normal opacity-70 ml-0.5',
-                                              },
-                                              `×${m.coeff}`
-                                          )
+                                                'span',
+                                                {
+                                                    class: 'text-muted-foreground text-xs font-normal opacity-70 ml-0.5',
+                                                },
+                                                `×${m.coeff}`,
+                                            )
                                         : null,
-                                ].filter(Boolean)
+                                ].filter(Boolean),
                             )
-                        } else if (m.type === 'test') {
+                        }
+                        else if (m.type === 'test') {
                             return h(
                                 'div',
                                 { class: 'flex items-center gap-1.5 text-sm font-medium' },
@@ -113,19 +115,19 @@ export function createSummaryColumns(
                                     h('span', `${m.val}`),
                                     m.coeff !== 1
                                         ? h(
-                                              'span',
-                                              {
-                                                  class: 'text-muted-foreground text-xs font-normal opacity-70 ml-0.5',
-                                              },
-                                              `×${m.coeff}`
-                                          )
+                                                'span',
+                                                {
+                                                    class: 'text-muted-foreground text-xs font-normal opacity-70 ml-0.5',
+                                                },
+                                                `×${m.coeff}`,
+                                            )
                                         : null,
-                                ].filter(Boolean)
+                                ].filter(Boolean),
                             )
                         }
                         return null
-                    })
-                )
+                    }),
+                ),
             )
         }
 
@@ -150,8 +152,8 @@ export function createSummaryColumns(
                                 class: 'text-xs text-muted-foreground line-clamp-1 truncate',
                                 title: task,
                             },
-                            `• ${task}`
-                        )
+                            `• ${task}`,
+                        ),
                     )
                 })
             }
@@ -166,7 +168,7 @@ export function createSummaryColumns(
     modules.forEach((mod) => {
         cols.push({
             id: `module_${mod.id}`,
-            accessorFn: (row) => row.moduleGrades?.[mod.name],
+            accessorFn: row => row.moduleGrades?.[mod.name],
             meta: { label: mod.name },
             header: ({ column }) => h(DataTableColumnHeader, { column, title: mod.name }),
             cell: ({ row }) => {
@@ -174,10 +176,10 @@ export function createSummaryColumns(
                 const gradeDetails = row.original.moduleDetails?.[mod.name]
 
                 if (
-                    gradeStr === null ||
-                    gradeStr === undefined ||
-                    gradeStr === '-' ||
-                    (typeof gradeStr === 'string' && gradeStr.trim() === '')
+                    gradeStr === null
+                    || gradeStr === undefined
+                    || gradeStr === '-'
+                    || (typeof gradeStr === 'string' && gradeStr.trim() === '')
                 ) {
                     const emptyNode = h('span', { class: 'text-muted-foreground/50 mx-4' }, '-')
                     if (gradeDetails) {
@@ -189,14 +191,11 @@ export function createSummaryColumns(
                                         {
                                             class: 'cursor-help w-max hover:bg-muted/50 rounded flex items-center justify-center p-1 -m-1',
                                         },
-                                        emptyNode
-                                    )
-                                ),
+                                        emptyNode,
+                                    )),
                                 h(TooltipContent, { class: 'w-[280px] p-3 shadow-md' }, () =>
-                                    renderGradeTooltipContent(gradeDetails)
-                                ),
-                            ])
-                        )
+                                    renderGradeTooltipContent(gradeDetails)),
+                            ]))
                     }
                     return emptyNode
                 }
@@ -209,7 +208,7 @@ export function createSummaryColumns(
                     {
                         class: ['font-medium mx-4', isPartial ? 'text-amber-500' : ''],
                     },
-                    String(cleanGrade)
+                    String(cleanGrade),
                 )
 
                 if (gradeDetails) {
@@ -221,14 +220,11 @@ export function createSummaryColumns(
                                     {
                                         class: 'cursor-help w-max hover:bg-muted/50 rounded flex items-center justify-center p-1 -m-1',
                                     },
-                                    valueNode
-                                )
-                            ),
+                                    valueNode,
+                                )),
                             h(TooltipContent, { class: 'w-[280px] p-3 shadow-md' }, () =>
-                                renderGradeTooltipContent(gradeDetails)
-                            ),
-                        ])
-                    )
+                                renderGradeTooltipContent(gradeDetails)),
+                        ]))
                 }
 
                 return valueNode
@@ -262,7 +258,7 @@ export function createSummaryColumns(
                         isPartial ? 'text-gray-500' : 'text-foreground',
                     ],
                 },
-                String(displayTotal)
+                String(displayTotal),
             )
         },
         enableSorting: true,
@@ -282,11 +278,9 @@ export function createSummaryColumns(
             return h(TooltipProvider, {}, () =>
                 h(Tooltip, { delayDuration: 200 }, () => [
                     h(TooltipTrigger, { asChild: true }, () =>
-                        h('span', { class: `${colorClass} font-medium text-xs ml-4 cursor-help` }, str)
-                    ),
+                        h('span', { class: `${colorClass} font-medium text-xs ml-4 cursor-help` }, str)),
                     h(TooltipContent, { class: 'text-xs' }, () => details),
-                ])
-            )
+                ]))
         },
         enableSorting: true,
     })
@@ -305,11 +299,9 @@ export function createSummaryColumns(
             return h(TooltipProvider, {}, () =>
                 h(Tooltip, { delayDuration: 200 }, () => [
                     h(TooltipTrigger, { asChild: true }, () =>
-                        h('span', { class: `${colorClass} font-medium text-xs mx-4 cursor-help` }, str)
-                    ),
+                        h('span', { class: `${colorClass} font-medium text-xs mx-4 cursor-help` }, str)),
                     h(TooltipContent, { class: 'text-xs' }, () => details),
-                ])
-            )
+                ]))
         },
         enableSorting: true,
     })
@@ -333,7 +325,8 @@ export function createSummaryColumns(
                 iconClass = 'text-blue-500 mr-1.5 h-3.5 w-3.5'
                 textClass = 'text-blue-500'
                 label = t('summary.automatic')
-            } else if (status === 'allowed') {
+            }
+            else if (status === 'allowed') {
                 icon = ShieldCheck
                 iconClass = 'text-emerald-500 mr-1.5 h-3.5 w-3.5'
                 textClass = 'text-emerald-500'
@@ -341,8 +334,8 @@ export function createSummaryColumns(
             }
 
             // Override with Manual if a manual grade is set
-            const hasGrade =
-                row.original.examGrade !== null && row.original.examGrade !== undefined && row.original.examGrade !== ''
+            const hasGrade
+                = row.original.examGrade !== null && row.original.examGrade !== undefined && row.original.examGrade !== ''
             if (hasGrade && !row.original.examIsAuto) {
                 icon = PenLine
                 iconClass = 'text-amber-500 mr-1.5 h-3.5 w-3.5'
@@ -359,8 +352,7 @@ export function createSummaryColumns(
                 h(Tooltip, { delayDuration: 200 }, () => [
                     h(TooltipTrigger, { asChild: true }, () => h('div', { class: 'cursor-help w-max' }, badgeNode)),
                     h(TooltipContent, { class: 'text-xs max-w-[200px]' }, () => cause),
-                ])
-            )
+                ]))
         },
         enableSorting: true,
     })
@@ -390,7 +382,8 @@ export function createSummaryColumns(
         header: ({ column }) => h(DataTableColumnHeader, { column, title: t('summary.date') }),
         cell: ({ row }) => {
             const dateStr = row.original.completedAt
-            if (!dateStr) return h('span', { class: 'text-muted-foreground/50 mx-4' }, '-')
+            if (!dateStr)
+                return h('span', { class: 'text-muted-foreground/50 mx-4' }, '-')
             return h('div', { class: 'text-xs text-muted-foreground mx-4' }, [
                 h('div', { class: 'flex flex-col gap-1' }, [
                     h('div', { class: 'flex items-center gap-1' }, [

@@ -52,16 +52,16 @@ const table = useVueTable({
         return props.items
     },
     columns,
-    getRowId: (row) => row.id,
+    getRowId: row => row.id,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
-    onRowSelectionChange: (updaterOrValue) => valueUpdater(updaterOrValue, rowSelection),
-    onGlobalFilterChange: (updaterOrValue) => valueUpdater(updaterOrValue, globalFilter),
-    onColumnVisibilityChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnVisibility),
-    onPaginationChange: (updaterOrValue) => valueUpdater(updaterOrValue, pagination),
+    onSortingChange: updaterOrValue => valueUpdater(updaterOrValue, sorting),
+    onRowSelectionChange: updaterOrValue => valueUpdater(updaterOrValue, rowSelection),
+    onGlobalFilterChange: updaterOrValue => valueUpdater(updaterOrValue, globalFilter),
+    onColumnVisibilityChange: updaterOrValue => valueUpdater(updaterOrValue, columnVisibility),
+    onPaginationChange: updaterOrValue => valueUpdater(updaterOrValue, pagination),
     state: {
         get sorting() {
             return sorting.value
@@ -83,7 +83,7 @@ const table = useVueTable({
 
 watch(
     () => props.searchQuery,
-    (q) => table.setGlobalFilter(q ?? '')
+    q => table.setGlobalFilter(q ?? ''),
 )
 
 // Use setColumnVisibility (not toggleVisibility) — the select column has enableHiding: false
@@ -91,10 +91,11 @@ watch(
 watch(
     () => props.bulkMode,
     (enabled) => {
-        table.setColumnVisibility((prev) => ({ ...prev, select: !!enabled }))
-        if (!enabled) table.toggleAllRowsSelected(false)
+        table.setColumnVisibility(prev => ({ ...prev, select: !!enabled }))
+        if (!enabled)
+            table.toggleAllRowsSelected(false)
     },
-    { immediate: true }
+    { immediate: true },
 )
 
 defineExpose({ table })
@@ -118,10 +119,10 @@ defineExpose({ table })
                                 header.id === 'name'
                                     ? 'sticky left-0 z-40 w-[200px] bg-card shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
                                     : header.id === 'actions'
-                                      ? 'w-10'
-                                      : !['select'].includes(header.id)
-                                        ? 'min-w-[100px]'
-                                        : '',
+                                        ? 'w-10'
+                                        : !['select'].includes(header.id)
+                                            ? 'min-w-[100px]'
+                                            : '',
                             ]"
                         >
                             <FlexRender

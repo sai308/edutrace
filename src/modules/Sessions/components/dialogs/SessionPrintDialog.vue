@@ -54,15 +54,19 @@ onMounted(async () => {
     ])
 
     teacherSuggestions.value = members
-        .filter((m) => m.role === 'teacher' || m.role === 'assistant')
-        .map((m) => m.name)
+        .filter(m => m.role === 'teacher' || m.role === 'assistant')
+        .map(m => m.name)
         .sort()
 
     // Apply defaults from settings if they exist
-    if (settings.subject) form.value.subject = settings.subject
-    if (settings.formOfControl) form.value.formOfControl = settings.formOfControl
-    if (settings.semester) form.value.semester = settings.semester
-    if (settings.academicYear) form.value.academicYear = settings.academicYear
+    if (settings.subject)
+        form.value.subject = settings.subject
+    if (settings.formOfControl)
+        form.value.formOfControl = settings.formOfControl
+    if (settings.semester)
+        form.value.semester = settings.semester
+    if (settings.academicYear)
+        form.value.academicYear = settings.academicYear
     if (settings.totalHours !== undefined) {
         form.value.totalHours = settings.totalHours.toString()
     }
@@ -118,7 +122,7 @@ watch(
         if (!practicalTeacherTouched.value) {
             form.value.practicalTeacher = newVal ?? ''
         }
-    }
+    },
 )
 
 function addExaminer() {
@@ -140,8 +144,9 @@ function handleClose() {
 // Filter teacher suggestions for autocomplete
 function filteredSuggestions(index: number) {
     const text = form.value.examiners[index] || ''
-    if (!text) return teacherSuggestions.value.slice(0, 8)
-    return teacherSuggestions.value.filter((t) => t.toLowerCase().includes(text.toLowerCase())).slice(0, 8)
+    if (!text)
+        return teacherSuggestions.value.slice(0, 8)
+    return teacherSuggestions.value.filter(t => t.toLowerCase().includes(text.toLowerCase())).slice(0, 8)
 }
 const showSuggestions = ref<boolean[]>([false])
 function selectSuggestion(index: number, name: string) {
@@ -167,8 +172,9 @@ function ensureArrayLength(index: number) {
 const showPracticalSuggestions = ref(false)
 const filteredPracticalSuggestions = computed(() => {
     const text = form.value.practicalTeacher || ''
-    if (!text) return teacherSuggestions.value.slice(0, 8)
-    return teacherSuggestions.value.filter((t) => t.toLowerCase().includes(text.toLowerCase())).slice(0, 8)
+    if (!text)
+        return teacherSuggestions.value.slice(0, 8)
+    return teacherSuggestions.value.filter(t => t.toLowerCase().includes(text.toLowerCase())).slice(0, 8)
 })
 function selectPracticalSuggestion(name: string) {
     form.value.practicalTeacher = name

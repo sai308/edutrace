@@ -98,7 +98,8 @@ onMounted(async () => {
 async function loadTemplateStatus() {
     try {
         hasCustomTemplate.value = await opfs.fileExists('templates', 'print_template.docx')
-    } catch {
+    }
+    catch {
         hasCustomTemplate.value = false
     }
 }
@@ -106,7 +107,8 @@ async function loadTemplateStatus() {
 async function loadTeacherSuggestions() {
     try {
         teacherSuggestions.value = (await settingsRepository.getTeachers()).slice().sort()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Failed to load teacher suggestions:', e)
     }
 }
@@ -141,14 +143,16 @@ function updateAcademicYear() {
 
 const filteredExaminerSuggestions = computed(() => {
     const text = printSettings.value.examiner || ''
-    if (!text) return teacherSuggestions.value.slice(0, 8)
-    return teacherSuggestions.value.filter((t) => t.toLowerCase().includes(text.toLowerCase())).slice(0, 8)
+    if (!text)
+        return teacherSuggestions.value.slice(0, 8)
+    return teacherSuggestions.value.filter(t => t.toLowerCase().includes(text.toLowerCase())).slice(0, 8)
 })
 
 const filteredPracticalSuggestions = computed(() => {
     const text = printSettings.value.practicalTeacher || ''
-    if (!text) return teacherSuggestions.value.slice(0, 8)
-    return teacherSuggestions.value.filter((t) => t.toLowerCase().includes(text.toLowerCase())).slice(0, 8)
+    if (!text)
+        return teacherSuggestions.value.slice(0, 8)
+    return teacherSuggestions.value.filter(t => t.toLowerCase().includes(text.toLowerCase())).slice(0, 8)
 })
 
 function hideSuggestions() {
@@ -169,10 +173,12 @@ async function savePrintSettings() {
     try {
         await settingsRepository.savePrintSettings(printSettings.value)
         toast.success(t('documents.settings.print.saveSuccess'))
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Save failed:', e)
         toast.error(t('documents.settings.print.saveError'))
-    } finally {
+    }
+    finally {
         isSavingPrint.value = false
     }
 }
@@ -184,17 +190,20 @@ function triggerTemplateUpload() {
 
 async function handleTemplateUpload(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0]
-    if (!file) return
+    if (!file)
+        return
 
     isUploadingTemplate.value = true
     try {
         await opfs.saveFile('templates', 'print_template.docx', file)
         hasCustomTemplate.value = true
         toast.success(t('documents.settings.print.templateUploadSuccess'))
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Template upload failed:', e)
         toast.error(t('documents.settings.print.templateUploadFail'))
-    } finally {
+    }
+    finally {
         isUploadingTemplate.value = false
         if (event.target) {
             ;(event.target as HTMLInputElement).value = ''
@@ -207,7 +216,8 @@ async function removeCustomTemplate() {
         await opfs.deleteFile('templates', 'print_template.docx')
         hasCustomTemplate.value = false
         toast.success(t('documents.settings.print.templateRemoveSuccess'))
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Template removal failed:', e)
         toast.error(t('documents.settings.print.templateRemoveFail'))
     }
@@ -218,7 +228,8 @@ async function previewTemplate() {
         const file = await opfs.getFile('templates', 'print_template.docx')
         previewBlob.value = file
         showPreviewDialog.value = true
-    } catch {
+    }
+    catch {
         toast.error(t('documents.settings.print.templatePreviewFail', 'Failed to load template preview'))
     }
 }
@@ -229,7 +240,8 @@ async function exportSessions() {
         const data = await backupService.exportDocumentSessions()
         downloadJson(data, 'sessions')
         toast.success(t('documents.settings.sessions.exportSuccess'))
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Export failed:', e)
         toast.error(t('documents.settings.sessions.exportFail'))
     }
@@ -241,7 +253,8 @@ function triggerSessionsImport() {
 
 async function handleSessionsImport(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0]
-    if (!file) return
+    if (!file)
+        return
 
     try {
         const text = await file.text()
@@ -249,7 +262,8 @@ async function handleSessionsImport(event: Event) {
         await backupService.importDocumentSessions(data)
         toast.success(t('documents.settings.sessions.importSuccess'))
         await loadStats()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Import failed:', e)
         toast.error(t('documents.settings.sessions.importFail'))
     }
@@ -265,10 +279,12 @@ async function handleDeleteSessions() {
         await backupService.clearSessions()
         toast.success(t('documents.settings.sessions.deleteSuccess'))
         await loadStats()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Delete failed:', e)
         toast.error(t('documents.settings.sessions.deleteFail'))
-    } finally {
+    }
+    finally {
         isDeletingSessions.value = false
         showDeleteSessions.value = false
     }
@@ -280,7 +296,8 @@ async function exportPlans() {
         const data = await backupService.exportPlans()
         downloadJson(data, 'plans')
         toast.success(t('documents.settings.plans.exportSuccess'))
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Export failed:', e)
         toast.error(t('documents.settings.plans.exportFail'))
     }
@@ -292,7 +309,8 @@ function triggerPlansImport() {
 
 async function handlePlansImport(event: Event) {
     const file = (event.target as HTMLInputElement).files?.[0]
-    if (!file) return
+    if (!file)
+        return
 
     try {
         const text = await file.text()
@@ -300,7 +318,8 @@ async function handlePlansImport(event: Event) {
         await backupService.importPlans(data)
         toast.success(t('documents.settings.plans.importSuccess'))
         await loadStats()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Import failed:', e)
         toast.error(t('documents.settings.plans.importFail'))
     }
@@ -316,10 +335,12 @@ async function handleDeletePlans() {
         await backupService.clearPlans()
         toast.success(t('documents.settings.plans.deleteSuccess'))
         await loadStats()
-    } catch (e) {
+    }
+    catch (e) {
         logger.error('Delete failed:', e)
         toast.error(t('documents.settings.plans.deleteFail'))
-    } finally {
+    }
+    finally {
         isDeletingPlans.value = false
         showDeletePlans.value = false
     }
@@ -384,7 +405,7 @@ async function handleDeletePlans() {
                                 accept=".json"
                                 class="hidden"
                                 @change="handleSessionsImport"
-                            />
+                            >
                         </div>
 
                         <Separator />
@@ -425,9 +446,7 @@ async function handleDeletePlans() {
                                         <span class="text-xs text-muted-foreground">{{
                                             $t('organization.settings.storageUsedLabel')
                                         }}</span>
-                                        <span class="font-medium tabular-nums"
-                                            >{{ (sessionsSize / 1024).toFixed(1) }} KB</span
-                                        >
+                                        <span class="font-medium tabular-nums">{{ (sessionsSize / 1024).toFixed(1) }} KB</span>
                                     </div>
                                     <div class="flex flex-col gap-0.5">
                                         <span class="text-xs text-muted-foreground">{{
@@ -491,7 +510,7 @@ async function handleDeletePlans() {
                                 accept=".json"
                                 class="hidden"
                                 @change="handlePlansImport"
-                            />
+                            >
                         </div>
 
                         <Separator />
@@ -532,9 +551,7 @@ async function handleDeletePlans() {
                                         <span class="text-xs text-muted-foreground">{{
                                             $t('organization.settings.storageUsedLabel')
                                         }}</span>
-                                        <span class="font-medium tabular-nums"
-                                            >{{ (plansSize / 1024).toFixed(1) }} KB</span
-                                        >
+                                        <span class="font-medium tabular-nums">{{ (plansSize / 1024).toFixed(1) }} KB</span>
                                     </div>
                                     <div class="flex flex-col gap-0.5">
                                         <span class="text-xs text-muted-foreground">{{
@@ -760,7 +777,7 @@ async function handleDeletePlans() {
                                         accept=".docx"
                                         class="hidden"
                                         @change="handleTemplateUpload"
-                                    />
+                                    >
                                     <Button
                                         variant="outline"
                                         size="sm"
@@ -874,7 +891,9 @@ async function handleDeletePlans() {
                 <DialogTitle>
                     {{ $t('documents.settings.print.templatePreviewTitle', 'Template Preview') }}
                 </DialogTitle>
-                <DialogDescription class="hidden"> Preview of the docx template </DialogDescription>
+                <DialogDescription class="hidden">
+                    Preview of the docx template
+                </DialogDescription>
             </DialogHeader>
             <div class="flex-1 overflow-hidden bg-muted/10 p-0 sm:p-4">
                 <DocxViewer v-if="showPreviewDialog" :document-blob="previewBlob" />

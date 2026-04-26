@@ -24,7 +24,7 @@ const { currentMonth, weekDays, nextMonth, prevMonth, generateCalendarDays } = u
 
 // ─── Semester stats ──────────────────────────────────────────────────────────
 
-function semesterRange(year: number, sem: 'first' | 'second'): { start: Date; end: Date } {
+function semesterRange(year: number, sem: 'first' | 'second'): { start: Date, end: Date } {
     return sem === 'first'
         ? { start: new Date(year, 8, 1), end: new Date(year, 11, 31, 23, 59, 59) } // Sep–Dec
         : { start: new Date(year, 0, 1), end: new Date(year, 5, 30, 23, 59, 59) } // Jan–Jun
@@ -35,7 +35,8 @@ function computeSemesterMetrics(sessions: Record<string, DetailedSession>, start
         const d = parseISO(dateStr)
         return d >= start && d <= end
     })
-    if (!entries.length) return { sessions: 0, avgParticipants: 0, avgDuration: 0 }
+    if (!entries.length)
+        return { sessions: 0, avgParticipants: 0, avgDuration: 0 }
     const totalParticipants = entries.reduce((s, [, sess]) => s + Object.keys(sess.participants).length, 0)
     const totalDuration = entries.reduce((s, [, sess]) => s + sess.maxDuration, 0)
     return {
@@ -46,7 +47,8 @@ function computeSemesterMetrics(sessions: Record<string, DetailedSession>, start
 }
 
 const semesterStats = computed(() => {
-    if (!props.stats?.sessions) return null
+    if (!props.stats?.sessions)
+        return null
 
     const now = new Date()
     const month = now.getMonth() + 1 // 1–12
@@ -96,13 +98,15 @@ watch(
     () => props.stats?.dates,
     (dates) => {
         const last = dates?.[dates.length - 1]
-        if (last) currentMonth.value = parseISO(last)
+        if (last)
+            currentMonth.value = parseISO(last)
     },
-    { immediate: true }
+    { immediate: true },
 )
 
 const calendarDays = computed<ExtendedCalendarDay[]>(() => {
-    if (!props.stats?.sessions) return []
+    if (!props.stats?.sessions)
+        return []
     return generateCalendarDays(null, null).map((day) => {
         const session = props.stats.sessions[day.dateStr]
         const rawPercent = session ? (session.maxDuration / TARGET_SESSION_SECONDS) * 100 : 0
@@ -143,7 +147,8 @@ const selectedDay = ref<ExtendedCalendarDay | null>(null)
 const isModalOpen = ref(false)
 
 function openDayDetails(day: ExtendedCalendarDay): void {
-    if (!day.isSessionDay) return
+    if (!day.isSessionDay)
+        return
     selectedDay.value = day
     isModalOpen.value = true
 }
@@ -154,9 +159,11 @@ function closeDayDetails(): void {
 }
 
 const modalParticipants = computed<ModalParticipant[]>(() => {
-    if (!selectedDay.value?.dateStr || !props.stats?.sessions) return []
+    if (!selectedDay.value?.dateStr || !props.stats?.sessions)
+        return []
     const session = props.stats.sessions[selectedDay.value.dateStr]
-    if (!session?.participants) return []
+    if (!session?.participants)
+        return []
 
     const maxDuration = session.maxDuration || 1
 
@@ -169,7 +176,8 @@ const modalParticipants = computed<ModalParticipant[]>(() => {
 })
 
 const selectedDayLabel = computed<string>(() => {
-    if (!selectedDay.value) return ''
+    if (!selectedDay.value)
+        return ''
     return selectedDay.value.date.toLocaleDateString(undefined, {
         weekday: 'long',
         year: 'numeric',

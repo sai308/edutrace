@@ -16,7 +16,8 @@ const { formatTime } = useFormatters()
 const { currentMonth, weekDays, nextMonth, prevMonth, generateCalendarDays } = useCalendar()
 
 const sessionDate = computed(() => {
-    if (!props.meet.date) return null
+    if (!props.meet.date)
+        return null
     // meet.date is 'YYYY-MM-DD' usually
     return new Date(props.meet.date)
 })
@@ -28,7 +29,7 @@ watch(
             currentMonth.value = newDate
         }
     },
-    { immediate: true }
+    { immediate: true },
 )
 
 const calendarDays = computed(() => {

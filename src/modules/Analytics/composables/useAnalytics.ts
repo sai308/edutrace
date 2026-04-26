@@ -19,11 +19,13 @@ export function useAnalytics() {
                 groupsRepository.getGroupMap(),
             ])
             stats.value = analyticsService.enrichStats(rawStats, groupsMap)
-        } catch (err) {
+        }
+        catch (err) {
             error.value = err instanceof Error ? err : new Error(String(err))
             logger.error('Error loading analytics:', err)
             toast.error('Failed to load analytics data')
-        } finally {
+        }
+        finally {
             loading.value = false
         }
     }

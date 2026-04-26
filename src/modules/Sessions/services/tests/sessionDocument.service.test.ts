@@ -103,7 +103,7 @@ describe('sessionDocumentService', () => {
         ;(documentGenerator.generateFromTemplate as any).mockResolvedValue(
             new Blob(['fake-docx'], {
                 type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            })
+            }),
         )
     })
 
@@ -144,7 +144,7 @@ describe('sessionDocumentService', () => {
                 expect.objectContaining({
                     templateDir: 'templates',
                     templateName: 'print_template.docx',
-                })
+                }),
             )
         })
 
@@ -160,13 +160,13 @@ describe('sessionDocumentService', () => {
             const result = await sessionDocumentService.generateDocument(
                 makeSession(),
                 mockGroup,
-                makeFormData({ recordNumber: '99' })
+                makeFormData({ recordNumber: '99' }),
             )
 
             expect(result.filename).toContain('CS-2024')
         })
 
-        it("filename includes today's date", async () => {
+        it('filename includes today\'s date', async () => {
             const today = new Date().toISOString().split('T')[0]!
             const result = await sessionDocumentService.generateDocument(makeSession(), mockGroup, makeFormData())
 
@@ -177,7 +177,7 @@ describe('sessionDocumentService', () => {
             await sessionDocumentService.generateDocument(
                 makeSession(),
                 mockGroup,
-                makeFormData({ recordNumber: '77' })
+                makeFormData({ recordNumber: '77' }),
             )
 
             const call = (documentGenerator.generateFromTemplate as any).mock.calls[0][0]
@@ -195,7 +195,7 @@ describe('sessionDocumentService', () => {
             await sessionDocumentService.generateDocument(
                 makeSession(),
                 mockGroup,
-                makeFormData({ examiners: ['Prof. A', 'Dr. B'] })
+                makeFormData({ examiners: ['Prof. A', 'Dr. B'] }),
             )
 
             const call = (documentGenerator.generateFromTemplate as any).mock.calls[0][0]
@@ -206,7 +206,7 @@ describe('sessionDocumentService', () => {
             await sessionDocumentService.generateDocument(
                 makeSession(),
                 mockGroup,
-                makeFormData({ examiners: ['Prof. A', '', 'Dr. B'] })
+                makeFormData({ examiners: ['Prof. A', '', 'Dr. B'] }),
             )
 
             const call = (documentGenerator.generateFromTemplate as any).mock.calls[0][0]
@@ -316,7 +316,7 @@ describe('sessionDocumentService', () => {
 
         it('handles null group gracefully (uses empty strings)', async () => {
             await expect(
-                sessionDocumentService.generateDocument(makeSession(), null, makeFormData())
+                sessionDocumentService.generateDocument(makeSession(), null, makeFormData()),
             ).resolves.not.toThrow()
 
             const call = (documentGenerator.generateFromTemplate as any).mock.calls[0][0]

@@ -32,7 +32,7 @@ describe('groupsRepository', () => {
             const result = await groupsRepository.getGroups()
 
             expect(result).toHaveLength(2)
-            expect(result.map((g) => g.id)).toEqual(expect.arrayContaining(['g1', 'g2']))
+            expect(result.map(g => g.id)).toEqual(expect.arrayContaining(['g1', 'g2']))
         })
 
         it('returns the full group shape including all fields', async () => {
@@ -61,13 +61,13 @@ describe('groupsRepository', () => {
     describe('saveGroup', () => {
         it('throws when name is missing', async () => {
             await expect(groupsRepository.saveGroup({ name: '', meetId: 'sg-001' } as any)).rejects.toThrow(
-                'saveGroup: group must have a name and meetId'
+                'saveGroup: group must have a name and meetId',
             )
         })
 
         it('throws when meetId is missing', async () => {
             await expect(groupsRepository.saveGroup({ name: 'Group X', meetId: '' } as any)).rejects.toThrow(
-                'saveGroup: group must have a name and meetId'
+                'saveGroup: group must have a name and meetId',
             )
         })
 
@@ -80,7 +80,7 @@ describe('groupsRepository', () => {
 
             expect(id).toBe('uuid-new')
             const groups = await groupsRepository.getGroups()
-            expect(groups.some((g) => g.name === 'New Repo Group')).toBe(true)
+            expect(groups.some(g => g.name === 'New Repo Group')).toBe(true)
         })
 
         it('persists the id onto the stored record', async () => {
@@ -105,7 +105,7 @@ describe('groupsRepository', () => {
             })
 
             const groups = await groupsRepository.getGroups()
-            const updated = groups.find((g) => g.id === 'existing-g')
+            const updated = groups.find(g => g.id === 'existing-g')
             expect(updated!.name).toBe('Updated Name')
         })
 
@@ -156,7 +156,7 @@ describe('groupsRepository', () => {
             await groupsRepository.deleteGroup('del-g1')
 
             const groups = await groupsRepository.getGroups()
-            expect(groups.find((g) => g.id === 'del-g1')).toBeUndefined()
+            expect(groups.find(g => g.id === 'del-g1')).toBeUndefined()
         })
 
         it('accepts a numeric id', async () => {

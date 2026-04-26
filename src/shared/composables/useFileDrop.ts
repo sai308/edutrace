@@ -7,23 +7,25 @@ export function useFileDrop(emit: (event: 'files-dropped', files: File[]) => voi
     let dragCounter = 0
 
     function checkFileTypes(items: DataTransferItemList | null): boolean {
-        if (!items) return false
+        if (!items)
+            return false
 
         for (let i = 0; i < items.length; i++) {
             const item = items[i]
             if (item && item.kind === 'file') {
                 const type = item.type
-                const isValid =
-                    type === 'text/csv' ||
-                    type === 'application/vnd.ms-excel' ||
-                    type === 'application/csv' ||
-                    type === 'text/x-csv' ||
-                    type === 'application/x-csv' ||
-                    type === 'text/comma-separated-values' ||
-                    type === 'text/x-comma-separated-values' ||
-                    type === ''
+                const isValid
+                    = type === 'text/csv'
+                        || type === 'application/vnd.ms-excel'
+                        || type === 'application/csv'
+                        || type === 'text/x-csv'
+                        || type === 'application/x-csv'
+                        || type === 'text/comma-separated-values'
+                        || type === 'text/x-comma-separated-values'
+                        || type === ''
 
-                if (!isValid) return false
+                if (!isValid)
+                    return false
             }
         }
         return true
@@ -66,7 +68,7 @@ export function useFileDrop(emit: (event: 'files-dropped', files: File[]) => voi
 
         const files = e.dataTransfer?.files
         if (files && files.length > 0) {
-            const validFiles = Array.from(files).filter((file) => file.name.toLowerCase().endsWith('.csv'))
+            const validFiles = Array.from(files).filter(file => file.name.toLowerCase().endsWith('.csv'))
             if (validFiles.length > 0) {
                 emit('files-dropped', validFiles)
             }

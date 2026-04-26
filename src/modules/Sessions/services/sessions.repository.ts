@@ -9,7 +9,8 @@ export class SessionRepository extends BaseRepository<'sessions'> {
     }
 
     private _validateSession(session: Omit<SessionReport, 'id'>): void {
-        if (!session.groupId) throw new Error('SessionReport.groupId is required')
+        if (!session.groupId)
+            throw new Error('SessionReport.groupId is required')
         if (!session.sessionType || !Object.values(SessionTypeEnum).includes(session.sessionType)) {
             throw new Error(`SessionReport.sessionType must be one of: ${Object.values(SessionTypeEnum).join(', ')}`)
         }

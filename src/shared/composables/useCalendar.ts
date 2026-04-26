@@ -48,7 +48,7 @@ export function useCalendar(initialDate: Date = new Date()) {
 
     function generateCalendarDays(
         sessionsMap: Map<string, any> | Record<string, any> | null,
-        sessionDate: Date | null = null
+        sessionDate: Date | null = null,
     ): CalendarDay[] {
         const start = startOfWeek(startOfMonth(currentMonth.value))
         const end = endOfWeek(endOfMonth(currentMonth.value))
@@ -64,7 +64,8 @@ export function useCalendar(initialDate: Date = new Date()) {
                         break
                     }
                 }
-            } else if (sessionsMap) {
+            }
+            else if (sessionsMap) {
                 for (const [key, val] of Object.entries(sessionsMap)) {
                     if (isSameDay(parseISO(key), date)) {
                         session = val

@@ -66,7 +66,7 @@ const sortOrder = ref<string>((route.query.order as string) || '')
 useQuerySync({ search: searchQuery, sort: sortField, order: sortOrder })
 
 function handleBulkDelete(ids: (string | number)[]): void {
-    ids.forEach((id) => emit('delete-group', id))
+    ids.forEach(id => emit('delete-group', id))
     groupsTableRef.value?.table.resetRowSelection()
 }
 
@@ -81,7 +81,8 @@ function handleSaveGroup(formData: GroupFormData): void {
 }
 
 function handleDeleteConfirm(): void {
-    if (groupToDeleteId.value === null) return
+    if (groupToDeleteId.value === null)
+        return
     emit('delete-group', groupToDeleteId.value)
     showDeleteModal.value = false
     groupToDeleteId.value = null
@@ -198,7 +199,7 @@ function getGroupActions(group: EnrichedGroup): RowActionItem[] {
                                 class="h-8 gap-2 shrink-0"
                                 @click="
                                     handleBulkDelete(
-                                        table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id)
+                                        table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id),
                                     )
                                 "
                             >

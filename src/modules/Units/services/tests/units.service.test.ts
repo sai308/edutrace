@@ -101,7 +101,7 @@ describe('saveUnit', () => {
             id: 99,
             name: 'Module 1',
         })
-        const err = await saveUnit({ name: 'Module 1' }).catch((e) => e)
+        const err = await saveUnit({ name: 'Module 1' }).catch(e => e)
         expect(err.name).toBe('DuplicateUnitError')
         expect(unitsRepository.saveUnit).not.toHaveBeenCalled()
     })
@@ -141,7 +141,7 @@ describe('saveUnit', () => {
                 taskIds: ['t1'],
                 testTaskId: 't1',
                 taskCoef: 2,
-            })
+            }),
         )
     })
 

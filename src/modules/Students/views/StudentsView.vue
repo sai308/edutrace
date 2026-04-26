@@ -47,10 +47,10 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-    'save-student': [payload: { formData: StudentFormData; originalStudent: StudentDashboardStats | null }]
+    'save-student': [payload: { formData: StudentFormData, originalStudent: StudentDashboardStats | null }]
     'delete-student': [id: string]
     'bulk-delete-students': [ids: string[]]
-    refresh: []
+    'refresh': []
 }>()
 
 const { t } = useI18n()
@@ -77,13 +77,13 @@ const isBulkDelete = ref(false)
 
 const allGroupsList = computed(() => {
     const set = new Set<string>()
-    Object.values(props.groupsMap).forEach((g) => set.add(g.name))
+    Object.values(props.groupsMap).forEach(g => set.add(g.name))
     return Array.from(set).sort()
 })
 
 const selectedCount = computed(() => tableRef.value?.table.getSelectedRowModel().rows.length ?? 0)
 const filteredCount = computed(() => tableRef.value?.table.getFilteredRowModel().rows.length ?? 0)
-const totalCount = computed(() => props.students.filter((s) => !props.teachers.has(s.name)).length)
+const totalCount = computed(() => props.students.filter(s => !props.teachers.has(s.name)).length)
 
 function handleSelectGroup(group: string) {
     selectedGroup.value = group
@@ -114,18 +114,20 @@ function handleDeleteConfirm() {
     if (isBulkDelete.value) {
         const ids = tableRef.value?.table
             .getSelectedRowModel()
-            .rows.map((r) => r.original.id)
+            .rows
+            .map(r => r.original.id)
             .filter(Boolean) as string[]
         emit('bulk-delete-students', ids)
         tableRef.value?.table.resetRowSelection()
-    } else if (studentToDelete.value) {
+    }
+    else if (studentToDelete.value) {
         emit('delete-student', studentToDelete.value.id)
     }
     showDeleteModal.value = false
     studentToDelete.value = null
 }
 
-function onProfileSave(payload: { formData: unknown; originalStudent: unknown }) {
+function onProfileSave(payload: { formData: unknown, originalStudent: unknown }) {
     handleSaveStudent({
         formData: payload.formData as StudentFormData,
         originalStudent: payload.originalStudent as StudentDashboardStats | null,
@@ -140,8 +142,9 @@ async function handleSaveStudent({
     originalStudent: StudentDashboardStats | null
 }) {
     if (formData.iep?.trim() && originalStudent) {
-        const isDuplicate = props.students.some((s) => s.iep === formData.iep.trim() && s.id !== originalStudent.id)
-        if (isDuplicate) return
+        const isDuplicate = props.students.some(s => s.iep === formData.iep.trim() && s.id !== originalStudent.id)
+        if (isDuplicate)
+            return
     }
     emit('save-student', { formData, originalStudent })
     showProfileModal.value = false
@@ -173,16 +176,17 @@ function getStudentActions(student: StudentDashboardStats): RowActionItem[] {
 watch(
     [() => props.students, selectedGroup],
     () => {
-        if (!selectedGroup.value || totalCount.value === 0) return
-        const nonTeachers = props.students.filter((s) => !props.teachers.has(s.name))
-        const studentsInGroup = nonTeachers.filter((s) => s.groups.includes(selectedGroup.value!))
+        if (!selectedGroup.value || totalCount.value === 0)
+            return
+        const nonTeachers = props.students.filter(s => !props.teachers.has(s.name))
+        const studentsInGroup = nonTeachers.filter(s => s.groups.includes(selectedGroup.value!))
         if (studentsInGroup.length === 0) {
             // Find the first group that actually has students
-            const allGroupNames = Array.from(new Set(nonTeachers.flatMap((s) => s.groups)))
+            const allGroupNames = Array.from(new Set(nonTeachers.flatMap(s => s.groups)))
             selectedGroup.value = allGroupNames[0] ?? null
         }
     },
-    { immediate: false }
+    { immediate: false },
 )
 </script>
 

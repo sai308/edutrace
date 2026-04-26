@@ -250,9 +250,9 @@ describe('analyticsService', () => {
 
             expect(result.dates).toEqual(['2024-01-01'])
             expect(result.matrix).toHaveLength(2)
-            const s1 = result.matrix.find((r) => r.name === 'S1')
+            const s1 = result.matrix.find(r => r.name === 'S1')
             expect(s1!['2024-01-01'].percentage).toBe(100)
-            const s2 = result.matrix.find((r) => r.name === 'S2')
+            const s2 = result.matrix.find(r => r.name === 'S2')
             expect(s2!['2024-01-01'].percentage).toBe(50)
         })
 
@@ -281,7 +281,7 @@ describe('analyticsService', () => {
             const result = await analyticsService.getDetailedStats('m1')
 
             expect(result.dates).toEqual(['2024-01-01'])
-            const s1 = result.matrix.find((r) => r.name === 'S1')
+            const s1 = result.matrix.find(r => r.name === 'S1')
             // durations are summed: 30 + 20 = 50
             expect(s1!.totalDuration).toBe(50)
         })
@@ -305,7 +305,7 @@ describe('analyticsService', () => {
             const result = await analyticsService.getDetailedStats('m1')
 
             expect(result.matrix).toHaveLength(2)
-            const s2 = result.matrix.find((r) => r.name === 'S2')
+            const s2 = result.matrix.find(r => r.name === 'S2')
             expect(s2!['2024-01-01'].duration).toBe(0)
             expect(s2!['2024-01-01'].percentage).toBe(0)
         })
@@ -326,8 +326,8 @@ describe('analyticsService', () => {
 
             const result = await analyticsService.getDetailedStats('m1', 'T1')
 
-            expect(result.matrix.find((r) => r.name === 'T1')).toBeUndefined()
-            expect(result.matrix.find((r) => r.name === 'S1')).toBeDefined()
+            expect(result.matrix.find(r => r.name === 'T1')).toBeUndefined()
+            expect(result.matrix.find(r => r.name === 'S1')).toBeDefined()
         })
     })
 

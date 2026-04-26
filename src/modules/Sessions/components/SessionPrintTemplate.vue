@@ -15,7 +15,7 @@ const props = defineProps<{
 }>()
 
 const sortedEntries = computed(() =>
-    [...props.session.entries].sort((a, b) => a.studentSnapshot.fullName.localeCompare(b.studentSnapshot.fullName))
+    [...props.session.entries].sort((a, b) => a.studentSnapshot.fullName.localeCompare(b.studentSnapshot.fullName)),
 )
 
 const t = i18n.global.t.bind(i18n.global)
@@ -35,7 +35,8 @@ const stats = computed(() => {
         }
         const grade = entry.grade as number
         const ects = toECTS(grade)
-        if (ects in buckets) buckets[ects] = (buckets[ects] ?? 0) + 1
+        if (ects in buckets)
+            buckets[ects] = (buckets[ects] ?? 0) + 1
     }
     return buckets
 })

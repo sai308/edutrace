@@ -36,24 +36,24 @@ export function createColumns(
     formatters: Formatters,
     t: (key: string, ...args: unknown[]) => string,
     getFormat: () => MarkFormat | '',
-    isCompact: Ref<boolean>
+    isCompact: Ref<boolean>,
 ): ColumnDef<UIMark>[] {
     return [
         {
             id: 'select',
             header: ({ table }) =>
                 h(Checkbox, {
-                    modelValue:
+                    'modelValue':
                         table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
                     'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
                         table.toggleAllPageRowsSelected(!!value),
-                    ariaLabel: 'Select all',
+                    'ariaLabel': 'Select all',
                 }),
             cell: ({ row }) =>
                 h(Checkbox, {
-                    modelValue: row.getIsSelected(),
+                    'modelValue': row.getIsSelected(),
                     'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
-                    ariaLabel: 'Select row',
+                    'ariaLabel': 'Select row',
                 }),
             enableSorting: false,
             enableHiding: false,
@@ -103,7 +103,7 @@ export function createColumns(
                         variant: 'secondary',
                         class: 'max-w-[120px] truncate select-none',
                     },
-                    () => groupName
+                    () => groupName,
                 )
             },
         },
@@ -131,7 +131,8 @@ export function createColumns(
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('marks.table.syncedAt') }),
             cell: ({ row }) => {
                 const val = row.getValue('syncedAt') as string | null | undefined
-                if (!val) return h('span', { class: 'text-xs text-muted-foreground' }, '—')
+                if (!val)
+                    return h('span', { class: 'text-xs text-muted-foreground' }, '—')
                 return h('div', { class: 'text-xs text-muted-foreground' }, [
                     h('div', { class: 'flex flex-col gap-1' }, [
                         h('div', { class: 'flex items-center gap-1' }, [
@@ -166,30 +167,30 @@ export function createColumns(
                         {
                             class: 'font-mono font-bold cursor-help border-b border-dotted border-muted-foreground/50',
                         },
-                        String(formatters.getFormattedMark(mark, (getFormat() as MarkFormat) || undefined) ?? '')
+                        String(formatters.getFormattedMark(mark, (getFormat() as MarkFormat) || undefined) ?? ''),
                     ),
                     tooltipLines.length > 0
                         ? h(
-                              'div',
-                              {
-                                  class: [
-                                      'absolute z-20 bottom-full left-1/2 -translate-x-1/2 mb-1.5',
-                                      'px-3 py-2 bg-popover border border-border rounded-md shadow-md',
-                                      'text-xs text-popover-foreground whitespace-nowrap pointer-events-none',
-                                      'invisible opacity-0 group-hover/mtip:visible group-hover/mtip:opacity-100',
-                                      'transition-opacity duration-150',
-                                  ].join(' '),
-                              },
-                              tooltipLines.map((line) => h('div', { class: 'py-0.5' }, line))
-                          )
+                                'div',
+                                {
+                                    class: [
+                                        'absolute z-20 bottom-full left-1/2 -translate-x-1/2 mb-1.5',
+                                        'px-3 py-2 bg-popover border border-border rounded-md shadow-md',
+                                        'text-xs text-popover-foreground whitespace-nowrap pointer-events-none',
+                                        'invisible opacity-0 group-hover/mtip:visible group-hover/mtip:opacity-100',
+                                        'transition-opacity duration-150',
+                                    ].join(' '),
+                                },
+                                tooltipLines.map(line => h('div', { class: 'py-0.5' }, line)),
+                            )
                         : null,
                 ])
 
                 const unsyncedDot = !mark.synced
                     ? h('span', {
-                          class: 'w-2 h-2 rounded-full bg-orange-500 animate-pulse',
-                          title: t('marks.tooltips.unSynced'),
-                      })
+                            class: 'w-2 h-2 rounded-full bg-orange-500 animate-pulse',
+                            title: t('marks.tooltips.unSynced'),
+                        })
                     : null
 
                 return h('div', { class: 'flex items-center justify-center gap-1' }, [
@@ -202,22 +203,27 @@ export function createColumns(
             // Hidden virtual column — holds all active filter logic so TanStack manages filtering.
             // The filterFn receives the current ActiveFilters value via table.setColumnFilters.
             id: '_filters',
-            accessorFn: (row) => row,
+            accessorFn: row => row,
             filterFn: (row: Row<UIMark>, _columnId: string, filterValue: ActiveFilters) => {
-                if (!filterValue) return true
+                if (!filterValue)
+                    return true
                 const m = row.original
-                if (filterValue.synced === 'unsynced' && m.synced) return false
+                if (filterValue.synced === 'unsynced' && m.synced)
+                    return false
                 if (filterValue.dateFrom) {
                     const fromDate = new Date(filterValue.dateFrom).setHours(0, 0, 0, 0)
-                    if (new Date(m.createdAt).getTime() < fromDate) return false
+                    if (new Date(m.createdAt).getTime() < fromDate)
+                        return false
                 }
                 if (filterValue.group && filterValue.group !== '_all' && filterValue.group !== 'null') {
-                    if (m.groupName !== filterValue.group) return false
+                    if (m.groupName !== filterValue.group)
+                        return false
                 }
                 if (filterValue.hideFailed) {
                     const max = Number(m.maxPoints) || 100
                     const percent = (Number(m.score) / max) * 100
-                    if (percent < 60) return false
+                    if (percent < 60)
+                        return false
                 }
                 return true
             },
@@ -248,7 +254,7 @@ export function createColumns(
                             title: mark.synced ? t('marks.tooltips.markAsUnsynced') : t('marks.tooltips.markAsSynced'),
                             onClick: () => emit('toggle-synced', mark),
                         },
-                        () => h(CircleCheckBig, { class: 'w-4 h-4' })
+                        () => h(CircleCheckBig, { class: 'w-4 h-4' }),
                     ),
                     h(
                         Button,
@@ -259,7 +265,7 @@ export function createColumns(
                             title: t('marks.tooltips.delete'),
                             onClick: () => emit('delete-mark', mark),
                         },
-                        () => h(Trash2, { class: 'w-4 h-4' })
+                        () => h(Trash2, { class: 'w-4 h-4' }),
                     ),
                 ])
             },

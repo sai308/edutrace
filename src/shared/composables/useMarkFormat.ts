@@ -25,7 +25,8 @@ export function useMarkFormat() {
     }
 
     function getFormattedMark(mark: Partial<Mark>, format: MarkFormat = 'raw'): string | number | undefined {
-        if (format === 'raw') return mark.score
+        if (format === 'raw')
+            return mark.score
 
         const max = Number(mark.maxPoints) || 100
         const percent = (Number(mark.score) / max) * 100

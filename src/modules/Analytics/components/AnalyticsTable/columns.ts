@@ -12,19 +12,21 @@ interface Formatters {
 }
 
 function getPercentageClass(pct: number): string {
-    if (pct >= ATTENDANCE_BADGE_THRESHOLDS.GREAT) return 'text-green-500'
-    if (pct >= ATTENDANCE_BADGE_THRESHOLDS.GOOD) return 'text-amber-500'
+    if (pct >= ATTENDANCE_BADGE_THRESHOLDS.GREAT)
+        return 'text-green-500'
+    if (pct >= ATTENDANCE_BADGE_THRESHOLDS.GOOD)
+        return 'text-amber-500'
     return 'text-red-500'
 }
 
 export function createColumns(
     t: ComposerTranslation,
     dates: string[],
-    { formatDate }: Formatters
+    { formatDate }: Formatters,
 ): ColumnDef<DetailedMatrixRow>[] {
-    const dateColumns: ColumnDef<DetailedMatrixRow>[] = dates.map((date) => ({
+    const dateColumns: ColumnDef<DetailedMatrixRow>[] = dates.map(date => ({
         id: date,
-        accessorFn: (row) => row[date]?.percentage ?? null,
+        accessorFn: row => row[date]?.percentage ?? null,
         meta: { label: formatDate(date) },
         header: ({ column }) =>
             h(DataTableColumnHeader, {
@@ -34,14 +36,15 @@ export function createColumns(
             }),
         cell: ({ row }) => {
             const cell = row.original[date]
-            if (!cell) return h('div', { class: 'text-center text-muted-foreground opacity-30' }, '-')
+            if (!cell)
+                return h('div', { class: 'text-center text-muted-foreground opacity-30' }, '-')
             return h('div', { class: 'flex items-center justify-center' }, [
                 h(
                     'div',
                     {
                         class: ['px-2 py-0.5 rounded text-[10px] sm:text-xs font-medium inline-block', cell.status],
                     },
-                    `${cell.percentage}%`
+                    `${cell.percentage}%`,
                 ),
             ])
         },
@@ -53,18 +56,18 @@ export function createColumns(
             id: 'select',
             header: ({ table }) =>
                 h(Checkbox, {
-                    modelValue:
+                    'modelValue':
                         table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
                     'onUpdate:modelValue': (v: boolean | 'indeterminate') => table.toggleAllPageRowsSelected(!!v),
-                    ariaLabel: t('common.selectAll'),
-                    class: 'translate-y-[2px]',
+                    'ariaLabel': t('common.selectAll'),
+                    'class': 'translate-y-[2px]',
                 }),
             cell: ({ row }) =>
                 h(Checkbox, {
-                    modelValue: row.getIsSelected(),
+                    'modelValue': row.getIsSelected(),
                     'onUpdate:modelValue': (v: boolean | 'indeterminate') => row.toggleSelected(!!v),
-                    ariaLabel: t('common.selectRow'),
-                    class: 'translate-y-[2px]',
+                    'ariaLabel': t('common.selectRow'),
+                    'class': 'translate-y-[2px]',
                 }),
             enableSorting: false,
             enableHiding: false,
@@ -98,7 +101,7 @@ export function createColumns(
                                 getPercentageClass(pct),
                             ],
                         },
-                        `${pct}%`
+                        `${pct}%`,
                     ),
                 ])
             },

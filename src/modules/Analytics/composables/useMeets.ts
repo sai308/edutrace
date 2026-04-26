@@ -22,18 +22,21 @@ export function useMeets() {
         try {
             await meetsRepository.deleteMeets([id])
             await loadMeets()
-        } catch (err) {
+        }
+        catch (err) {
             logger.error('Failed to delete meet:', err)
             toast.error('Failed to delete session')
         }
     }
 
     async function bulkDeleteMeets(ids: string[]): Promise<void> {
-        if (!ids.length) return
+        if (!ids.length)
+            return
         try {
             await meetsRepository.deleteMeets(ids)
             await loadMeets()
-        } catch (err) {
+        }
+        catch (err) {
             logger.error('Failed to bulk delete meets:', err)
             toast.error('Failed to delete sessions')
         }

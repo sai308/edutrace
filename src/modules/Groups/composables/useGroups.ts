@@ -24,10 +24,12 @@ export function useGroups() {
             memberCounts.value = data.memberCounts
             allMeetIds.value = data.allMeetIds
             allTeachers.value = data.allTeachers
-        } catch (error) {
+        }
+        catch (error) {
             logger.error('Failed to load groups data:', error)
             toast.error(t('groups.errors.loadFailed'))
-        } finally {
+        }
+        finally {
             isLoading.value = false
         }
     }
@@ -38,7 +40,8 @@ export function useGroups() {
             await groupsService.saveGroup(formData)
             await loadData()
             toast.success(isUpdate ? t('groups.toasts.updated') : t('groups.toasts.created'))
-        } catch (e: unknown) {
+        }
+        catch (e: unknown) {
             logger.error('Save group failed', e)
             const message = e instanceof Error ? e.message : t('groups.errors.saveFailed')
             toast.error(message)
@@ -51,7 +54,8 @@ export function useGroups() {
             await groupsService.deleteGroup(id)
             await loadData()
             toast.success(t('groups.toasts.deleted'))
-        } catch (e: unknown) {
+        }
+        catch (e: unknown) {
             logger.error('Delete group failed', e)
             toast.error(t('groups.errors.deleteFailed'))
             throw e

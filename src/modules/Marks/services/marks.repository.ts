@@ -8,12 +8,15 @@ class MarksRepository extends BaseRepository<'marks'> {
     }
 
     private _validateMark(mark: Partial<Mark>): void {
-        if (!mark.taskId) throw new Error('Mark.taskId is required')
-        if (!mark.studentId) throw new Error('Mark.studentId is required')
-        if (!mark.groupName) throw new Error('Mark.groupName is required')
+        if (!mark.taskId)
+            throw new Error('Mark.taskId is required')
+        if (!mark.studentId)
+            throw new Error('Mark.studentId is required')
+        if (!mark.groupName)
+            throw new Error('Mark.groupName is required')
     }
 
-    async saveMark(mark: Partial<Mark> & { taskId: string; studentId: string }): Promise<SaveMarkResult> {
+    async saveMark(mark: Partial<Mark> & { taskId: string, studentId: string }): Promise<SaveMarkResult> {
         this._validateMark(mark)
         const db = await this.getDb()
         const tx = db.transaction(this.storeName, 'readwrite')
@@ -73,11 +76,13 @@ class MarksRepository extends BaseRepository<'marks'> {
                 if (existing.score !== mark.score) {
                     await store.put(mark)
                     stats.updated++
-                } else {
+                }
+                else {
                     // Score unchanged and not synced — nothing to update
                     stats.skipped++
                 }
-            } else {
+            }
+            else {
                 await store.add(mark)
                 stats.added++
             }
@@ -114,7 +119,7 @@ class MarksRepository extends BaseRepository<'marks'> {
         const db = await this.getDb()
         const tx = db.transaction(this.storeName, 'readwrite')
         const store = tx.objectStore(this.storeName)
-        await Promise.all(ids.map((id) => store.delete(id as unknown as number)))
+        await Promise.all(ids.map(id => store.delete(id as unknown as number)))
         await tx.done
     }
 
@@ -127,15 +132,16 @@ class MarksRepository extends BaseRepository<'marks'> {
             db.getAll('members'),
         ])) as [Mark[], Task[], Member[]]
 
-        const taskMap = new Map(allTasks.map((t) => [t.id.toString(), t]))
-        const memberMap = new Map(allMembers.map((m) => [m.id.toString(), m]))
+        const taskMap = new Map(allTasks.map(t => [t.id.toString(), t]))
+        const memberMap = new Map(allMembers.map(m => [m.id.toString(), m]))
 
         const flatMarks: FlatMark[] = []
         for (const mark of allMarks) {
             const task = taskMap.get(mark.taskId.toString())
             const student = memberMap.get(mark.studentId.toString())
 
-            if (!task || !student) continue
+            if (!task || !student)
+                continue
 
             flatMarks.push({
                 id: mark.id!,
@@ -175,27 +181,29 @@ class MarksRepository extends BaseRepository<'marks'> {
         }
 
         // 2. Collect unique taskIds and fetch tasks by primary key
-        const uniqueTaskIds = [...new Set(groupMarks.map((m) => m.taskId))]
+        const uniqueTaskIds = [...new Set(groupMarks.map(m => m.taskId))]
         const tasksStore = tx.objectStore('tasks')
         // taskId is stored as string in Mark but the tasks store key is number in the schema;
         // cast through unknown to avoid idb type error while preserving runtime behaviour.
-        const taskResults = await Promise.all(uniqueTaskIds.map((id) => tasksStore.get(id as unknown as number)))
+        const taskResults = await Promise.all(uniqueTaskIds.map(id => tasksStore.get(id as unknown as number)))
         const taskMap = new Map<string, Task>()
         taskResults.forEach((t: Task | undefined) => {
-            if (t) taskMap.set(t.id.toString(), t)
+            if (t)
+                taskMap.set(t.id.toString(), t)
         })
 
         // 3. Get all members for name lookup
         const membersStore = tx.objectStore('members')
         const allMembers = (await membersStore.getAll()) as Member[]
-        const memberMap = new Map(allMembers.map((m) => [m.id.toString(), m]))
+        const memberMap = new Map(allMembers.map(m => [m.id.toString(), m]))
 
         const flatMarks: FlatMark[] = []
         for (const mark of groupMarks) {
             const task = taskMap.get(mark.taskId.toString())
             const student = memberMap.get(mark.studentId.toString())
 
-            if (!task || !student) continue
+            if (!task || !student)
+                continue
 
             flatMarks.push({
                 id: mark.id!,
@@ -220,7 +228,7 @@ class MarksRepository extends BaseRepository<'marks'> {
         const store = tx.objectStore(this.storeName)
         const index = store.index('studentId')
 
-        const promises = studentIds.map((id) => index.getAll(id))
+        const promises = studentIds.map(id => index.getAll(id))
         const results = (await Promise.all(promises)) as Mark[][]
 
         return results.flat()

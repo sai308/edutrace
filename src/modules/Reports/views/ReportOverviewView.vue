@@ -16,7 +16,8 @@ const { formatDuration, formatTime } = useFormatters()
 const timelineData = computed(() => calculateTimelineData(props.meet))
 
 function formatTimeHHMM(date: Date | null): string {
-    if (!date) return ''
+    if (!date)
+        return ''
     return format(date, 'HH:mm')
 }
 </script>
@@ -40,21 +41,15 @@ function formatTimeHHMM(date: Date | null): string {
                 <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs">
                     <div class="flex items-center gap-2">
                         <div class="w-3 h-3 sm:w-4 sm:h-4 rounded bg-green-500" />
-                        <span class="text-muted-foreground whitespace-nowrap"
-                            >≥{{ ATTENDANCE_BADGE_THRESHOLDS.GREAT }}%</span
-                        >
+                        <span class="text-muted-foreground whitespace-nowrap">≥{{ ATTENDANCE_BADGE_THRESHOLDS.GREAT }}%</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="w-3 h-3 sm:w-4 sm:h-4 rounded bg-yellow-500" />
-                        <span class="text-muted-foreground whitespace-nowrap"
-                            >{{ ATTENDANCE_BADGE_THRESHOLDS.GOOD }}–{{ ATTENDANCE_BADGE_THRESHOLDS.GREAT - 1 }}%</span
-                        >
+                        <span class="text-muted-foreground whitespace-nowrap">{{ ATTENDANCE_BADGE_THRESHOLDS.GOOD }}–{{ ATTENDANCE_BADGE_THRESHOLDS.GREAT - 1 }}%</span>
                     </div>
                     <div class="flex items-center gap-2">
                         <div class="w-3 h-3 sm:w-4 sm:h-4 rounded bg-red-500" />
-                        <span class="text-muted-foreground whitespace-nowrap"
-                            >&lt;{{ ATTENDANCE_BADGE_THRESHOLDS.GOOD }}%</span
-                        >
+                        <span class="text-muted-foreground whitespace-nowrap">&lt;{{ ATTENDANCE_BADGE_THRESHOLDS.GOOD }}%</span>
                     </div>
                 </div>
             </div>
@@ -86,8 +81,8 @@ function formatTimeHHMM(date: Date | null): string {
                                     participant.percentage >= ATTENDANCE_BADGE_THRESHOLDS.GREAT
                                         ? '#22c55e'
                                         : participant.percentage >= ATTENDANCE_BADGE_THRESHOLDS.GOOD
-                                          ? '#eab308'
-                                          : '#ef4444',
+                                            ? '#eab308'
+                                            : '#ef4444',
                             }"
                         >
                             <div

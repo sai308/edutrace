@@ -19,9 +19,11 @@ const UA_MONTHS: Record<string, number> = {
 // Parses "22 січ. 2026 р." → Date(2026, 0, 22). Returns null if the string doesn't match.
 function parseUkrainianDate(str: string): Date | null {
     const m = str.trim().match(/^(\d{1,2})\s+([\u0400-\u04FF]+)\.?\s+(\d{4})/)
-    if (!m) return null
+    if (!m)
+        return null
     const month = UA_MONTHS[m[2]!]
-    if (!month) return null
+    if (!month)
+        return null
     return new Date(Number(m[3]), month - 1, Number(m[1]))
 }
 
@@ -30,9 +32,10 @@ export function useFormatters() {
 
     function formatDate(
         dateStr: string | number | Date | null | undefined,
-        options: Intl.DateTimeFormatOptions = {}
+        options: Intl.DateTimeFormatOptions = {},
     ): string {
-        if (!dateStr) return '-'
+        if (!dateStr)
+            return '-'
         try {
             let date = new Date(dateStr)
             if (isNaN(date.getTime()) && typeof dateStr === 'string') {
@@ -44,16 +47,18 @@ export function useFormatters() {
                 day: 'numeric',
                 ...options,
             })
-        } catch {
+        }
+        catch {
             return String(dateStr)
         }
     }
 
     function formatDateTime(
         dateStr: string | number | Date | null | undefined,
-        options: Intl.DateTimeFormatOptions = {}
+        options: Intl.DateTimeFormatOptions = {},
     ): string {
-        if (!dateStr) return '-'
+        if (!dateStr)
+            return '-'
         try {
             return new Date(dateStr).toLocaleString(undefined, {
                 year: 'numeric',
@@ -63,37 +68,43 @@ export function useFormatters() {
                 minute: '2-digit',
                 ...options,
             })
-        } catch {
+        }
+        catch {
             return String(dateStr)
         }
     }
 
     function formatTime(
         dateStr: string | number | Date | null | undefined,
-        options: Intl.DateTimeFormatOptions = {}
+        options: Intl.DateTimeFormatOptions = {},
     ): string {
-        if (!dateStr) return '-'
+        if (!dateStr)
+            return '-'
         try {
             return new Date(dateStr).toLocaleTimeString(undefined, {
                 hour: '2-digit',
                 minute: '2-digit',
                 ...options,
             })
-        } catch {
+        }
+        catch {
             return String(dateStr)
         }
     }
 
     function formatDuration(seconds: number | null | undefined): string {
-        if (seconds === null || seconds === undefined) return '-'
+        if (seconds === null || seconds === undefined)
+            return '-'
         const h = Math.floor(seconds / 3600)
         const m = Math.floor((seconds % 3600) / 60)
-        if (h > 0) return `${h}${t('duration.hours')} ${m}${t('duration.minutes')}`
+        if (h > 0)
+            return `${h}${t('duration.hours')} ${m}${t('duration.minutes')}`
         return `${m}${t('duration.minutes')}`
     }
 
     function formatSurname(fullName: string | null | undefined): string {
-        if (!fullName) return '-'
+        if (!fullName)
+            return '-'
         return fullName.trim().split(' ')[0] || '-'
     }
 

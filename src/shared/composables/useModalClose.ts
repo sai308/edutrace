@@ -15,7 +15,8 @@ function handleGlobalEscape(event: KeyboardEvent): void {
     if (event.key === 'Escape' && modalStack.length > 0) {
         // Get the topmost modal and call its close callback
         const topModal = modalStack[modalStack.length - 1]
-        if (topModal) topModal.closeCallback()
+        if (topModal)
+            topModal.closeCallback()
     }
 }
 
@@ -30,7 +31,8 @@ export function useModalClose(isOpenOrCallback: Ref<boolean> | (() => void), clo
         // Old API: always register (for backwards compatibility)
         callback = isOpenOrCallback
         isOpenRef = null
-    } else {
+    }
+    else {
         // New API: register only when isOpen is true
         isOpenRef = toRef(isOpenOrCallback) as Ref<boolean>
         callback = closeCallback as () => void
@@ -41,7 +43,7 @@ export function useModalClose(isOpenOrCallback: Ref<boolean> | (() => void), clo
 
     function registerModal(): void {
         // Add this modal to the stack if not already there
-        if (!modalStack.some((m) => m.id === modalId)) {
+        if (!modalStack.some(m => m.id === modalId)) {
             modalStack.push({ id: modalId, closeCallback: callback })
 
             // Attach global listener if not already attached
@@ -54,7 +56,7 @@ export function useModalClose(isOpenOrCallback: Ref<boolean> | (() => void), clo
 
     function unregisterModal(): void {
         // Remove this modal from the stack
-        const index = modalStack.findIndex((m) => m.id === modalId)
+        const index = modalStack.findIndex(m => m.id === modalId)
         if (index !== -1) {
             modalStack.splice(index, 1)
         }
@@ -73,16 +75,18 @@ export function useModalClose(isOpenOrCallback: Ref<boolean> | (() => void), clo
             (isOpen: boolean) => {
                 if (isOpen) {
                     registerModal()
-                } else {
+                }
+                else {
                     unregisterModal()
                 }
             },
-            { immediate: true }
+            { immediate: true },
         )
 
         // Cleanup on unmount
         onUnmounted(() => unregisterModal())
-    } else {
+    }
+    else {
         // Old API: register immediately (backwards compatibility)
         onMounted(() => {
             registerModal()

@@ -125,7 +125,8 @@ describe('summaryService', () => {
 
         expect(students).toHaveLength(1)
         const alice = students[0]
-        if (!alice) throw new Error('Alice not found')
+        if (!alice)
+            throw new Error('Alice not found')
         expect(alice.moduleGrades.Mod1).toBe(5)
         expect(alice.status).toBe('automatic')
     })
@@ -251,7 +252,7 @@ describe('summaryService', () => {
     describe('deleteModule', () => {
         it('throws "Not implemented. Delete Units instead."', async () => {
             await expect(summaryService.deleteModule('any-id')).rejects.toThrow(
-                'Not implemented. Delete Units instead.'
+                'Not implemented. Delete Units instead.',
             )
         })
     })

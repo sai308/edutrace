@@ -27,7 +27,7 @@ const { t } = useI18n()
 const columns = computed(() => {
     return props.table
         .getAllColumns()
-        .filter((column) => typeof column.accessorFn !== 'undefined' && column.getCanHide())
+        .filter(column => typeof column.accessorFn !== 'undefined' && column.getCanHide())
 })
 
 const visibleColumnsCount = computed(() => {

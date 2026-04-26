@@ -9,7 +9,8 @@ function t(key: string): string {
 export function extractModuleNames(students: StudentSummaryData[]): string[] {
     for (const s of students) {
         const keys = Object.keys(s.moduleGrades)
-        if (keys.length > 0) return keys
+        if (keys.length > 0)
+            return keys
     }
     return []
 }
@@ -19,7 +20,8 @@ function sortByName(students: StudentSummaryData[]): StudentSummaryData[] {
 }
 
 function cellValue(v: string | number | null | undefined): string {
-    if (v == null) return ''
+    if (v == null)
+        return ''
     return String(v)
 }
 
@@ -49,7 +51,7 @@ export function exportSummaryCsv(students: StudentSummaryData[], groupName: stri
         return [
             String(i + 1),
             csvEscape(s.name),
-            ...moduleNames.map((m) => csvEscape(cellValue(s.moduleGrades[m]))),
+            ...moduleNames.map(m => csvEscape(cellValue(s.moduleGrades[m]))),
             csvEscape(cellValue(s.total)),
             csvEscape(cellValue(s.examGrade)),
         ].join(',')
@@ -128,7 +130,7 @@ function tbl(rows: string[], gridCols: number[]): string {
         <w:top ${bVal}/><w:left ${bVal}/><w:bottom ${bVal}/><w:right ${bVal}/>
         <w:insideH ${bVal}/><w:insideV ${bVal}/>
     </w:tblBorders>`
-    const grid = gridCols.map((cw) => `<w:gridCol w:w="${cw}"/>`).join('')
+    const grid = gridCols.map(cw => `<w:gridCol w:w="${cw}"/>`).join('')
     return `<w:tbl>
     <w:tblPr>
         <w:tblW w:w="${totalW}" w:type="dxa"/>
@@ -153,8 +155,8 @@ function buildDocumentXml(students: StudentSummaryData[], groupName: string): st
     const date = new Date().toLocaleDateString()
 
     const nameColWidth = moduleNames.length === 0 ? PAGE_WIDTH - NUM_COL - TOTAL_COL - EXAM_COL : NAME_COL
-    const moduleColWidth =
-        moduleNames.length > 0
+    const moduleColWidth
+        = moduleNames.length > 0
             ? Math.floor((PAGE_WIDTH - NUM_COL - nameColWidth - TOTAL_COL - EXAM_COL) / moduleNames.length)
             : 0
 
@@ -170,7 +172,7 @@ function buildDocumentXml(students: StudentSummaryData[], groupName: string): st
             center: true,
             size: DATA_SIZE,
         }),
-        ...moduleNames.map((m) => tc(m, { w: moduleColWidth, bold: true, center: true, size: DATA_SIZE })),
+        ...moduleNames.map(m => tc(m, { w: moduleColWidth, bold: true, center: true, size: DATA_SIZE })),
         tc(t('control.settings.summaryExport.colTotal'), {
             w: TOTAL_COL,
             bold: true,
@@ -189,16 +191,16 @@ function buildDocumentXml(students: StudentSummaryData[], groupName: string): st
         trCompact([
             tc(String(i + 1), { w: NUM_COL, center: true, size: DATA_SIZE }),
             tc(s.name, { w: nameColWidth, underline: true, size: DATA_SIZE }),
-            ...moduleNames.map((m) =>
+            ...moduleNames.map(m =>
                 tc(cellValue(s.moduleGrades[m]), {
                     w: moduleColWidth,
                     center: true,
                     size: DATA_SIZE,
-                })
+                }),
             ),
             tc(cellValue(s.total), { w: TOTAL_COL, center: true, size: DATA_SIZE }),
             tc(cellValue(s.examGrade), { w: EXAM_COL, center: true, size: DATA_SIZE }),
-        ])
+        ]),
     )
 
     const sectPr = `<w:sectPr>

@@ -11,14 +11,16 @@ import DataTableRowActions from '@/shared/components/DataTableRowActions.vue'
 type RoleBadgeVariant = 'default' | 'secondary' | 'outline'
 
 function getRoleBadgeVariant(role: Member['role']): RoleBadgeVariant {
-    if (role === 'teacher') return 'default'
-    if (role === 'assistant') return 'outline'
+    if (role === 'teacher')
+        return 'default'
+    if (role === 'assistant')
+        return 'outline'
     return 'secondary'
 }
 
 export function createColumns(
     rowActions: (member: Member) => RowActionItem[],
-    t: ComposerTranslation
+    t: ComposerTranslation,
 ): ColumnDef<Member>[] {
     return [
         {
@@ -27,18 +29,18 @@ export function createColumns(
             enableHiding: false,
             header: ({ table }) =>
                 h(Checkbox, {
-                    modelValue:
+                    'modelValue':
                         table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
                     'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
                         table.toggleAllPageRowsSelected(!!value),
-                    ariaLabel: t('common.selectAll'),
+                    'ariaLabel': t('common.selectAll'),
                 }),
             cell: ({ row }) =>
                 h(Checkbox, {
-                    modelValue: row.getIsSelected(),
-                    disabled: !row.getCanSelect(),
+                    'modelValue': row.getIsSelected(),
+                    'disabled': !row.getCanSelect(),
                     'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
-                    ariaLabel: t('common.selectRow'),
+                    'ariaLabel': t('common.selectRow'),
                 }),
         },
         {
@@ -76,7 +78,7 @@ export function createColumns(
                         variant: isHidden ? 'destructive' : 'default',
                         class: isHidden ? 'opacity-70' : '',
                     },
-                    () => (isHidden ? t('common.deleted') : t('common.active'))
+                    () => (isHidden ? t('common.deleted') : t('common.active')),
                 )
             },
         },

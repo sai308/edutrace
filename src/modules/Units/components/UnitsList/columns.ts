@@ -12,18 +12,18 @@ export function createColumns(rowActions: (unit: Unit) => RowActionItem[], t: Co
             id: 'select',
             header: ({ table }) =>
                 h(Checkbox, {
-                    modelValue:
+                    'modelValue':
                         table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate'),
                     'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
                         table.toggleAllPageRowsSelected(!!value),
-                    ariaLabel: t('common.selectAll'),
+                    'ariaLabel': t('common.selectAll'),
                 }),
             cell: ({ row }) =>
                 h(Checkbox, {
-                    modelValue: row.getIsSelected(),
-                    disabled: !row.getCanSelect(),
+                    'modelValue': row.getIsSelected(),
+                    'disabled': !row.getCanSelect(),
                     'onUpdate:modelValue': (value: boolean | 'indeterminate') => row.toggleSelected(!!value),
-                    ariaLabel: t('common.selectRow'),
+                    'ariaLabel': t('common.selectRow'),
                 }),
             enableSorting: false,
             enableHiding: false,

@@ -21,7 +21,8 @@ export function useReportProcessing() {
     }
 
     async function processFiles(filterMode: 'all' | 'related'): Promise<void> {
-        if (!pendingFiles.value || pendingFiles.value.length === 0) return
+        if (!pendingFiles.value || pendingFiles.value.length === 0)
+            return
 
         isProcessing.value = true
         showFilterModal.value = false
@@ -29,27 +30,35 @@ export function useReportProcessing() {
         try {
             const stats = await reportsService.processFiles(pendingFiles.value, filterMode)
 
-            if (stats.saved > 0) toast.success(t('reports.processing.saved', { count: stats.saved }))
-            if (stats.skipped > 0) toast.info(t('reports.processing.skipped', { count: stats.skipped }))
-            if (stats.unrecognized > 0) toast.info(t('csvFilter.skippedUnrecognized', { count: stats.unrecognized }))
+            if (stats.saved > 0)
+                toast.success(t('reports.processing.saved', { count: stats.saved }))
+            if (stats.skipped > 0)
+                toast.info(t('reports.processing.skipped', { count: stats.skipped }))
+            if (stats.unrecognized > 0)
+                toast.info(t('csvFilter.skippedUnrecognized', { count: stats.unrecognized }))
 
             await loadMeets()
 
             if (filterCallback.value) {
                 filterCallback.value()
             }
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Error processing files:', e)
             if (e instanceof WorkerError && e.code === 'PARSE_ERROR') {
                 toast.error(e.message)
-            } else if (e instanceof WorkerError && e.code === 'WORKER_TIMEOUT') {
+            }
+            else if (e instanceof WorkerError && e.code === 'WORKER_TIMEOUT') {
                 toast.error(t('workerErrors.timeout'))
-            } else if (e instanceof WorkerError && e.code === 'SERIALIZATION_ERROR') {
+            }
+            else if (e instanceof WorkerError && e.code === 'SERIALIZATION_ERROR') {
                 toast.error(t('workerErrors.serialization'))
-            } else {
+            }
+            else {
                 toast.error(t('reports.processing.error'))
             }
-        } finally {
+        }
+        finally {
             isProcessing.value = false
             pendingFiles.value = []
             filterCallback.value = null

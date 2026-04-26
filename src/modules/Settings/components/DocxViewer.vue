@@ -22,11 +22,13 @@ const MIN_SCALE = 0.5
 const MAX_SCALE = 2.0
 
 function zoomIn() {
-    if (scale.value < MAX_SCALE) scale.value = Number((scale.value + SCALE_STEP).toFixed(1))
+    if (scale.value < MAX_SCALE)
+        scale.value = Number((scale.value + SCALE_STEP).toFixed(1))
 }
 
 function zoomOut() {
-    if (scale.value > MIN_SCALE) scale.value = Number((scale.value - SCALE_STEP).toFixed(1))
+    if (scale.value > MIN_SCALE)
+        scale.value = Number((scale.value - SCALE_STEP).toFixed(1))
 }
 
 function resetZoom() {
@@ -43,7 +45,8 @@ const wrapperStyle = computed(() => ({
 }))
 
 async function renderDocument() {
-    if (!container.value) return
+    if (!container.value)
+        return
 
     if (!props.documentBlob) {
         container.value.innerHTML = ''
@@ -72,10 +75,12 @@ async function renderDocument() {
             renderEndnotes: true,
             debug: false,
         })
-    } catch (err) {
+    }
+    catch (err) {
         logger.error('Failed to render docx', err)
         error.value = 'Failed to render document. It may be corrupted or unsupported.'
-    } finally {
+    }
+    finally {
         isLoading.value = false
     }
 }
@@ -84,7 +89,7 @@ watch(
     () => props.documentBlob,
     () => {
         renderDocument()
-    }
+    },
 )
 
 onMounted(() => {
@@ -104,7 +109,9 @@ onUnmounted(() => {
         <div class="flex items-center justify-between p-2 border-b bg-background sticky top-0 z-20 shadow-sm shrink-0">
             <div class="text-sm font-medium px-2 flex items-center gap-2">
                 Document Viewer
-                <Badge variant="secondary" class="font-mono text-[10px] hidden sm:inline-flex"> A4 Layout </Badge>
+                <Badge variant="secondary" class="font-mono text-[10px] hidden sm:inline-flex">
+                    A4 Layout
+                </Badge>
             </div>
 
             <TooltipProvider>
@@ -186,7 +193,9 @@ onUnmounted(() => {
                 class="absolute inset-0 flex flex-col items-center justify-center bg-background/80 backdrop-blur-sm z-10 gap-4"
             >
                 <Loader2 class="w-8 h-8 animate-spin text-primary" />
-                <p class="text-sm text-muted-foreground animate-pulse">Rendering document...</p>
+                <p class="text-sm text-muted-foreground animate-pulse">
+                    Rendering document...
+                </p>
             </div>
 
             <!-- Error State -->
@@ -198,7 +207,9 @@ onUnmounted(() => {
                 <p class="font-medium">
                     {{ error }}
                 </p>
-                <p class="text-xs opacity-70">Try downloading the file and opening it in a desktop application.</p>
+                <p class="text-xs opacity-70">
+                    Try downloading the file and opening it in a desktop application.
+                </p>
             </div>
 
             <!-- Empty State -->

@@ -17,7 +17,8 @@ export const localeService = {
     getLocale(): Locale {
         try {
             return (localStorage.getItem(LOCALE_KEY) as Locale) || DEFAULT_LOCALE
-        } catch (e) {
+        }
+        catch (e) {
             logger.warn('Failed to get locale from localStorage:', e)
             return DEFAULT_LOCALE
         }
@@ -26,7 +27,8 @@ export const localeService = {
     setLocale(locale: string) {
         try {
             localStorage.setItem(LOCALE_KEY, locale)
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Failed to save locale to localStorage:', e)
         }
     },
@@ -48,7 +50,8 @@ export const localeService = {
         for (const key of keys) {
             if (value && typeof value === 'object' && key in value) {
                 value = (value as Record<string, unknown>)[key]
-            } else {
+            }
+            else {
                 return keyPath // Return key path if not found
             }
         }

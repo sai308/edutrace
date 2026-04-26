@@ -25,10 +25,12 @@ export function useStudents() {
             teachers.value = data.teachers
             meets.value = data.meets
             tasks.value = data.tasks
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Error loading student data:', e)
             toast.error('Failed to load students')
-        } finally {
+        }
+        finally {
             isLoading.value = false
         }
     }
@@ -39,11 +41,13 @@ export function useStudents() {
             await studentsService.saveStudent(formData, originalStudent)
             await loadData()
             toast.success(isNew ? 'Student added' : 'Student updated')
-        } catch (e: any) {
+        }
+        catch (e: any) {
             logger.error('Error in saveStudent:', e)
             if (e.message === 'IEP_NOT_UNIQUE') {
                 toast.error('A student with this IEP already exists')
-            } else {
+            }
+            else {
                 toast.error(isNew ? 'Error adding student' : 'Error updating student')
             }
         }
@@ -54,7 +58,8 @@ export function useStudents() {
             await studentsService.deleteStudent(id)
             await loadData()
             toast.success('Student deleted')
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Delete student failed', e)
             toast.error('Error deleting student')
         }
@@ -65,7 +70,8 @@ export function useStudents() {
             await studentsService.bulkDeleteStudents(ids)
             await loadData()
             toast.success('Selected students deleted')
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Bulk delete students failed', e)
             toast.error('Error deleting students')
         }

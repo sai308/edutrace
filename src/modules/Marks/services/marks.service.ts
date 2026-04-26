@@ -39,7 +39,7 @@ export class MarksService {
             const text = await file.text()
             const parsedData: MarksParsedData = await withTimeout(
                 this.parser.parseMarksCSV(text, file.name, groupName),
-                PARSER_TIMEOUT_MS
+                PARSER_TIMEOUT_MS,
             )
 
             // 1.5. Normalize Group Names
@@ -73,7 +73,8 @@ export class MarksService {
                 skippedMarksCount: stats.skipped,
                 updatedMarksCount: stats.updated,
             }
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('Error processing marks:', e)
             throw classifyWorkerError(e)
         }
@@ -86,7 +87,7 @@ export class MarksService {
         score: number
     }): Promise<SaveMarkResult> {
         const allTasks = await tasksRepository.getAllTasks()
-        const task = allTasks.find((t) => t.id === data.taskId)
+        const task = allTasks.find(t => t.id === data.taskId)
         return marksRepository.saveMark({
             taskId: data.taskId,
             studentId: data.studentId,
@@ -100,7 +101,8 @@ export class MarksService {
     }
 
     async toggleSynced(mark: Pick<Mark, 'id' | 'synced'>): Promise<boolean | undefined> {
-        if (!mark || !mark.id) return
+        if (!mark || !mark.id)
+            return
         const newSynced = !mark.synced
         await marksRepository.updateMarkSynced(mark.id, newSynced)
         return newSynced
@@ -130,18 +132,20 @@ export class MarksService {
             const text = await file.text()
             const parsed: MarksParsedData = await withTimeout(
                 this.parser.parseMarksCSV(text, file.name, ''),
-                PARSER_TIMEOUT_MS
+                PARSER_TIMEOUT_MS,
             )
-            const studentNames = new Set(parsed.studentsData.map((s) => s.student.name.toLowerCase().trim()))
-            if (studentNames.size === 0) return []
+            const studentNames = new Set(parsed.studentsData.map(s => s.student.name.toLowerCase().trim()))
+            if (studentNames.size === 0)
+                return []
 
             const meetIdScores = new Map<string, number>()
 
             // Path 1: match student names against meet participants
             const allMeets = await meetsRepository.getAllMeets()
             for (const meet of allMeets) {
-                if (!meet.meetId || !Array.isArray(meet.participants)) continue
-                const matchCount = meet.participants.filter((p) => studentNames.has(p.name.toLowerCase().trim())).length
+                if (!meet.meetId || !Array.isArray(meet.participants))
+                    continue
+                const matchCount = meet.participants.filter(p => studentNames.has(p.name.toLowerCase().trim())).length
                 if (matchCount > 0) {
                     meetIdScores.set(meet.meetId, (meetIdScores.get(meet.meetId) ?? 0) + matchCount)
                 }
@@ -152,9 +156,10 @@ export class MarksService {
                 studentsRepository.getAllMembers({ includeHidden: true }),
                 groupsRepository.getAll(),
             ])
-            const groupMeetIdMap = new Map(allGroups.filter((g) => g.meetId).map((g) => [g.name, g.meetId]))
+            const groupMeetIdMap = new Map(allGroups.filter(g => g.meetId).map(g => [g.name, g.meetId]))
             for (const member of allMembers) {
-                if (!member.groupName || !studentNames.has(member.name.toLowerCase().trim())) continue
+                if (!member.groupName || !studentNames.has(member.name.toLowerCase().trim()))
+                    continue
                 const meetId = groupMeetIdMap.get(member.groupName)
                 if (meetId) {
                     meetIdScores.set(meetId, (meetIdScores.get(meetId) ?? 0) + 1)
@@ -162,18 +167,19 @@ export class MarksService {
             }
 
             return [...meetIdScores.entries()].sort((a, b) => b[1] - a[1]).map(([id]) => id)
-        } catch {
+        }
+        catch {
             return []
         }
     }
 
-    async loadSuggestions(): Promise<{ allMeetIds: string[]; allTeachers: string[] }> {
+    async loadSuggestions(): Promise<{ allMeetIds: string[], allTeachers: string[] }> {
         const [meets, teachersList] = await Promise.all([
             meetsRepository.getAllMeets(),
             settingsRepository.getTeachers(),
         ])
 
-        const allMeetIds = meets.map((m) => m.meetId).filter(Boolean)
+        const allMeetIds = meets.map(m => m.meetId).filter(Boolean)
         const uniqueMeets = [...new Set(allMeetIds)]
         const uniqueTeachers = [...new Set(teachersList)]
 
@@ -183,7 +189,8 @@ export class MarksService {
     async loadMarksData(groupName: string | null = null): Promise<FlatMark[]> {
         if (groupName) {
             return marksRepository.getMarksByGroupWithRelations(groupName)
-        } else {
+        }
+        else {
             return marksRepository.getAllMarksWithRelations()
         }
     }

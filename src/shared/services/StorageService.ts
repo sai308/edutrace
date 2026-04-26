@@ -30,16 +30,19 @@ class StorageAdapter {
     get<T = any>(key: string, defaultValue: T | null = null): T | string | null {
         try {
             const item = this.storage.getItem(key)
-            if (item === null) return defaultValue
+            if (item === null)
+                return defaultValue
 
             // Attempt to parse JSON
             try {
                 return JSON.parse(item) as T
-            } catch {
+            }
+            catch {
                 // If parse fails, return the raw string.
                 return item
             }
-        } catch (e) {
+        }
+        catch (e) {
             logger.error(`StorageService: Error getting key '${key}'`, e)
             return defaultValue
         }
@@ -55,7 +58,8 @@ class StorageAdapter {
         try {
             const stringValue = value !== null && typeof value === 'object' ? JSON.stringify(value) : String(value)
             this.storage.setItem(key, stringValue)
-        } catch (e) {
+        }
+        catch (e) {
             logger.error(`StorageService: Error setting key '${key}'`, e)
         }
     }
@@ -67,7 +71,8 @@ class StorageAdapter {
     remove(key: string): void {
         try {
             this.storage.removeItem(key)
-        } catch (e) {
+        }
+        catch (e) {
             logger.error(`StorageService: Error removing key '${key}'`, e)
         }
     }
@@ -78,7 +83,8 @@ class StorageAdapter {
     clear(): void {
         try {
             this.storage.clear()
-        } catch (e) {
+        }
+        catch (e) {
             logger.error('StorageService: Error clearing storage', e)
         }
     }

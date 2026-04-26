@@ -54,13 +54,15 @@ function handleDelete(task: Task) {
 
 async function handleSaveTask(formData: Partial<Task>) {
     const saved = await saveTask(formData, editingTask.value)
-    if (saved) showTaskDialog.value = false
+    if (saved)
+        showTaskDialog.value = false
 }
 
 function handleBulkDelete() {
     const selectedRows = tableRef.value?.table.getFilteredSelectedRowModel().rows ?? []
-    const ids = selectedRows.map((r) => r.original.id)
-    if (!ids.length) return
+    const ids = selectedRows.map(r => r.original.id)
+    if (!ids.length)
+        return
 
     confirmTitle.value = t('tasks.bulkDelete')
     confirmMessage.value = t('tasks.bulkDeleteConfirm', { count: ids.length })

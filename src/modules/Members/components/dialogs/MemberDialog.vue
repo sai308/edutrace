@@ -58,7 +58,8 @@ const showGroupSuggestions = ref(false)
 watch(
     () => props.isOpen,
     (newVal) => {
-        if (!newVal) return
+        if (!newVal)
+            return
 
         errors.value = { name: '', groupName: '' }
         showGroupSuggestions.value = false
@@ -71,10 +72,11 @@ watch(
                 role: props.member.role ?? 'student',
                 iep: props.member.iep ?? '',
             }
-        } else {
+        }
+        else {
             formData.value = { name: '', email: '', groupName: '', role: 'student', iep: '' }
         }
-    }
+    },
 )
 
 watch(
@@ -85,7 +87,7 @@ watch(
             formData.value.iep = ''
             errors.value.groupName = ''
         }
-    }
+    },
 )
 
 // ── Computed ───────────────────────────────────────────────────────────────────
@@ -94,7 +96,7 @@ const isGroupDisabled = computed(() => formData.value.role === 'teacher' || form
 
 const filteredGroups = computed<string[]>(() => {
     const query = formData.value.groupName?.toLowerCase() ?? ''
-    return props.allGroups.filter((g) => g.toLowerCase().includes(query))
+    return props.allGroups.filter(g => g.toLowerCase().includes(query))
 })
 
 // ── Handlers ───────────────────────────────────────────────────────────────────
@@ -122,19 +124,22 @@ function validate(): boolean {
 }
 
 function handleSave(): void {
-    if (!validate()) return
+    if (!validate())
+        return
     emit('save', { ...formData.value })
 }
 
 function handleBlur(type: 'group'): void {
     setTimeout(() => {
-        if (type === 'group') showGroupSuggestions.value = false
+        if (type === 'group')
+            showGroupSuggestions.value = false
     }, 200)
 }
 
 function handleOpenChange(val: boolean): void {
     emit('update:isOpen', val)
-    if (!val) emit('close')
+    if (!val)
+        emit('close')
 }
 </script>
 
