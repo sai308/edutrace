@@ -116,12 +116,20 @@ export default defineConfig({
                     if (id.includes('vue-i18n') || id.includes('@intlify'))
                         return 'vendor-i18n'
 
-                    // Icons — split alphabetically so neither half exceeds the size limit
+                    // Icons — split alphabetically to avoid exceeding the size limit
+                    // Core utilities, index files, and icons must be separated to prevent Rollup circular dependencies
                     if (id.includes('lucide')) {
+                        if (id.includes('lucide-vue-next.js') || id.includes('/icons/index.js'))
+                            return 'vendor-icons-index'
+
                         const match = id.match(/\/icons\/([a-z])/)
-                        if (match && match[1] && match[1] < 'n')
-                            return 'vendor-icons-1'
-                        return 'vendor-icons-2'
+                        if (match && match[1]) {
+                            if (match[1] < 'n')
+                                return 'vendor-icons-1'
+                            return 'vendor-icons-2'
+                        }
+
+                        return 'vendor-icons-core'
                     }
 
                     // Headless UI primitives
