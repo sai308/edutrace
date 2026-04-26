@@ -217,8 +217,8 @@ function getMeetActions(meet: Meet): RowActionItem[] {
             :meet-ids="meetIdsToDelete"
             @success="
                 () => {
-                    meetToDeleteId = null
-                    meetIdsToDelete = []
+                    meetToDeleteId = null;
+                    meetIdsToDelete = [];
                 }
             "
         />

@@ -671,7 +671,7 @@ async function handleDeletePlans() {
                                             :key="suggestion"
                                             class="w-full text-left px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground transition-colors"
                                             @mousedown.prevent="
-                                                printSettings.examiner = suggestion
+                                                printSettings.examiner = suggestion;
                                                 showExaminerSuggestions = false
                                             "
                                         >
@@ -699,7 +699,7 @@ async function handleDeletePlans() {
                                             :key="suggestion"
                                             class="w-full text-left px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground transition-colors"
                                             @mousedown.prevent="
-                                                printSettings.practicalTeacher = suggestion
+                                                printSettings.practicalTeacher = suggestion;
                                                 showPracticalSuggestions = false
                                             "
                                         >

@@ -316,12 +316,12 @@ const sessionTypeLabel = computed(() => {
                                         : $t('sessions.printDialog.examinerPlaceholderMinor')
                                 "
                                 @input="
-                                    ensureArrayLength(index)
-                                    onExaminerInput(index)
+                                    ensureArrayLength(index);
+                                    onExaminerInput(index);
                                 "
                                 @focus="
-                                    ensureArrayLength(index)
-                                    showSuggestions[index] = true
+                                    ensureArrayLength(index);
+                                    showSuggestions[index] = true;
                                 "
                                 @blur="onExaminerBlur(index)"
                             />
@@ -361,8 +361,8 @@ const sessionTypeLabel = computed(() => {
                             v-model="form.practicalTeacher"
                             :placeholder="$t('sessions.printDialog.practicalTeacherPlaceholder')"
                             @input="
-                                practicalTeacherTouched = true
-                                showPracticalSuggestions = true
+                                practicalTeacherTouched = true;
+                                showPracticalSuggestions = true;
                             "
                             @focus="showPracticalSuggestions = true"
                             @blur="hidePracticalSuggestions()"

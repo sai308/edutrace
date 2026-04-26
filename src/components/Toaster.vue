@@ -46,8 +46,8 @@ const colors = {
                     class="ml-3 px-2 py-0.5 text-xs font-semibold rounded bg-black/10 hover:bg-black/20 transition-colors shrink-0"
                     @click="
                         () => {
-                            t.action!.fn()
-                            toast.remove(t.id)
+                            t.action!.fn();
+                            toast.remove(t.id);
                         }
                     "
                 >
@@ -55,7 +55,7 @@ const colors = {
                 </button>
                 <button
                     class="ml-2 p-1 rounded-md hover:bg-black/5 transition-colors"
-                    @click="toast.remove(t.id)"
+                    @click="toast.remove(t.id);"
                 >
                     <X class="w-4 h-4" />
                 </button>
