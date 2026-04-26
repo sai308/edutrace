@@ -32,6 +32,7 @@ export default antfu({
         'dist/**',
         'dev-dist/**',
         'public/**',
+        'landing/**'
         'reports/**',
         'coverage/**',
         'src/workers/**',         // plain JS workers
