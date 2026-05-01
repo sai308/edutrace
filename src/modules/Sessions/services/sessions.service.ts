@@ -81,26 +81,17 @@ export class SessionsService {
     }
 
     /**
-     * Syncs an OPEN Main session with the latest grades from the Summary module.
+     * Syncs an OPEN Main session with pre-fetched exam data.
      * Updates missing or AUTO grades and adds any newly joined students.
      */
-    async syncMainSession(group: Group, sessionId: string): Promise<SessionReport> {
-        const session = await sessionRepository.getById(sessionId)
-        if (!session)
-            throw new Error('Session not found')
+    async syncMainSession(session: SessionReport, examData: { students: StudentSummaryData[] }): Promise<SessionReport> {
         if (session.status === SessionStatusEnum.CLOSED)
             return session
         if (session.sessionType !== SessionTypeEnum.MAIN)
             return session
 
-        const examData = await summaryService.loadExamData(group, {
-            assessmentType: 'examination',
-            t: (key: string) => key,
-        })
-
         let updated = false
 
-        // 1. Sync existing entries (only if grade is missing or was AUTO)
         for (const entry of session.entries) {
             if (entry.grade === null || entry.gradeType === GradeTypeEnum.AUTO) {
                 const studentData = examData.students.find(s => s.id === entry.studentId)
@@ -116,7 +107,6 @@ export class SessionsService {
             }
         }
 
-        // 2. Add any newly joined students
         for (const student of examData.students) {
             if (!session.entries.some(e => e.studentId === student.id)) {
                 const { grade, gradeType, updatedAt } = this.resolveGradeFromStudent(student)
@@ -183,24 +173,16 @@ export class SessionsService {
     }
 
     /**
-     * Syncs an OPEN Retake session with the latest grades from the Summary module.
+     * Syncs an OPEN Retake session with pre-fetched exam data.
      * Updates missing or AUTO grades for students already listed in the retake session.
      * New students are NOT added — retake sessions are intentionally limited to the
      * students who failed or missed the previous session.
      */
-    async syncRetakeSession(group: Group, sessionId: string): Promise<SessionReport> {
-        const session = await sessionRepository.getById(sessionId)
-        if (!session)
-            throw new Error('Session not found')
+    async syncRetakeSession(session: SessionReport, examData: { students: StudentSummaryData[] }): Promise<SessionReport> {
         if (session.status === SessionStatusEnum.CLOSED)
             return session
         if (session.sessionType === SessionTypeEnum.MAIN)
             return session
-
-        const examData = await summaryService.loadExamData(group, {
-            assessmentType: 'examination',
-            t: (key: string) => key,
-        })
 
         let updated = false
 
@@ -224,6 +206,35 @@ export class SessionsService {
         }
 
         return session
+    }
+
+    /**
+     * Fetches exam data once and syncs all OPEN sessions in parallel.
+     * Falls back to the un-synced session if an individual sync fails.
+     */
+    async batchSyncSessions(group: Group, sessions: SessionReport[]): Promise<SessionReport[]> {
+        const hasOpen = sessions.some(s => s.status === SessionStatusEnum.OPEN)
+        if (!hasOpen)
+            return sessions
+
+        const examData = await summaryService.loadExamData(group, {
+            assessmentType: 'examination',
+            t: (key: string) => key,
+        })
+
+        const settled = await Promise.allSettled(
+            sessions.map((session) => {
+                if (session.status !== SessionStatusEnum.OPEN)
+                    return Promise.resolve(session)
+                if (session.sessionType === SessionTypeEnum.MAIN)
+                    return this.syncMainSession(session, examData)
+                return this.syncRetakeSession(session, examData)
+            }),
+        )
+
+        return settled.map((result, i) =>
+            result.status === 'fulfilled' ? result.value : sessions[i]!,
+        )
     }
 
     /**

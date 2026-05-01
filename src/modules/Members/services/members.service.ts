@@ -1,13 +1,7 @@
-import type { Member } from '@Students/types/students'
+import type { Member, StudentFormData } from '@Students/types/students'
 import { studentsRepository } from '@Students/services/students.repository'
 
-export interface MemberFormData {
-    name: string
-    email: string
-    groupName: string | null
-    role: 'student' | 'teacher' | 'assistant'
-    iep: string
-}
+export type MemberFormData = StudentFormData
 
 export interface MemberFormErrors {
     name: string
@@ -49,20 +43,21 @@ class MembersService {
      * Persists a member record. Handles both create (existingMember = null) and
      * update scenarios by merging form data with the original record.
      */
-    async saveMember(formData: MemberFormData, existingMember: Member | null): Promise<void> {
+    async saveMember(formData: MemberFormData, existingMember: Member | null): Promise<Member> {
         const memberToSave: Member = {
             ...(existingMember ?? {
-                id: '',
+                id: crypto.randomUUID(),
                 createdAt: new Date().toISOString(),
             }),
             name: formData.name,
             email: formData.email,
-            groupName: formData.groupName ?? '',
+            groupName: formData.groupName,
             role: formData.role,
             iep: formData.iep || undefined,
         }
 
-        await studentsRepository.saveMember(memberToSave)
+        const id = await studentsRepository.saveMember(memberToSave)
+        return { ...memberToSave, id }
     }
 }
 

@@ -27,18 +27,22 @@ pnpm vitest run src/modules/Marks/services/tests/marks.service.test.ts
 pnpm vitest run --reporter=verbose -t "test name pattern"
 ```
 
-## MANDATORY: Use LeanKG First
-Before ANY codebase search/navigation, use LeanKG tools:
-1. mcp_status - check if ready
-2. Use tool: search_code, find_function, query_file, get_impact_radius
-3. Only fallback to grep/read if LeanKG fails
+## MANDATORY: Use LeanKG — No Exceptions
 
-| Task              | Use |
-|-------------------|-----|
-| Where is X?       | search_code or find_function |
-| What breaks if I change Y? | get_impact_radius |
-| What tests cover Y? | get_tested_by |
-| How does X work?  | get_context |
+**NEVER use grep, find, or Read to navigate code without trying LeanKG first.**
+
+Before ANY codebase search or navigation task, use LeanKG MCP tools. This is a hard rule, not a suggestion.
+
+| Task                          | Required tool                  |
+|-------------------------------|--------------------------------|
+| Where is X defined?           | `search_code` or `find_function` |
+| What breaks if I change Y?    | `get_impact_radius`            |
+| What tests cover Y?           | `get_tested_by`                |
+| How does X work?              | `get_context`                  |
+| Overview of a file            | `query_file`                   |
+| Dependencies of X             | `get_dependencies`             |
+
+Fallback to `grep`/`Read` **only** if LeanKG returns no result or errors. If you fall back, note why.
 
 ## Architecture
 
@@ -114,8 +118,8 @@ Modules: `Analytics`, `Groups`, `Marks`, `Members`, `Plans`, `Reports`, `Session
 | `DatabaseService.ts` | IndexedDB singleton (v17), schema migrations, `getDb()` |
 | `BaseRepository.ts` | Abstract base class for all repositories — typed CRUD, bulk ops, index queries |
 | `settings.repository.ts` | Workspace-scoped settings get/set (key-value in `settings` store) |
-| `workspace.repository.ts` | Workspace CRUD + export/import (metadata lives in `localStorage`) |
-| `backup.service.ts` | Full-workspace export/import — serializes all IDB stores to JSON |
+| `workspace.repository.ts` | Workspace CRUD; multi-workspace export/import/wipe — workspace list and active ID in `localStorage`, full IDB data (all 11 stores) per workspace in separate named databases |
+| `backup.service.ts` | Single-workspace export/import — serializes all IDB stores of the active workspace to JSON |
 | `stats.service.ts` | App-level statistics: record counts and estimated storage size per entity |
 | `toast.ts` | Toast notification singleton — `toast.success/error/info/warning(msg, ms?)` |
 | `StorageService.ts` | `localStorage` abstraction with typed key access |
@@ -131,7 +135,7 @@ Modules: `Analytics`, `Groups`, `Marks`, `Members`, `Plans`, `Reports`, `Session
 | `useCompactName` | Formats full name as "First L." for compact display |
 | `useCalendar` | Calendar grid generation (`generateCalendarDays`), month navigation, localized weekday names |
 | `useQuerySync` | Two-way URL query ↔ ref binding for sort/filter persistence across navigation |
-| `useWorkspace` | Active workspace ref + switch action. `DashboardLayout` uses it in a `watchEffect` to override `--primary`, `--primary-foreground`, and `--workspace-color` on `:root` whenever the workspace changes. |
+| `useWorkspace` | Module-level singleton refs: `workspaces`, `currentWorkspaceId`, `activeWorkspace`. Exposes `loadWorkspaces()` to refresh from `localStorage`. `DashboardLayout` uses it in a `watchEffect` to override `--primary`, `--primary-foreground`, `--workspace-color`, `--sidebar-accent`, and `--sidebar-accent-foreground` on `:root` whenever the workspace changes. Actual switching is done by `workspaceRepository.switchWorkspace()` followed by `window.location.reload()`. |
 | `useWorkspaceModals` | Workspace management dialog state (create/edit/delete/import) |
 | `useFileDrop` | File drag-drop event handler |
 | `useColors` | Attendance score → Tailwind class mapping (`getScoreColor`) |
@@ -175,7 +179,7 @@ Defined in `vite.config.ts` and mirrored in `tsconfig.app.json`:
 
 ### Routing
 
-All routes are under `DashboardLayout` (sidebar + header). `DashboardLayout` runs a `watchEffect` that overrides `--primary`, `--primary-foreground`, and `--workspace-color` on `:root` from the active workspace color. `--primary-foreground` is auto-computed for WCAG contrast using `contrastForeground(hex)`. This makes all `bg-primary`/`text-primary` utilities and the sidebar accent automatically workspace-colored with no per-component logic. See `DESIGN.md §2 — Workspace color accent` for the full surface inventory.
+All routes are under `DashboardLayout` (sidebar + header). `DashboardLayout` runs a `watchEffect` that overrides `--primary`, `--primary-foreground`, `--workspace-color`, `--sidebar-accent`, and `--sidebar-accent-foreground` on `:root` from the active workspace color. `--primary-foreground` is auto-computed for WCAG contrast using `contrastForeground(hex)`. This makes all `bg-primary`/`text-primary` utilities, hover states, and the sidebar active accent automatically workspace-colored with no per-component logic. See `DESIGN.md §2 — Workspace color accent` for the full surface inventory.
 
 Route groups by nav section:
 - `/attendance/` — analytics, reports, settings
@@ -305,13 +309,15 @@ If the app starts serving a new static asset type (e.g. `.wasm`, `.json`), add t
 
 Architectural decisions and coding conventions are documented in `guidelines/` and at the repo root:
 
-- `DESIGN.md` — UI/UX principles: layout, color tokens, typography, spacing, component patterns, page anatomy (including the **Page Heading Pattern** rule — h1 always unconditional, description fallback when no data, `text-2xl` fixed size), modal rules, feedback, icons, animation, and responsive conventions.
+- `DESIGN.md` — UI/UX principles: layout, color tokens, typography, spacing, component patterns, page anatomy (including the **Header Row Pattern** — always `flex-row`, mandatory items counter on mobile, static description on desktop, icon-only buttons on mobile, no `border-b`, `text-2xl` fixed), modal rules, feedback, icons, animation, and responsive conventions.
 - `guidelines/tables.md` — canonical rules for data tables: core pattern (Rules 1–3) + checklist. Sub-documents: `table-features.md` (filtering, pagination, bulk), `table-layout.md` (page anatomy, mobile toolbar), `table-columns.md` (date cells, row actions, ordinal, compact names), `table-sticky.md` (sticky header/columns, z-index).
 - `guidelines/detail-pages.md` — canonical structure for entity detail pages with a multi-view tab switcher (header zone, stats strip, view content, URL sync, loading/not-found states).
 - `guidelines/dialogs.md` — surface types (Dialog / AlertDialog / Sheet), sizing, anatomy, props API, stack depth, scrollable dialogs, profile dialog pattern, and migration plan for hand-rolled overlays.
 - `guidelines/calendar-views.md` — canonical structure for calendar views inside detail pages: multi-session variant (AnalyticsCalendarView) vs. single-session variant (ReportCalendarView), `useCalendar` composable usage, month jump-on-mount pattern.
 - `guidelines/edge-cases.md` — diagnosed performance and correctness edge cases with fixes and rules to prevent recurrence (e.g. TanStack search freeze, memory leak from unstable data references, Set/Array type mismatches).
-- `guidelines/empty-states.md` — canonical rules for empty state rendering: two-scenario model (no-data-at-all vs. filtered-empty), Zone 1 header visibility matrix, data-source selector persistence rule, no-selection placeholder variant, and navigation CTA patterns.
+- `guidelines/empty-states.md` — canonical rules for empty state rendering: two-scenario model (no-data-at-all vs. filtered-empty), header row visibility matrix, data-source selector persistence rule, no-selection placeholder variant, and navigation CTA patterns.
+- `guidelines/dropdown-pickers.md` — canonical shape for single-value selector dropdowns (`DropdownMenu` + `Button` trigger, `bg-primary/15 text-primary font-medium` on active item). Covers group pickers and format/scale pickers. Includes exclusion: `TeamSwitcher.vue` uses `Check` icon instead.
+- `guidelines/observability.md` — client-side observability architecture: logger (ring buffer, sessionStorage persistence, Error serialization, categories), app status indicator, worker error handling pattern (`withTimeout` + `classifyWorkerError` + `activeWorkerTasks`), stats service, diagnostics export, and checklist for new modules.
 
 ## First-load UX
 

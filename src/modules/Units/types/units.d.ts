@@ -10,5 +10,4 @@ export interface Unit {
     ordinal?: number
     createdAt?: string
     updatedAt?: string
-    workspaceId?: string
 }

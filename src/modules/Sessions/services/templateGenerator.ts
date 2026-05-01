@@ -391,7 +391,7 @@ function buildDocumentXml(): string {
 
     const ectsAbsent = tr([
         tc('{countAbsent}', { w: EW[0], center: true, size: 18 }),
-        tc(t('sessions.grades.absentTooltip'), {
+        tc(t('sessions.grades.absent'), {
             w: EW[1] + EW[2] + EW[3] + EW[4],
             span: 4,
             center: true,

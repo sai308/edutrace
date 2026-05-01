@@ -28,18 +28,18 @@ class FinalAssessmentsRepository extends BaseRepository<'finalAssessments'> {
         const store = tx.objectStore(this.storeName)
 
         // Check for existing assessment using composite index
-        const index = store.index('student_type' as any)
+        const index = store.index('student_type')
         const existing = await index.get([assessment.studentId, assessment.assessmentType])
 
         if (existing) {
             // Update existing assessment
-            const updated = {
+            const updated: FinalAssessment = {
                 ...existing,
                 ...assessment,
                 id: existing.id,
-                createdAt: existing.createdAt, // Preserve original creation time
-                documentedAt: (assessment as any).documentedAt ?? existing.documentedAt ?? new Date().toISOString(),
-            } as any
+                createdAt: existing.createdAt,
+                documentedAt: assessment.documentedAt ?? existing.documentedAt ?? new Date().toISOString(),
+            }
             await store.put(updated)
             await tx.done
             return { id: existing.id!, isNew: false, updated: true }
@@ -50,15 +50,15 @@ class FinalAssessmentsRepository extends BaseRepository<'finalAssessments'> {
         const id = await store.add({
             ...assessment,
             createdAt: now,
-            syncedAt: (assessment as any).syncedAt || null,
-            documentedAt: (assessment as any).documentedAt ?? now,
-        } as any)
+            syncedAt: assessment.syncedAt ?? null,
+            documentedAt: assessment.documentedAt ?? now,
+        } as FinalAssessment)
         await tx.done
         return { id, isNew: true, updated: false }
     }
 
     async getFinalAssessmentByStudent(studentId: string, assessmentType: string): Promise<FinalAssessment | undefined> {
-        return this.getFromIndex('student_type' as any, [studentId, assessmentType])
+        return this.getFromIndex('student_type', [studentId, assessmentType])
     }
 
     async getAllFinalAssessments(): Promise<FinalAssessment[]> {
@@ -66,11 +66,11 @@ class FinalAssessmentsRepository extends BaseRepository<'finalAssessments'> {
     }
 
     async getFinalAssessmentsByType(assessmentType: string): Promise<FinalAssessment[]> {
-        return this.getAllFromIndex('assessmentType' as any, assessmentType)
+        return this.getAllFromIndex('assessmentType', assessmentType)
     }
 
     async deleteFinalAssessment(id: string | number): Promise<void> {
-        return this.delete(id as any)
+        return this.delete(id as number)
     }
 
     async updateSyncStatus(id: string | number, syncedAt: string | null): Promise<void> {
@@ -78,9 +78,9 @@ class FinalAssessmentsRepository extends BaseRepository<'finalAssessments'> {
         const tx = db.transaction(this.storeName, 'readwrite')
         const store = tx.objectStore(this.storeName)
 
-        const assessment = await store.get(id as any)
+        const assessment = await store.get(id as number)
         if (assessment) {
-            ;(assessment as any).syncedAt = syncedAt
+            assessment.syncedAt = syncedAt
             await store.put(assessment)
         }
         await tx.done
@@ -91,9 +91,9 @@ class FinalAssessmentsRepository extends BaseRepository<'finalAssessments'> {
         const tx = db.transaction(this.storeName, 'readwrite')
         const store = tx.objectStore(this.storeName)
 
-        const assessment = await store.get(id as any)
+        const assessment = await store.get(id as number)
         if (assessment) {
-            ;(assessment as any).documentedAt = documentedAt
+            assessment.documentedAt = documentedAt
             await store.put(assessment)
         }
         await tx.done

@@ -7,8 +7,8 @@ Canonical rules for implementing TanStack data tables in EduTrace.
 | Document | What it covers |
 |---|---|
 | **[table-features.md](table-features.md)** | Filtering, pagination, row selection, column headers, bulk mode (Rules 4-7, 9) |
-| **[table-layout.md](table-layout.md)** | Page anatomy, Zone 1 header patterns, toolbar, mobile responsive layout (Rules 10, 16) |
-| **[table-columns.md](table-columns.md)** | Date/time cells, row actions, ordinal `#` column, compact names (Rules 12, 14, 15, 17) |
+| **[table-layout.md](table-layout.md)** | Page anatomy, header row patterns, toolbar, mobile responsive layout (Rules 10, 16) |
+| **[table-columns.md](table-columns.md)** | Date/time cells, row actions, ordinal `#` column, compact names, locale-aware text sort (Rules 12, 14, 15, 17, 18) |
 | **[table-sticky.md](table-sticky.md)** | Sticky header, pinned columns, background tokens, z-index layering (Rules 8, 11, 13) |
 
 ---
@@ -201,9 +201,10 @@ New table needed?
         ├─ Selection          checkbox column first, hidden by default (select: false) (Rule 6)
         │                     revealed via bulk-ops Switch in toolbar slot (Rule 9)
         ├─ Sortable columns   DataTableColumnHeader; meta.label on every hideable column (Rule 7)
+        ├─ Text column sort   localeCompare sortingFn on every sortable text/name column (Rule 18)
         │
         ├─ LAYOUT (table-layout.md)
-        ├─ Page layout        flex-col sm:flex-row header; ml-auto or self-end for button alignment (Rule 10)
+        ├─ Page layout        flex-row header always; justify-between + shrink-0 for alignment (Rule 10)
         ├─ Icon-only buttons  gap-2 on button + hidden sm:inline on label text (Rule 10)
         ├─ Scope selectors    hidden sm:inline on label prefix to prevent mobile overflow (Rule 10)
         ├─ Mobile toolbar?    search + bulk + columns → dual sm:hidden / hidden sm:flex sections (Rule 16)

@@ -22,11 +22,11 @@ class ModulesRepository extends BaseRepository<'modules'> {
     }
 
     async getModuleById(id: string | number): Promise<Module | undefined> {
-        return this.getById(id as any)
+        return this.getById(id as number)
     }
 
     async deleteModule(id: string | number): Promise<void> {
-        return this.delete(id as any)
+        return this.delete(id as number)
     }
 }
 

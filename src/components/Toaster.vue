@@ -21,7 +21,7 @@ const colors = {
 
 <template>
     <div
-        class="fixed bottom-4 right-4 z-100 flex flex-col gap-2 max-w-sm w-full pointer-events-none"
+        class="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:right-4 sm:w-full sm:max-w-sm z-100 flex flex-col gap-2 pointer-events-none"
     >
         <TransitionGroup
             enter-active-class="transition duration-300 ease-out"

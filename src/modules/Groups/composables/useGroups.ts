@@ -1,6 +1,7 @@
 import type { EnrichedGroup, GroupFormData } from '../types/groups'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { activeWorkerTasks } from '@/shared/lib/appStatus'
 import { logger } from '@/shared/lib/logger'
 import { toast } from '@/shared/services/toast'
 import { groupsService } from '../services/groups.service'
@@ -17,7 +18,10 @@ export function useGroups() {
     const { t } = useI18n()
 
     async function loadData(): Promise<void> {
+        if (isLoading.value)
+            return
         isLoading.value = true
+        activeWorkerTasks.value++
         try {
             const data = await groupsService.loadGroupsData()
             groups.value = data.groups
@@ -26,11 +30,12 @@ export function useGroups() {
             allTeachers.value = data.allTeachers
         }
         catch (error) {
-            logger.error('Failed to load groups data:', error)
+            logger.error('Failed to load groups data:', error, 'worker')
             toast.error(t('groups.errors.loadFailed'))
         }
         finally {
             isLoading.value = false
+            activeWorkerTasks.value = Math.max(0, activeWorkerTasks.value - 1)
         }
     }
 

@@ -1,5 +1,6 @@
 import type { StudentDashboardStats } from '@Students/types/students'
 import type { ColumnDef } from '@tanstack/vue-table'
+import type { Ref } from 'vue'
 import type { ComposerTranslation } from 'vue-i18n'
 import type { RowActionItem } from '@/shared/types/table'
 import { h } from 'vue'
@@ -20,6 +21,7 @@ export function createColumns(
     t: ComposerTranslation,
     getScoreColor: (v: number) => string,
     ordinalMap: Map<string, number>,
+    isCompact: Ref<boolean>,
 ): ColumnDef<StudentDashboardStats>[] {
     return [
         {
@@ -59,13 +61,16 @@ export function createColumns(
         {
             accessorKey: 'name',
             meta: { label: t('students.table.name') },
+            sortingFn: (a, b) =>
+                (a.getValue('name') as string).localeCompare(b.getValue('name') as string, undefined, {
+                    sensitivity: 'base',
+                }),
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('students.table.name') }),
-            cell: ({ row }) =>
-                h(
-                    'div',
-                    { class: 'font-medium truncate', title: row.getValue('name') as string },
-                    row.getValue('name') as string,
-                ),
+            cell: ({ row }) => {
+                const name = row.getValue('name') as string
+                const display = isCompact.value ? (name.split(/\s+/)[0] ?? name) : name
+                return h('div', { class: 'font-medium truncate', title: name }, display)
+            },
         },
         {
             id: 'groups',

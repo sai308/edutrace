@@ -17,7 +17,7 @@ Part of the [table guidelines](tables.md). See also: [features](table-features.m
   :key="header.id"
   :class="[
     header.id === 'name'
-      ? 'sticky left-0 z-40 bg-card shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
+      ? 'sticky left-0 z-40 bg-muted/50 backdrop-blur supports-backdrop-filter:bg-muted/40 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
       : '',
   ]"
 >
@@ -30,7 +30,7 @@ Part of the [table guidelines](tables.md). See also: [features](table-features.m
   :key="cell.id"
   :class="[
     cell.column.id === 'name'
-      ? 'sticky left-0 z-20 bg-card shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
+      ? 'sticky left-0 z-20 bg-muted/50 backdrop-blur supports-backdrop-filter:bg-muted/40 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
       : '',
   ]"
 >
@@ -40,11 +40,27 @@ Part of the [table guidelines](tables.md). See also: [features](table-features.m
 
 ### Sticky column background
 
-Sticky cells must use **`bg-card`** — a fully opaque background that prevents scrolled-under rows from bleeding through. Do not use `bg-background/95` (semi-transparent, causes bleed) or `bg-muted/50 backdrop-blur` (also semi-transparent). The right-border shadow provides the visual pinning indicator without any transparency.
+Sticky cells must use the **glassy background token**:
 
-- **Left-pinned column** (name, student): `bg-card`
-- **Right-pinned column** (totals, percentage): `bg-card`
-- The `<TableHeader>` element itself also uses `bg-card` — both the row and its sticky cell share the same token.
+```
+bg-muted/50 backdrop-blur supports-backdrop-filter:bg-muted/40
+```
+
+This creates a frosted-glass effect: semi-transparent on browsers that support `backdrop-filter`, and falls back to the slightly more opaque `bg-muted/50` on those that don't. The `supports-backdrop-filter:` variant ensures no intermediate half-transparent artifact appears.
+
+Apply identically to **both** the sticky `<TableHead>` (corner) and sticky `<TableCell>` (body):
+
+```vue
+<!-- Header corner -->
+'sticky left-0 z-40 bg-muted/50 backdrop-blur supports-backdrop-filter:bg-muted/40 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
+
+<!-- Body cell -->
+'sticky left-0 z-20 bg-muted/50 backdrop-blur supports-backdrop-filter:bg-muted/40 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)] font-medium'
+```
+
+The `<TableHeader>` row itself keeps **`bg-card`** (fully opaque) — only the sticky cells within it use the glassy token.
+
+Do **not** use `bg-card` on sticky cells — it is fully opaque and creates a hard visible seam as content scrolls under the pinned column. Do not use `bg-background/95` — different colour token, inconsistent with the design system.
 
 ### Z-index layering when sticky columns and sticky header coexist
 
@@ -96,14 +112,14 @@ Apply if the table has **5 or more visible data columns** on a typical load, or 
 <!-- Header -->
 <TableHead
   :class="header.id === 'name'
-    ? 'sticky left-0 z-40 w-[180px] sm:w-[240px] bg-card shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
+    ? 'sticky left-0 z-40 w-[180px] sm:w-[240px] bg-muted/50 backdrop-blur supports-backdrop-filter:bg-muted/40 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
     : ''"
 >
 
 <!-- Body -->
 <TableCell
   :class="cell.column.id === 'name'
-    ? 'sticky left-0 z-20 bg-card shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)] font-medium'
+    ? 'sticky left-0 z-20 bg-muted/50 backdrop-blur supports-backdrop-filter:bg-muted/40 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)] font-medium'
     : ''"
 >
 ```
@@ -127,7 +143,7 @@ Apply if the table has **5 or more visible data columns** on a typical load, or 
 
 Rules:
 - Pin at most **two** columns: one on the left (name/title), one on the right (total/percentage) when a summary column exists.
-- The pinned column background must use `bg-card` — a transparent or semi-transparent background will let scrolled content bleed through (see Rule 8).
+- The pinned column cells must use `bg-muted/50 backdrop-blur supports-backdrop-filter:bg-muted/40` — see Rule 8 for the full token and rationale.
 - The `<TableHeader>` must use `z-30` (not `z-10`) whenever sticky columns are present. See Rule 8 for the full z-index explanation.
 - The shadow on the left pin faces right (`shadow-[1px_0_0_0_...]`); the shadow on a right pin faces left (`shadow-[-1px_0_0_0_...]`).
 - Do **not** apply sticky columns to simple 3–4 column tables that already fit comfortably on tablet without scrolling.

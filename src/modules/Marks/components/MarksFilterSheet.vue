@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { Calendar } from 'lucide-vue-next'
+import type { Group } from '@Groups/types/groups'
+import { Calendar, ChevronDown  } from 'lucide-vue-next'
 import { nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
@@ -13,11 +15,13 @@ export interface MarksFilters {
     synced: 'all' | 'unsynced'
     dateFrom: string
     hideFailed: boolean
+    group: string | null
 }
 
 const props = defineProps<{
     open: boolean
     filters: MarksFilters
+    groups?: Group[]
 }>()
 
 const emit = defineEmits<{
@@ -57,9 +61,10 @@ function apply() {
 
 function clear() {
     localFilters.value = {
-        synced: 'unsynced', // Default to unsynced as requested
+        synced: 'unsynced',
         dateFrom: '',
         hideFailed: true,
+        group: null,
     }
 }
 </script>
@@ -75,6 +80,35 @@ function clear() {
             </SheetHeader>
 
             <div class="grid gap-6 p-4">
+                <!-- Group Selector -->
+                <div v-if="groups && groups.length > 0" class="space-y-3">
+                    <Label class="text-base font-semibold">{{ t('marks.table.group') }}</Label>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger as-child>
+                            <Button variant="outline" class="w-full justify-between gap-1 font-normal">
+                                <span class="truncate">{{ localFilters.group || t('marks.filterModal.allGroups') }}</span>
+                                <ChevronDown class="h-4 w-4 opacity-50 shrink-0" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent class="w-[var(--radix-dropdown-menu-trigger-width)] max-h-[300px] overflow-y-auto">
+                            <DropdownMenuItem
+                                :class="!localFilters.group ? 'bg-primary/15 text-primary font-medium' : ''"
+                                @click="localFilters.group = null"
+                            >
+                                {{ t('marks.filterModal.allGroups') }}
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                v-for="group in groups"
+                                :key="group.id"
+                                :class="localFilters.group === group.name ? 'bg-primary/15 text-primary font-medium' : ''"
+                                @click="localFilters.group = group.name"
+                            >
+                                {{ group.name }}
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+
                 <div class="grid grid-cols-2 gap-4">
                     <!-- Synced Status -->
                     <div class="space-y-3">

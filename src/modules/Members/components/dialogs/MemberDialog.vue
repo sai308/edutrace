@@ -166,7 +166,6 @@ function handleOpenChange(val: boolean): void {
                         id="name"
                         v-model="formData.name"
                         :placeholder="$t('members.dialog.namePlaceholder')"
-                        autofocus
                         :class="{ 'border-destructive': errors.name }"
                     />
                     <span v-if="errors.name" class="text-[0.8rem] text-destructive">{{ errors.name }}</span>

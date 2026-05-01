@@ -1,5 +1,6 @@
 import type { Meet } from '@Analytics/types/analytics'
 import type { Member } from '../types/students'
+import { logger } from '@/shared/lib/logger'
 import { BaseRepository } from '@/shared/services/BaseRepository'
 
 class StudentsRepository extends BaseRepository<'members'> {
@@ -53,16 +54,9 @@ class StudentsRepository extends BaseRepository<'members'> {
 
     async syncAllMembersFromMeets(): Promise<number> {
         const db = await this.getDb()
-
-        // This functionality needs access to Meets repo or raw DB access
-        // Since we are in the repo layer, we can access 'meets' store via DB or inject MeetRepo.
-        // For simplicity/performance in this batch operation, direct DB access is fine inside the service layer
-        // BUT ideally we should decouple.
-        // Let's stick to direct DB for now as it was in original.
-
         const allMeets = await db.getAll('meets')
         const existingMembers = await this.getAll()
-        const membersMap = new Map<string, Member>() // Key: name, Value: member
+        const membersMap = new Map<string, Member>()
 
         existingMembers.forEach(m => membersMap.set(m.name, m))
 
@@ -79,11 +73,13 @@ class StudentsRepository extends BaseRepository<'members'> {
                     const newMember: Member = {
                         id: crypto.randomUUID(),
                         name: participant.name,
-                        groupName: meet.groupName || 'Unknown', // Inferred from meet
+                        email: participant.email || '',
+                        groupName: meet.groupName || null,
                         role: 'student',
+                        aliases: [],
+                        hidden: false,
                         createdAt: new Date().toISOString(),
                     }
-                    // Add to map to prevent duplicates in this run
                     membersMap.set(participant.name, newMember)
                     await store.add(newMember)
                     addedCount++
@@ -96,10 +92,12 @@ class StudentsRepository extends BaseRepository<'members'> {
 
     async hideMember(id: string): Promise<string | undefined> {
         const member = await this.getById(id)
-        if (member) {
-            member.hidden = true
-            return this.put(member)
+        if (!member) {
+            logger.warn(`hideMember: member ${id} not found`)
+            return undefined
         }
+        member.hidden = true
+        return this.put(member)
     }
 
     async hideMembers(ids: string[]): Promise<void> {
@@ -107,22 +105,21 @@ class StudentsRepository extends BaseRepository<'members'> {
         const tx = db.transaction(this.storeName, 'readwrite')
         const store = tx.objectStore(this.storeName)
 
-        for (const id of ids) {
-            const member = await store.get(id)
-            if (member) {
-                member.hidden = true
-                await store.put(member)
-            }
-        }
+        const members = await Promise.all(ids.map(id => store.get(id)))
+        await Promise.all(
+            members.map(member => member ? store.put({ ...member, hidden: true }) : Promise.resolve()),
+        )
         await tx.done
     }
 
     async restoreMember(id: string): Promise<string | undefined> {
         const member = await this.getById(id)
-        if (member) {
-            member.hidden = false
-            return this.put(member)
+        if (!member) {
+            logger.warn(`restoreMember: member ${id} not found`)
+            return undefined
         }
+        member.hidden = false
+        return this.put(member)
     }
 
     async restoreMembers(ids: string[]): Promise<void> {
@@ -130,13 +127,10 @@ class StudentsRepository extends BaseRepository<'members'> {
         const tx = db.transaction(this.storeName, 'readwrite')
         const store = tx.objectStore(this.storeName)
 
-        for (const id of ids) {
-            const member = await store.get(id)
-            if (member) {
-                member.hidden = false
-                await store.put(member)
-            }
-        }
+        const members = await Promise.all(ids.map(id => store.get(id)))
+        await Promise.all(
+            members.map(member => member ? store.put({ ...member, hidden: false }) : Promise.resolve()),
+        )
         await tx.done
     }
 

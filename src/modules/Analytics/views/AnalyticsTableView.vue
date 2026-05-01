@@ -14,7 +14,7 @@ const searchQuery = ref('')
     <AnalyticsDataTable :stats="stats" :search-query="searchQuery">
         <template #toolbar>
             <div class="relative flex-1 max-w-xs">
-                <Search class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
                     v-model="searchQuery"
                     :placeholder="$t('analytics.details.table.searchPlaceholder')"

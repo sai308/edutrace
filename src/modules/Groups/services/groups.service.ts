@@ -11,6 +11,7 @@ import { studentsRepository } from '@Students/services/students.repository'
 import { tasksRepository } from '@Tasks/services/tasks.repository'
 import { wrap } from 'comlink'
 import { v4 as uuidv4 } from 'uuid'
+import { classifyWorkerError, withTimeout } from '@/shared/lib/workerError'
 import { settingsRepository } from '@/shared/services/settings.repository'
 import GroupsWorker from '@/workers/groups.worker?worker'
 import { COURSE_MAX, COURSE_MIN } from '../constants/groups.constants'
@@ -36,7 +37,7 @@ interface IGroupsWorker {
         teacherList: string[],
         allTasks: Task[],
         allMarks: Mark[],
-    ) => Promise<GroupsData & { teacherSet: Set<string> }>
+    ) => Promise<{ groups: EnrichedGroup[], memberCounts: Record<string, number>, allMeetIds: string[] }>
 }
 
 export class GroupsService {
@@ -68,18 +69,25 @@ export class GroupsService {
             JSON.parse(JSON.stringify(allMarks)),
         ] as const
 
-        const result = await this.worker.processGroupsData(...payload)
+        const result = await withTimeout(this.worker.processGroupsData(...payload), 30_000).catch((e) => {
+            throw classifyWorkerError(e)
+        })
         return {
-            groups: result.groups as EnrichedGroup[],
+            groups: result.groups,
             memberCounts: result.memberCounts,
             allMeetIds: result.allMeetIds,
-            // Use the settings teacher list (role-filtered, managed in Settings page)
-            // rather than all meet participants from the worker.
             allTeachers: teacherList,
         }
     }
 
-    async saveGroup(formData: GroupFormData): Promise<Group> {
+    private async syncMembersFromMeets(group: Group): Promise<void> {
+        if (!group.meetId)
+            return
+        const meets = await meetsRepository.getMeetsByMeetId(group.meetId)
+        await studentsRepository.syncParticipants(meets, group.name)
+    }
+
+    async saveGroup(formData: GroupFormData): Promise<void> {
         const name = formData.name?.trim()
         const meetId = formData.meetId?.trim()
 
@@ -95,7 +103,7 @@ export class GroupsService {
             meetId,
         }
         await groupsRepository.saveGroup(group)
-        return group
+        await this.syncMembersFromMeets(group)
     }
 
     async deleteGroup(id: string | number): Promise<void> {

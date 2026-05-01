@@ -1,5 +1,6 @@
 import type { DetailedMatrixRow } from '@Analytics/types/analytics'
 import type { ColumnDef } from '@tanstack/vue-table'
+import type { Ref } from 'vue'
 import type { ComposerTranslation } from 'vue-i18n'
 import { ATTENDANCE_BADGE_THRESHOLDS } from '@Analytics/constants/analytics.constants'
 import { h } from 'vue'
@@ -23,6 +24,7 @@ export function createColumns(
     t: ComposerTranslation,
     dates: string[],
     { formatDate }: Formatters,
+    isCompact: Ref<boolean>,
 ): ColumnDef<DetailedMatrixRow>[] {
     const dateColumns: ColumnDef<DetailedMatrixRow>[] = dates.map(date => ({
         id: date,
@@ -76,13 +78,15 @@ export function createColumns(
             id: 'name',
             accessorKey: 'name',
             meta: { label: t('analytics.details.table.student') },
+            sortingFn: (a, b) =>
+                (a.getValue('name') as string).localeCompare(b.getValue('name') as string, undefined, {
+                    sensitivity: 'base',
+                }),
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('analytics.details.table.student') }),
             cell: ({ row }) => {
                 const name = row.original.name
-                return h('div', { class: 'font-medium text-xs sm:text-sm' }, [
-                    h('span', { class: 'hidden sm:inline-block truncate max-w-[180px]' }, name),
-                    h('span', { class: 'inline-block sm:hidden truncate max-w-[120px]', title: name }, name),
-                ])
+                const display = isCompact.value ? (name.split(/\s+/)[0] ?? name) : name
+                return h('div', { class: 'font-medium text-xs sm:text-sm truncate', title: name }, display)
             },
         },
         ...dateColumns,

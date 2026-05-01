@@ -3,6 +3,14 @@ import Papa from 'papaparse';
 import { v4 as uuidv4 } from 'uuid';
 import { MEET_REPORT_KEYWORDS, MARKS_CSV_REQUIRED_HEADERS, MARKS_CSV_KEYWORDS } from '../shared/constants/headers';
 
+function detectEffectiveMaxPoints(rawMaxPoints, maxObservedScore) {
+    if (rawMaxPoints === 0)
+        return maxObservedScore <= 5 ? 5 : 100
+    if (maxObservedScore > rawMaxPoints)
+        return maxObservedScore <= 100 ? 100 : maxObservedScore
+    return rawMaxPoints
+}
+
 /**
  * --- Shared Constants & Helpers ---
  */
@@ -263,10 +271,24 @@ const parser = {
             throw new Error('Invalid Marks CSV: Mismatch or absence of task header rows.');
         }
 
+        // First pass: find max observed score per task to detect actual grading scale.
+        const maxObservedScore = new Array(taskNames.length).fill(0);
+        for (let i = 3; i < allRows.length; i++) {
+            const cols = allRows[i];
+            for (let j = 0; j < taskNames.length; j++) {
+                const raw = parseFloat((cols[3 + j] || '').trim());
+                if (!isNaN(raw)) maxObservedScore[j] = Math.max(maxObservedScore[j], raw);
+            }
+        }
+
+        const effectiveMaxPoints = taskMaxPoints.map((rawMax, j) =>
+            detectEffectiveMaxPoints(rawMax, maxObservedScore[j])
+        );
+
         const tasks = taskNames.map((name, index) => ({
             name: name.trim(),
             date: normalizeTaskDate(taskDates[index]),
-            maxPoints: taskMaxPoints[index]
+            maxPoints: effectiveMaxPoints[index]
         }));
 
         const studentsData = [];
@@ -287,9 +309,9 @@ const parser = {
             for (let j = 0; j < taskNames.length; j++) {
                 const markValue = cols[scoreStartIndex + j];
                 if (markValue && markValue.trim().length > 0) {
-                    const score = parseFloat(markValue.trim());
-                    if (!isNaN(score)) {
-                        marks.push({ taskIndex: j, score, synced: false });
+                    const raw = parseFloat(markValue.trim());
+                    if (!isNaN(raw)) {
+                        marks.push({ taskIndex: j, score: raw, synced: false });
                     }
                 }
             }

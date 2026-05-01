@@ -1,11 +1,45 @@
 import { describe, expect, it } from 'vitest'
-import { computeECTSStats, toECTS, toNationalGrade } from '../grades'
+import { computeECTSStats, normalizeImportScore, toECTS, toNationalGrade } from '../grades'
 
 // Minimal t() stub — returns the last segment of the i18n key
 const t = (key: string) => key.split('.').at(-1) ?? key
 // Simulates the exam form-of-control translated value
 const EXAM = 'exam'
 const CREDIT = 'credit'
+
+describe('normalizeImportScore', () => {
+    it('proportional when maxPoints is non-zero and not 100', () => {
+        expect(normalizeImportScore(4, 5)).toBe(80)
+        expect(normalizeImportScore(3, 5)).toBe(60)
+        expect(normalizeImportScore(5, 5)).toBe(100)
+        expect(normalizeImportScore(8, 10)).toBe(80)
+        expect(normalizeImportScore(45, 50)).toBe(90)
+    })
+
+    it('heuristic 5-scale when maxPoints=0 and score ≤ 5', () => {
+        expect(normalizeImportScore(5, 0)).toBe(100)
+        expect(normalizeImportScore(4, 0)).toBe(80)
+        expect(normalizeImportScore(3, 0)).toBe(60)
+        expect(normalizeImportScore(2, 0)).toBe(40)
+        expect(normalizeImportScore(1, 0)).toBe(20)
+    })
+
+    it('passes through 100-scale scores unchanged', () => {
+        expect(normalizeImportScore(85, 100)).toBe(85)
+        expect(normalizeImportScore(100, 100)).toBe(100)
+        expect(normalizeImportScore(0, 100)).toBe(0)
+    })
+
+    it('uses 100-scale pass-through when maxPoints=0 and score > 5', () => {
+        expect(normalizeImportScore(75, 0)).toBe(75)
+        expect(normalizeImportScore(6, 0)).toBe(6)
+    })
+
+    it('clamps output to 0-100', () => {
+        expect(normalizeImportScore(150, 100)).toBe(100)
+        expect(normalizeImportScore(-5, 0)).toBe(0)
+    })
+})
 
 describe('toECTS', () => {
     it('maps grade bands to correct ECTS letters', () => {
@@ -45,9 +79,9 @@ describe('toECTS', () => {
 
 describe('toNationalGrade', () => {
     describe('absent (null grade)', () => {
-        it('returns absentTooltip key regardless of form-of-control', () => {
-            expect(toNationalGrade(null, EXAM, t)).toBe('absentTooltip')
-            expect(toNationalGrade(null, CREDIT, t)).toBe('absentTooltip')
+        it('returns absent key regardless of form-of-control', () => {
+            expect(toNationalGrade(null, EXAM, t)).toBe('absent')
+            expect(toNationalGrade(null, CREDIT, t)).toBe('absent')
         })
     })
 

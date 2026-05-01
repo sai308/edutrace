@@ -30,10 +30,12 @@ export function buildTask(formData: Partial<Task>, existingId?: string): Task {
 }
 
 /**
- * Builds and persists a task. Throws ConstraintError if a task with the
- * same normalizedName already exists (enforced by IndexedDB unique index).
+ * Builds and persists a task. Returns the saved Task.
+ * Throws ConstraintError if a task with the same normalizedName already exists
+ * (enforced by IndexedDB unique index).
  */
-export async function saveTask(formData: Partial<Task>, existingTask?: Task | null): Promise<void> {
+export async function saveTask(formData: Partial<Task>, existingTask?: Task | null): Promise<Task> {
     const task = buildTask(formData, existingTask?.id)
     await tasksRepository.saveTask(task)
+    return task
 }

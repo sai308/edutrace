@@ -59,7 +59,7 @@ class StudentStatsService {
             settingsRepository.getTeachers(),
             marksRepository.getMarksByStudentIds(studentIds),
             settingsRepository.getDurationLimit(),
-            groupName ? tasksRepository.getAllTasks() : tasksRepository.getAllTasks(),
+            tasksRepository.getAllTasks(),
         ]
 
         const [allMeets, groupMap, teacherList, marks, durationLimitMinutes, tasks] = await Promise.all(promises)

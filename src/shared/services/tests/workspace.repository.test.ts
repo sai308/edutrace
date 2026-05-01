@@ -280,7 +280,7 @@ describe('exportWorkspaces', () => {
 
     it('includes data written to the workspace before export', async () => {
         const db = await initDb('ws-data', 'Data WS', DB_WS_A)
-        await db.put('groups', { id: 'g1', name: 'CS-101', meetId: 'abc', createdAt: '' })
+        await db.put('groups', { id: 'g1', name: 'CS-101', meetId: 'abc' })
         await databaseService.resetConnection()
 
         const result = await workspaceRepository.exportWorkspaces(['ws-data'])
@@ -291,8 +291,8 @@ describe('exportWorkspaces', () => {
 
     it('exports data from multiple stores', async () => {
         const db = await initDb('ws-ms', 'Multi Store', DB_WS_A)
-        await db.put('groups', { id: 'g1', name: 'G1', meetId: 'x', createdAt: '' })
-        await db.put('meets', { id: 'm1', name: 'M1', createdAt: '', groupId: 'g1' })
+        await db.put('groups', { id: 'g1', name: 'G1', meetId: 'x' })
+        await db.put('meets', { id: 'm1', meetId: 'x', date: '2024-01-01', participants: [] })
         await databaseService.resetConnection()
 
         const result = await workspaceRepository.exportWorkspaces(['ws-ms'])
@@ -303,10 +303,10 @@ describe('exportWorkspaces', () => {
 
     it('exports multiple workspaces in one call', async () => {
         const db1 = await initDb('ws-m1', 'Multi 1', DB_WS_A)
-        await db1.put('groups', { id: 'g-m1', name: 'M1', meetId: 'x', createdAt: '' })
+        await db1.put('groups', { id: 'g-m1', name: 'M1', meetId: 'x' })
 
         const db2 = await initDb('ws-m2', 'Multi 2', DB_WS_B)
-        await db2.put('groups', { id: 'g-m2', name: 'M2', meetId: 'y', createdAt: '' })
+        await db2.put('groups', { id: 'g-m2', name: 'M2', meetId: 'y' })
 
         // Both workspaces must be registered for exportWorkspaces to find them
         seedWorkspaces([
@@ -397,7 +397,7 @@ describe('importWorkspaces', () => {
     it('clears pre-existing data before restoring imported records', async () => {
         // Seed the workspace with old data
         const db = await initDb('ws-owt', 'Overwrite', DB_WS_A)
-        await db.put('groups', { id: 'old-g', name: 'Old', meetId: 'old', createdAt: '' })
+        await db.put('groups', { id: 'old-g', name: 'Old', meetId: 'old' })
         await databaseService.resetConnection()
 
         // Import new data for the same workspace / DB
@@ -476,8 +476,8 @@ describe('importWorkspaces', () => {
 
     it('full round-trip: exported data is faithfully restored after wipe', async () => {
         const db = await initDb('ws-rt', 'Round Trip', DB_WS_B)
-        await db.put('groups', { id: 'rt-g1', name: 'RT Group', meetId: 'rt-x', createdAt: '' })
-        await db.put('meets', { id: 'rt-m1', name: 'RT Meet', createdAt: '', groupId: 'rt-g1' })
+        await db.put('groups', { id: 'rt-g1', name: 'RT Group', meetId: 'rt-x' })
+        await db.put('meets', { id: 'rt-m1', meetId: 'rt-x', date: '2024-01-01', participants: [] })
         await databaseService.resetConnection()
 
         const exported = await workspaceRepository.exportWorkspaces(['ws-rt'])
@@ -504,9 +504,9 @@ describe('importWorkspaces', () => {
 describe('deleteWorkspacesData', () => {
     it('clears all data from every maintenance store', async () => {
         const db = await initDb('ws-clr', 'Clear', DB_WS_A)
-        await db.put('groups', { id: 'g1', name: 'G1', meetId: 'x', createdAt: '' })
-        await db.put('meets', { id: 'm1', name: 'M1', createdAt: '', groupId: 'g1' })
-        await db.put('marks', { id: 'mk1', value: 85, createdAt: '' })
+        await db.put('groups', { id: 'g1', name: 'G1', meetId: 'x' })
+        await db.put('meets', { id: 'm1', meetId: 'x', date: '2024-01-01', participants: [] })
+        await db.put('marks', { id: 'mk1', taskId: 'task-1', studentId: 'st-1', groupName: 'G1', value: 85, createdAt: '' })
         await databaseService.resetConnection()
 
         await workspaceRepository.deleteWorkspacesData(['ws-clr'])
@@ -533,10 +533,10 @@ describe('deleteWorkspacesData', () => {
 
     it('clears data for multiple workspaces in one call', async () => {
         const db1 = await initDb('ws-clr1', 'Clear 1', DB_WS_A)
-        await db1.put('groups', { id: 'g1', name: 'G1', meetId: 'x', createdAt: '' })
+        await db1.put('groups', { id: 'g1', name: 'G1', meetId: 'x' })
 
         const db2 = await initDb('ws-clr2', 'Clear 2', DB_WS_B)
-        await db2.put('groups', { id: 'g2', name: 'G2', meetId: 'y', createdAt: '' })
+        await db2.put('groups', { id: 'g2', name: 'G2', meetId: 'y' })
 
         seedWorkspaces([
             { id: 'ws-clr1', name: 'Clear 1', dbName: DB_WS_A },

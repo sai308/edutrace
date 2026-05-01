@@ -1,4 +1,5 @@
 import type { SessionEntry, SessionReport } from '@Sessions/models/session.model'
+import type { StudentSummaryData } from '@Summary/types/summary'
 import { GradeTypeEnum, SessionStatusEnum, SessionTypeEnum } from '@Sessions/models/session.model'
 import { summaryService } from '@Summary/services/summary.service'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -12,17 +13,41 @@ vi.mock('@Summary/services/summary.service')
 
 const group = { id: 'g1', name: 'Group A', meetId: 'meet-001' }
 
-function makeStudent(overrides: Record<string, unknown> = {}) {
+function makeStudent(overrides: Record<string, unknown> = {}): StudentSummaryData {
     return {
         id: 's1',
         name: 'Alice',
+        aliases: [],
         groups: ['Group A'],
-        examGradeRaw: null,
+        marks: [],
+        sessionCount: 0,
+        totalSessions: 0,
+        totalDuration: 0,
+        averageAttendancePercent: 0,
+        averageMark: 0,
+        totalTasks: 0,
+        completedTasks: 0,
+        completionPercent: 0,
+        completion: 0,
+        completionExact: '',
+        completionDetails: '',
+        attendance: 0,
+        attendanceExact: '',
+        attendanceDetails: '',
+        status: 'automatic',
+        statusCause: '',
+        isAllowed: false,
+        moduleGrades: {},
+        moduleDetails: {},
+        total: null,
         totalRaw: null,
+        examGrade: null,
+        examGradeRaw: null,
         examIsAuto: true,
         completedAt: '2024-06-01T00:00:00.000Z',
+        meets: [],
         ...overrides,
-    }
+    } as StudentSummaryData
 }
 
 function makeEntry(overrides: Partial<SessionEntry> = {}): SessionEntry {
@@ -143,34 +168,30 @@ describe('sessionsService', () => {
     describe('syncMainSession', () => {
         it('returns closed session without syncing', async () => {
             const closed = makeSession({ status: SessionStatusEnum.CLOSED })
-            ;(sessionRepository.getById as any).mockResolvedValue(closed)
 
-            const result = await service.syncMainSession(group, 'session-1')
+            const result = await service.syncMainSession(closed, { students: [] })
 
             expect(result.status).toBe(SessionStatusEnum.CLOSED)
-            expect(summaryService.loadExamData).not.toHaveBeenCalled()
+            expect(sessionRepository.put).not.toHaveBeenCalled()
         })
 
         it('returns non-MAIN session without syncing', async () => {
             const retake = makeSession({ sessionType: SessionTypeEnum.FIRST_RETAKE })
-            ;(sessionRepository.getById as any).mockResolvedValue(retake)
 
-            const result = await service.syncMainSession(group, 'session-1')
+            const result = await service.syncMainSession(retake, { students: [] })
 
-            expect(summaryService.loadExamData).not.toHaveBeenCalled()
             expect(result).toBe(retake)
+            expect(sessionRepository.put).not.toHaveBeenCalled()
         })
 
         it('updates an AUTO grade entry when a new value is available', async () => {
             const session = makeSession({
                 entries: [makeEntry({ grade: null, gradeType: GradeTypeEnum.AUTO })],
             })
-            ;(sessionRepository.getById as any).mockResolvedValue(session)
-            ;(summaryService.loadExamData as any).mockResolvedValue({
+
+            const result = await service.syncMainSession(session, {
                 students: [makeStudent({ examGradeRaw: 77 })],
             })
-
-            const result = await service.syncMainSession(group, 'session-1')
 
             expect(result.entries[0]!.grade).toBe(77)
             expect(sessionRepository.put).toHaveBeenCalled()
@@ -180,12 +201,10 @@ describe('sessionsService', () => {
             const session = makeSession({
                 entries: [makeEntry({ grade: 50, gradeType: GradeTypeEnum.MANUAL })],
             })
-            ;(sessionRepository.getById as any).mockResolvedValue(session)
-            ;(summaryService.loadExamData as any).mockResolvedValue({
+
+            const result = await service.syncMainSession(session, {
                 students: [makeStudent({ examGradeRaw: 90 })],
             })
-
-            const result = await service.syncMainSession(group, 'session-1')
 
             expect(result.entries[0]!.grade).toBe(50)
             expect(sessionRepository.put).not.toHaveBeenCalled()
@@ -193,22 +212,14 @@ describe('sessionsService', () => {
 
         it('adds newly joined students not yet in the session', async () => {
             const session = makeSession({ entries: [] })
-            ;(sessionRepository.getById as any).mockResolvedValue(session)
-            ;(summaryService.loadExamData as any).mockResolvedValue({
+
+            const result = await service.syncMainSession(session, {
                 students: [makeStudent({ id: 's-new', name: 'Bob', examGradeRaw: 65 })],
             })
-
-            const result = await service.syncMainSession(group, 'session-1')
 
             expect(result.entries).toHaveLength(1)
             expect(result.entries[0]!.studentId).toBe('s-new')
             expect(sessionRepository.put).toHaveBeenCalled()
-        })
-
-        it('throws when session is not found', async () => {
-            ;(sessionRepository.getById as any).mockResolvedValue(undefined)
-
-            await expect(service.syncMainSession(group, 'missing')).rejects.toThrow('Session not found')
         })
     })
 
@@ -293,12 +304,11 @@ describe('sessionsService', () => {
     describe('syncRetakeSession', () => {
         it('returns a MAIN session without syncing', async () => {
             const mainSession = makeSession({ sessionType: SessionTypeEnum.MAIN })
-            ;(sessionRepository.getById as any).mockResolvedValue(mainSession)
 
-            const result = await service.syncRetakeSession(group, 'session-1')
+            const result = await service.syncRetakeSession(mainSession, { students: [] })
 
-            expect(summaryService.loadExamData).not.toHaveBeenCalled()
             expect(result).toBe(mainSession)
+            expect(sessionRepository.put).not.toHaveBeenCalled()
         })
 
         it('does not add new students to the retake session', async () => {
@@ -306,12 +316,10 @@ describe('sessionsService', () => {
                 sessionType: SessionTypeEnum.FIRST_RETAKE,
                 entries: [makeEntry({ studentId: 's1' })],
             })
-            ;(sessionRepository.getById as any).mockResolvedValue(retake)
-            ;(summaryService.loadExamData as any).mockResolvedValue({
+
+            const result = await service.syncRetakeSession(retake, {
                 students: [makeStudent({ id: 's1', examGradeRaw: 55 }), makeStudent({ id: 's-new', examGradeRaw: 70 })],
             })
-
-            const result = await service.syncRetakeSession(group, 'session-1')
 
             expect(result.entries).toHaveLength(1)
             expect(result.entries[0]!.studentId).toBe('s1')
@@ -322,15 +330,86 @@ describe('sessionsService', () => {
                 sessionType: SessionTypeEnum.FIRST_RETAKE,
                 entries: [makeEntry({ grade: null, gradeType: GradeTypeEnum.AUTO })],
             })
-            ;(sessionRepository.getById as any).mockResolvedValue(retake)
-            ;(summaryService.loadExamData as any).mockResolvedValue({
+
+            const result = await service.syncRetakeSession(retake, {
                 students: [makeStudent({ examGradeRaw: 68 })],
             })
 
-            const result = await service.syncRetakeSession(group, 'session-1')
-
             expect(result.entries[0]!.grade).toBe(68)
             expect(sessionRepository.put).toHaveBeenCalled()
+        })
+    })
+
+    // ── batchSyncSessions ──────────────────────────────────────────────────
+
+    describe('batchSyncSessions', () => {
+        it('returns sessions unchanged when none are open', async () => {
+            const sessions = [makeSession({ status: SessionStatusEnum.CLOSED })]
+
+            const result = await service.batchSyncSessions(group, sessions)
+
+            expect(summaryService.loadExamData).not.toHaveBeenCalled()
+            expect(result).toEqual(sessions)
+        })
+
+        it('calls loadExamData exactly once for multiple open sessions', async () => {
+            ;(summaryService.loadExamData as any).mockResolvedValue({ students: [] })
+            const sessions = [
+                makeSession({ id: 's1', sessionType: SessionTypeEnum.MAIN }),
+                makeSession({ id: 's2', sessionType: SessionTypeEnum.FIRST_RETAKE }),
+            ]
+
+            await service.batchSyncSessions(group, sessions)
+
+            expect(summaryService.loadExamData).toHaveBeenCalledTimes(1)
+        })
+
+        it('syncs MAIN and retake sessions with shared examData', async () => {
+            ;(summaryService.loadExamData as any).mockResolvedValue({
+                students: [makeStudent({ examGradeRaw: 80 })],
+            })
+            const sessions = [
+                makeSession({ id: 's1', sessionType: SessionTypeEnum.MAIN, entries: [makeEntry()] }),
+                makeSession({ id: 's2', sessionType: SessionTypeEnum.FIRST_RETAKE, entries: [makeEntry()] }),
+            ]
+
+            const result = await service.batchSyncSessions(group, sessions)
+
+            expect(result[0]!.entries[0]!.grade).toBe(80)
+            expect(result[1]!.entries[0]!.grade).toBe(80)
+        })
+
+        it('skips closed sessions in a batch', async () => {
+            ;(summaryService.loadExamData as any).mockResolvedValue({
+                students: [makeStudent({ examGradeRaw: 80 })],
+            })
+            const closedSession = makeSession({
+                id: 's1',
+                status: SessionStatusEnum.CLOSED,
+                entries: [makeEntry({ grade: 50 })],
+            })
+            const openSession = makeSession({
+                id: 's2',
+                sessionType: SessionTypeEnum.FIRST_RETAKE,
+                entries: [makeEntry()],
+            })
+
+            const result = await service.batchSyncSessions(group, [closedSession, openSession])
+
+            expect(result[0]!.entries[0]!.grade).toBe(50)
+            expect(result[1]!.entries[0]!.grade).toBe(80)
+        })
+
+        it('falls back to un-synced session when individual sync fails', async () => {
+            ;(summaryService.loadExamData as any).mockResolvedValue({
+                students: [makeStudent({ examGradeRaw: 80 })],
+            })
+            ;(sessionRepository.put as any).mockRejectedValueOnce(new Error('DB write failed'))
+            const session = makeSession({ entries: [makeEntry()] })
+
+            const result = await service.batchSyncSessions(group, [session])
+
+            expect(result[0]).toBe(session)
         })
     })
 

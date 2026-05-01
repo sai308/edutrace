@@ -85,6 +85,8 @@ const activeFilterCount = computed(() => {
         count++
     if (activeFilters.value.hideFailed)
         count++
+    if (activeFilters.value.group)
+        count++
     return count
 })
 
@@ -139,6 +141,7 @@ function applyFilters(filters: MarksFilters) {
     filterSynced.value = filters.synced
     filterDateFrom.value = filters.dateFrom
     filterHideFailed.value = filters.hideFailed
+    filterGroup.value = filters.group
 }
 </script>
 
@@ -148,13 +151,14 @@ function applyFilters(filters: MarksFilters) {
         <p>{{ $t('loader.loading') }}</p>
     </div>
     <div v-else class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        <!-- Zone 1: Page header -->
-        <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
-            <div>
-                <h1 class="text-2xl font-bold tracking-tight">
+        <!-- Header row -->
+        <div class="flex flex-row items-start sm:items-center justify-between gap-4">
+            <div class="min-w-0">
+                <h1 class="text-2xl font-bold tracking-tight truncate">
                     {{ $t('marks.title') }}
                 </h1>
-                <p class="text-sm text-muted-foreground mt-0.5">
+                <!-- Mobile: mandatory counter -->
+                <p class="text-sm text-muted-foreground mt-0.5 truncate sm:hidden">
                     <template v-if="marks.length > 0">
                         {{
                             $t('marks.subtitle', {
@@ -167,11 +171,15 @@ function applyFilters(filters: MarksFilters) {
                         {{ $t('marks.description') }}
                     </template>
                 </p>
+                <!-- Desktop: description -->
+                <p class="text-sm text-muted-foreground mt-0.5 truncate hidden sm:block">
+                    {{ $t('marks.description') }}
+                </p>
             </div>
-            <!-- Scope selectors + action buttons -->
-            <div class="flex flex-wrap items-center gap-2 shrink-0">
-                <!-- Group Selector -->
-                <DropdownMenu>
+            <!-- Controls: group selector (empty state) or action buttons (with data) -->
+            <div class="flex items-center gap-2 shrink-0">
+                <!-- Group Selector — visible only on empty state (with data, group is in filter drawer) -->
+                <DropdownMenu v-if="marks.length === 0">
                     <DropdownMenuTrigger as-child>
                         <Button variant="outline" size="sm" class="h-9 gap-1" :disabled="groups.length === 0">
                             <span class="hidden sm:inline text-xs text-muted-foreground mr-1">{{ $t('marks.table.group') }}:</span>
@@ -182,50 +190,24 @@ function applyFilters(filters: MarksFilters) {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" class="w-[200px] max-h-[300px] overflow-y-auto">
-                        <DropdownMenuItem @click="filterGroup = null">
+                        <DropdownMenuItem
+                            :class="!filterGroup ? 'bg-primary/15 text-primary font-medium' : ''"
+                            @click="filterGroup = null"
+                        >
                             {{ $t('marks.filterModal.allGroups') }}
                         </DropdownMenuItem>
-                        <DropdownMenuItem v-for="group in groups" :key="group.id" @click="filterGroup = group.name">
+                        <DropdownMenuItem
+                            v-for="group in groups"
+                            :key="group.id"
+                            :class="filterGroup === group.name ? 'bg-primary/15 text-primary font-medium' : ''"
+                            @click="filterGroup = group.name"
+                        >
                             {{ group.name }}
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
-                <!-- Grade Scale Selector -->
-                <DropdownMenu>
-                    <DropdownMenuTrigger as-child>
-                        <Button variant="outline" size="sm" class="h-9 gap-1">
-                            <span class="hidden sm:inline text-xs text-muted-foreground mr-1">{{ $t('marks.gradeScale') }}:</span>
-                            <span class="font-medium">
-                                {{
-                                    selectedFormat === 'raw' || selectedFormat === ''
-                                        ? $t('marks.scales.default')
-                                        : selectedFormat === '5-scale'
-                                            ? $t('marks.scales.5point')
-                                            : selectedFormat === '100-scale'
-                                                ? $t('marks.scales.100point')
-                                                : $t('marks.scales.ects')
-                                }}
-                            </span>
-                            <ChevronDown class="h-3 w-3 opacity-50" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" class="w-[180px]">
-                        <DropdownMenuItem @click="selectedFormat = ''">
-                            {{ $t('marks.scales.default') }}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem @click="selectedFormat = '5-scale'">
-                            {{ $t('marks.scales.5point') }}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem @click="selectedFormat = '100-scale'">
-                            {{ $t('marks.scales.100point') }}
-                        </DropdownMenuItem>
-                        <DropdownMenuItem @click="selectedFormat = 'ects'">
-                            {{ $t('marks.scales.ects') }}
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-                <!-- Action buttons — only shown when data exists; empty state provides these CTAs when marks=0 -->
-                <div v-if="marks.length > 0" class="ml-auto flex items-center gap-2">
+                <!-- Action buttons — only shown when data exists -->
+                <template v-if="marks.length > 0">
                     <Button variant="outline" size="sm" class="gap-2" @click="showManualMarkDialog = true">
                         <PenLine class="w-4 h-4" />
                         <span class="hidden sm:inline">{{ $t('marks.addMark') }}</span>
@@ -234,7 +216,7 @@ function applyFilters(filters: MarksFilters) {
                         <FileUp class="w-4 h-4" />
                         <span class="hidden sm:inline">{{ $t('marks.import') }}</span>
                     </Button>
-                </div>
+                </template>
             </div>
         </div>
 
@@ -264,7 +246,53 @@ function applyFilters(filters: MarksFilters) {
                                 class="pl-8 h-9 w-full"
                             />
                         </div>
-                        <!-- Row 2: bulk | filters | columns (3-col grid) -->
+                        <!-- Row 2: grade scale (full-width) -->
+                        <DropdownMenu>
+                            <DropdownMenuTrigger as-child>
+                                <Button variant="outline" size="sm" class="h-9 w-full gap-1 justify-between">
+                                    <span class="text-xs text-muted-foreground">{{ $t('marks.gradeScale') }}:</span>
+                                    <span class="font-medium">
+                                        {{
+                                            selectedFormat === 'raw' || selectedFormat === ''
+                                                ? $t('marks.scales.default')
+                                                : selectedFormat === '5-scale'
+                                                    ? $t('marks.scales.5point')
+                                                    : selectedFormat === '100-scale'
+                                                        ? $t('marks.scales.100point')
+                                                        : $t('marks.scales.ects')
+                                        }}
+                                    </span>
+                                    <ChevronDown class="h-3 w-3 opacity-50 shrink-0" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="start" class="w-[180px]">
+                                <DropdownMenuItem
+                                    :class="selectedFormat === '' || selectedFormat === 'raw' ? 'bg-primary/15 text-primary font-medium' : ''"
+                                    @click="selectedFormat = ''"
+                                >
+                                    {{ $t('marks.scales.default') }}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    :class="selectedFormat === '5-scale' ? 'bg-primary/15 text-primary font-medium' : ''"
+                                    @click="selectedFormat = '5-scale'"
+                                >
+                                    {{ $t('marks.scales.5point') }}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    :class="selectedFormat === '100-scale' ? 'bg-primary/15 text-primary font-medium' : ''"
+                                    @click="selectedFormat = '100-scale'"
+                                >
+                                    {{ $t('marks.scales.100point') }}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                    :class="selectedFormat === 'ects' ? 'bg-primary/15 text-primary font-medium' : ''"
+                                    @click="selectedFormat = 'ects'"
+                                >
+                                    {{ $t('marks.scales.ects') }}
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        <!-- Row 3: bulk | filters | columns (3-col grid) -->
                         <div class="grid grid-cols-3 gap-2">
                             <Button
                                 v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
@@ -298,8 +326,6 @@ function applyFilters(filters: MarksFilters) {
                                 @click="showFilterModal = true"
                             >
                                 <Filter class="w-3.5 h-3.5 shrink-0" />
-                                <span v-if="!(bulkMode && table.getFilteredSelectedRowModel().rows.length > 0)">{{ $t('marks.filters') }}
-                                </span>
                                 <Badge
                                     v-if="activeFilterCount > 0"
                                     variant="secondary"
@@ -328,7 +354,10 @@ function applyFilters(filters: MarksFilters) {
                                     class="pl-8 h-9"
                                 />
                             </div>
-                            <div class="flex items-center gap-2 shrink-0">
+                            <div
+                                v-if="!(bulkMode && table.getFilteredSelectedRowModel().rows.length > 0)"
+                                class="flex items-center gap-2 shrink-0"
+                            >
                                 <Switch
                                     :model-value="bulkMode"
                                     class="cursor-pointer"
@@ -354,8 +383,54 @@ function applyFilters(filters: MarksFilters) {
                                 </Badge>
                             </Button>
                         </div>
-                        <!-- Right: filters + columns picker -->
+                        <!-- Right: grade scale + filters + columns picker -->
                         <div class="flex items-center gap-2 shrink-0">
+                            <!-- Grade Scale Selector -->
+                            <DropdownMenu>
+                                <DropdownMenuTrigger as-child>
+                                    <Button variant="outline" size="sm" class="h-9 gap-1">
+                                        <span class="hidden sm:inline text-xs text-muted-foreground mr-1">{{ $t('marks.gradeScale') }}:</span>
+                                        <span class="font-medium">
+                                            {{
+                                                selectedFormat === 'raw' || selectedFormat === ''
+                                                    ? $t('marks.scales.default')
+                                                    : selectedFormat === '5-scale'
+                                                        ? $t('marks.scales.5point')
+                                                        : selectedFormat === '100-scale'
+                                                            ? $t('marks.scales.100point')
+                                                            : $t('marks.scales.ects')
+                                            }}
+                                        </span>
+                                        <ChevronDown class="h-3 w-3 opacity-50" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" class="w-[180px]">
+                                    <DropdownMenuItem
+                                        :class="selectedFormat === '' || selectedFormat === 'raw' ? 'bg-primary/15 text-primary font-medium' : ''"
+                                        @click="selectedFormat = ''"
+                                    >
+                                        {{ $t('marks.scales.default') }}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        :class="selectedFormat === '5-scale' ? 'bg-primary/15 text-primary font-medium' : ''"
+                                        @click="selectedFormat = '5-scale'"
+                                    >
+                                        {{ $t('marks.scales.5point') }}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        :class="selectedFormat === '100-scale' ? 'bg-primary/15 text-primary font-medium' : ''"
+                                        @click="selectedFormat = '100-scale'"
+                                    >
+                                        {{ $t('marks.scales.100point') }}
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem
+                                        :class="selectedFormat === 'ects' ? 'bg-primary/15 text-primary font-medium' : ''"
+                                        @click="selectedFormat = 'ects'"
+                                    >
+                                        {{ $t('marks.scales.ects') }}
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -436,7 +511,8 @@ function applyFilters(filters: MarksFilters) {
         <!-- Filter Sheet -->
         <MarksFilterSheet
             :open="showFilterModal"
-            :filters="activeFilters"
+            :filters="{ ...activeFilters, group: filterGroup }"
+            :groups="groups"
             @update:open="(v) => (showFilterModal = v)"
             @apply="applyFilters"
         />

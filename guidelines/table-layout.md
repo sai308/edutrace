@@ -1,6 +1,6 @@
 # Table Page Layout
 
-Standard page anatomy, Zone 1 header patterns, toolbar structure, and the mobile dual-section layout.
+Standard page anatomy, header row patterns, toolbar structure, and the mobile dual-section layout.
 
 Part of the [table guidelines](tables.md). See also: [features](table-features.md) · [column patterns](table-columns.md) · [sticky & scroll](table-sticky.md)
 
@@ -12,12 +12,13 @@ Every page that contains a data table follows a consistent two-zone layout above
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│ Zone 1 — Header                                          │
-│  left:  Page title   Short muted description             │
-│  right: [Import ↑]  [+ Create]                          │
+│ Header row — always visible                              │
+│  left:  Page title                                       │
+│         [Counter on mobile] / [Description on desktop]   │
+│  right: [Import ↑]  [+ Create]  (icon-only on mobile)   │
 ├──────────────────────────────────────────────────────────┤
-│ Zone 2 — Toolbar  (in the #toolbar slot)                 │
-│  left:  [Search ________]  [Bulk ◌]  [Delete N]         │
+│ Toolbar  (in the #toolbar slot)                          │
+│  left:  [Search ________]  [Bulk ◌ or Delete N]          │
 │  right: [Filter ▼]  [Columns ▼]                         │
 ├──────────────────────────────────────────────────────────┤
 │                                                          │
@@ -30,19 +31,21 @@ Every page that contains a data table follows a consistent two-zone layout above
 
 ```vue
 <template>
-  <div class="space-y-4">
+  <div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
-    <!-- Zone 1: Page header -->
-    <!-- flex-col on mobile so title stacks above buttons; flex-row from sm onward -->
-    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
-      <div>
-        <h2 class="text-2xl font-bold tracking-tight">{{ $t('module.title') }}</h2>
-        <!-- description is optional — omit if the title is self-explanatory -->
-        <p class="text-sm text-muted-foreground mt-0.5">{{ $t('module.description') }}</p>
+    <!-- Header row: always visible, always a single horizontal row -->
+    <div class="flex flex-row items-start sm:items-center justify-between gap-4">
+      <div class="min-w-0">
+        <h1 class="text-2xl font-bold tracking-tight truncate">{{ $t('module.title') }}</h1>
+        <!-- Mobile: items counter (mandatory) -->
+        <p class="text-sm text-muted-foreground mt-0.5 truncate sm:hidden">
+          <template v-if="items.length > 0">{{ $t('module.subtitle', { count: filteredCount, total: items.length }) }}</template>
+          <template v-else>{{ $t('module.description') }}</template>
+        </p>
+        <!-- Desktop: static description (counter omitted — pagination shows it) -->
+        <p class="text-sm text-muted-foreground mt-0.5 truncate hidden sm:block">{{ $t('module.description') }}</p>
       </div>
-      <!-- ml-auto wrapper pushes buttons to the right regardless of whether they
-           share a row with scope selectors or wrap onto their own row on mobile -->
-      <div class="ml-auto flex items-center gap-2">
+      <div v-if="items.length > 0" class="flex items-center gap-2 shrink-0">
         <!-- Import only for modules that support CSV import -->
         <Button variant="outline" size="sm" class="gap-2" @click="handleImport">
           <Upload class="w-4 h-4" />
@@ -74,14 +77,26 @@ Every page that contains a data table follows a consistent two-zone layout above
               <Input v-model="searchQuery" :placeholder="$t('module.searchPlaceholder')"
                      class="pl-8 h-9" />
             </div>
-            <Switch :model-value="bulkMode" @update:model-value="bulkMode = $event" />
-            <span class="text-sm text-muted-foreground hidden sm:inline select-none">
-              {{ $t('common.bulk') }}
-            </span>
-            <Button v-if="bulkMode && table.getSelectedRowModel().rows.length > 0"
-                    variant="destructive" size="sm" @click="handleBulkDelete(table)">
-              <Trash2 class="w-4 h-4 mr-1.5" />
-              {{ $t('common.deleteN', { n: table.getSelectedRowModel().rows.length }) }}
+            <!-- Switch hidden when rows are selected; delete button takes its place -->
+            <div
+                v-if="!(bulkMode && table.getFilteredSelectedRowModel().rows.length > 0)"
+                class="flex items-center gap-2 shrink-0"
+            >
+                <Switch :model-value="bulkMode" @update:model-value="bulkMode = $event" />
+                <span class="text-sm text-muted-foreground hidden sm:inline select-none">
+                    {{ $t('common.bulk') }}
+                </span>
+            </div>
+            <Button
+                v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
+                variant="destructive" size="sm" class="h-8 gap-2 shrink-0"
+                @click="handleBulkDelete(table)"
+            >
+                <Trash2 class="w-4 h-4" />
+                {{ $t('common.delete') }}
+                <Badge class="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums">
+                    {{ table.getFilteredSelectedRowModel().rows.length }}
+                </Badge>
             </Button>
           </div>
 
@@ -99,50 +114,21 @@ Every page that contains a data table follows a consistent two-zone layout above
 </template>
 ```
 
-### Zone 1 rules
+### Header row rules
 
-- The page description (`<p class="text-sm text-muted-foreground">`) is optional; omit it where the title alone is clear.
-- The Import button is only rendered for modules that support CSV import (currently Students, Marks). Do not add a placeholder import button to other modules.
-- The Create button is always the rightmost header action and always uses the default (primary) variant.
-- Domain filter dropdowns belong in the **right group** of the toolbar, between bulk actions and `DataTableViewOptions`.
+- The header row is **always a single horizontal flex row** (`flex flex-row`) — never `flex-col`. `justify-between` places left (title) and right (controls) at opposite ends on all viewports.
+- `min-w-0` on the left `<div>` prevents the title from pushing controls off-screen on narrow screens; pair it with `truncate` on `<h1>`.
+- **Mobile subtitle (mandatory):** show the items counter (`module.subtitle` key, interpolates `count`/`total`) when data exists; fall back to static description when empty. Hide with `sm:hidden`.
+- **Desktop subtitle:** show only the static description (`module.description`). The counter is redundant on desktop — pagination already shows filtered/total counts. Show with `hidden sm:block`.
+- The Import button is only rendered for modules that support CSV import. Do not add a placeholder import button to other modules.
+- The Create/primary action is always the rightmost header control and always uses the default (primary) variant.
+- Never add `border-b`, `pb-4`, or `shrink-0` to the header row container — vertical rhythm comes from the parent `space-y-4`.
+- Domain filter dropdowns belong in the **right group** of the toolbar, not in the header row.
 - `DataTableViewOptions` is rendered in the **`#toolbar` slot** of the parent page — **not** hardcoded inside `DataTable.vue`.
-- Use `space-y-4` as the root spacing class for consistent vertical rhythm between the header and the table.
-
-### Zone 1 action button alignment on mobile
-
-Action buttons must be right-aligned on both mobile and desktop. The technique depends on the Zone 1 right-side structure:
-
-**Pattern A — buttons inside a `flex-wrap` container (alongside scope selectors):**
-
-Wrap the buttons in `<div class="ml-auto flex items-center gap-2">`. `ml-auto` consumes all leftover flex space on its line, pushing the buttons to the right regardless of whether they share a row with selectors or wrap onto their own row:
-
-```vue
-<div class="flex flex-wrap items-center gap-2 shrink-0">
-  <!-- scope selectors (Group, Grade Scale, etc.) -->
-  <DropdownMenu>...</DropdownMenu>
-  <!-- action buttons — always pushed to the row end -->
-  <div class="ml-auto flex items-center gap-2">
-    <Button ...><Upload class="w-4 h-4" /><span class="hidden sm:inline">Import</span></Button>
-    <Button ...><Plus class="w-4 h-4" /><span class="hidden sm:inline">Add</span></Button>
-  </div>
-</div>
-```
-
-**Pattern B — single button as the sole right-side child of `flex-col sm:flex-row`:**
-
-Add `self-end sm:self-auto` to the button or its wrapper. In a `flex-col` parent the cross axis is horizontal, so `self-end` right-aligns the item. `sm:self-auto` resets it on desktop where `justify-between` handles placement:
-
-```vue
-<!-- single-button case: no flex-wrap container needed -->
-<Button size="sm" class="gap-2 shrink-0 self-end sm:self-auto" @click="handleCreate">
-  <Plus class="w-4 h-4" />
-  <span class="hidden sm:inline">{{ $t('module.create') }}</span>
-</Button>
-```
 
 ### Icon-only action buttons on mobile
 
-Action buttons in Zone 1 must be icon-only on mobile and show their label from `sm` onward. Use `gap-2` on the button and `<span class="hidden sm:inline">` on the label — **never** `mr-2` on the icon:
+Header row action buttons must be icon-only on mobile and show their label from `sm` onward. Use `gap-2` on the button and `<span class="hidden sm:inline">` on the label — **never** `mr-2` on the icon:
 
 ```vue
 <!-- ✅ Correct -->
@@ -159,7 +145,7 @@ Action buttons in Zone 1 must be icon-only on mobile and show their label from `
 
 ### Scope selector label hiding on mobile
 
-Pages that include scope-selector buttons in Zone 1 (e.g. "Group: КН-33 ▾", "Grade Scale: Default ▾") must hide the label prefix on mobile. The prefix span gets `hidden sm:inline` so only the selected value and chevron are visible on narrow viewports. This prevents the selector row from overflowing when action buttons are also present:
+Pages that include scope-selector buttons in the header row (e.g. "Group: КН-33 ▾", "Grade Scale: Default ▾") must hide the label prefix on mobile. The prefix span gets `hidden sm:inline` so only the selected value and chevron are visible on narrow viewports. This prevents the selector row from overflowing when action buttons are also present:
 
 ```vue
 <Button variant="outline" size="sm" class="h-9 gap-1">
@@ -187,29 +173,62 @@ Apply this pattern whenever the toolbar contains all three of:
 
 A toolbar with only search + columns (no bulk) does not need the two-section split — a single `flex` row with `flex-1` on the search input is sufficient.
 
+### Mobile icon-only rule
+
+**On mobile, every control button in the toolbar must be icon-only (+ badge if applicable) — no text labels.** This applies to the bulk delete button, filter buttons, reorder buttons, and any other action button in the mobile toolbar section. Text labels appear only in the `hidden sm:flex` desktop section.
+
+```vue
+<!-- ✅ Mobile button — icon + badge only -->
+<Button variant="destructive" size="sm" class="h-9 gap-2 w-full" @click="...">
+    <Trash2 class="h-4 w-4 shrink-0" />
+    <Badge class="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums">{{ count }}</Badge>
+</Button>
+
+<!-- ✅ Desktop button — icon + text + badge -->
+<Button variant="destructive" size="sm" class="h-8 gap-2 shrink-0" @click="...">
+    <Trash2 class="h-3.5 w-3.5" />
+    <span>{{ $t('common.delete') }}</span>
+    <Badge class="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums">{{ count }}</Badge>
+</Button>
+```
+
+Do **not** use a conditional `v-if` to hide/show text — the mobile and desktop sections are separate DOM elements, so just omit the `<span>` in the mobile section entirely.
+
+### `DataTableViewOptions` placement
+
+`DataTableViewOptions` must always be rendered inside the **`#toolbar` slot** of the parent page — **never** hardcoded in `DataTable.vue`. A `DataTable.vue` that renders its own `DataTableViewOptions` outside the slot cannot participate in the dual-section responsive layout and breaks the mobile grid.
+
 ### Layout anatomy
 
 **Mobile (< `sm`, i.e. `< 640px`)** — two stacked rows:
 
 ```
 Row 1:  [Search __________________________________]   ← full width
-Row 2:  [Bulk ◌]  or  [Delete N]  |  [Columns N]    ← grid-cols-2
+Row 2:  [Bulk ◌]  or  [🗑 N]  |  [⊞ N]             ← grid-cols-2 (icon+badge only)
+```
+
+If the toolbar has **3** action buttons (e.g. bulk + extra filter + columns), use `grid-cols-3`:
+
+```
+Row 2:  [Bulk ◌] or [🗑 N]  |  [Filter N]  |  [⊞ N]  ← grid-cols-3
 ```
 
 - Row 1: full-width search input (`w-full`).
-- Row 2: a `grid grid-cols-2 gap-2` container giving 50 % to the left (bulk toggle or bulk delete) and 50 % to the right (columns picker).
+- Row 2: `grid grid-cols-2 gap-2` (or `grid-cols-3` when a third action is present).
 - When bulk mode is on **and** rows are selected, the left cell shows the destructive delete button (`w-full`) instead of the switch + label pair.
+- All buttons in row 2 get `w-full` to fill their grid cell.
 - `DataTableViewOptions` receives `button-class="w-full"` so its trigger button fills the right cell.
 - `DataTableViewOptions` also receives `:compact="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"` to hide the "Columns" label text (preserving space for the count badge) when the delete button is already competing for width.
 
 **Desktop (≥ `sm`)** — single row, left-aligned:
 
 ```
-[Search _____________]  [Bulk ◌]  [Delete N]  ···  [Columns N]
+[Search _____________]  [Bulk ◌ or Delete N]  ···  [Columns N]
 ```
 
 - Standard single-row layout with `hidden sm:flex items-center justify-between gap-3`.
 - Search has `max-w-xs` constraint (no `w-full`).
+- Switch hides when rows are selected; delete button occupies the same slot.
 - `DataTableViewOptions` receives no extra classes (default button width).
 
 ### Template skeleton
@@ -257,7 +276,11 @@ Row 2:  [Bulk ◌]  or  [Delete N]  |  [Columns N]    ← grid-cols-2
                 <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input v-model="searchQuery" :placeholder="$t('module.searchPlaceholder')" class="pl-8 h-9" />
             </div>
-            <div class="flex items-center gap-2 shrink-0">
+            <!-- Switch hidden when rows are selected; delete button takes its place -->
+            <div
+                v-if="!(bulkMode && table.getFilteredSelectedRowModel().rows.length > 0)"
+                class="flex items-center gap-2 shrink-0"
+            >
                 <Switch :model-value="bulkMode" class="cursor-pointer" @update:model-value="bulkMode = $event" />
                 <span class="text-sm text-muted-foreground select-none">{{ $t('common.bulk') }}</span>
             </div>

@@ -55,7 +55,7 @@ function handleReset() {
         <DropdownMenuTrigger as-child>
             <Button variant="outline" :class="cn('h-9 gap-2', props.buttonClass)">
                 <Columns class="w-4 h-4 shrink-0" />
-                <span v-if="!compact">{{ t('columnPicker.button') }}</span>
+                <span v-if="!compact" class="hidden sm:inline">{{ t('columnPicker.button') }}</span>
                 <Badge class="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums">
                     {{ visibleColumnsCount }}
                 </Badge>
@@ -80,7 +80,6 @@ function handleReset() {
                     v-for="column in columns"
                     :key="column.id"
                     class="flex items-center space-x-2 rounded-sm px-2 py-1.5 hover:bg-accent hover:text-accent-foreground cursor-pointer"
-                    @click="column.toggleVisibility(!column.getIsVisible())"
                 >
                     <Checkbox
                         :id="column.id"
@@ -88,7 +87,7 @@ function handleReset() {
                         class="data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                         @update:model-value="(value: boolean | string) => column.toggleVisibility(!!value)"
                     />
-                    <Label :for="column.id" class="flex-1 cursor-pointer text-sm font-normal pointer-events-none">
+                    <Label :for="column.id" class="flex-1 cursor-pointer text-sm font-normal">
                         {{ column.columnDef.meta?.label ?? column.id }}
                     </Label>
                 </div>

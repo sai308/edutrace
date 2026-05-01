@@ -17,7 +17,7 @@ function handleViewDetails(meetId: string): void {
 </script>
 
 <template>
-    <div class="container py-4 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <AnalyticsDashboard
             :stats="stats"
             :loading="loading"

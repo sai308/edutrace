@@ -20,10 +20,10 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
 
 <template>
     <div
-        class="h-full flex-1 flex flex-col space-y-4 p-4 md:p-6 pt-2 md:flex max-w-[1400px] mx-auto w-full min-h-0 animate-in fade-in slide-in-from-bottom-4 duration-500"
+        class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500"
     >
         <!-- Zone 1: Page header — always visible -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b gap-4 shrink-0">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <h1 class="text-2xl font-bold tracking-tight">
                     {{ t('plans.title') }}
@@ -44,12 +44,16 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" class="w-full sm:w-[200px] max-h-[300px] overflow-y-auto">
-                        <DropdownMenuItem @click="filterGroup = null">
+                        <DropdownMenuItem
+                            :class="!filterGroup ? 'bg-primary/15 text-primary font-medium' : ''"
+                            @click="filterGroup = null"
+                        >
                             {{ t('marks.filterModal.allGroups') }}
                         </DropdownMenuItem>
                         <DropdownMenuItem
                             v-for="group in groups"
                             :key="group.id as string"
+                            :class="filterGroup === group.name ? 'bg-primary/15 text-primary font-medium' : ''"
                             @click="filterGroup = group.name"
                         >
                             {{ group.name }}

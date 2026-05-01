@@ -179,6 +179,7 @@
     "modules": {
         "title": "Modules",
         "description": "Manage task groups and coefficients to produce intermediate grades.",
+        "subtitle": "{count} modules",
         "list": {
             "filterPlaceholder": "Filter modules...",
             "deleteSelected": "Delete ({count})",
@@ -522,6 +523,10 @@
                 "title": "Print Defaults",
                 "description": "Set default values for the Session result print form.",
                 "subject": "Subject",
+                "studyForm": "Mode of Study",
+                "studyFormPlaceholder": "e.g. Full-time",
+                "specialty": "Specialty",
+                "specialtyPlaceholder": "e.g. 122 Computer Science",
                 "formOfControl": "Form of Control",
                 "semester": "Semester",
                 "semesterSuffix": "sem.",
@@ -1245,6 +1250,8 @@
             "durationLimitLabel": "Max Session Duration (minutes)",
             "saveBtn": "Save",
             "durationLimitHelp": "Sessions longer than this will be capped to this duration.",
+            "reapplyLimitBtn": "Apply to Existing Reports",
+            "reapplyLimitHelp": "Retroactively cap durations in all already-imported reports.",
             "squashLabel": "Squash Short Sessions",
             "squashHelp": "Merge short sessions (reconnections) into the main session.",
             "squashThresholdLabel": "Squash Threshold (minutes)",
@@ -1504,6 +1511,12 @@
         "add": "Add Member",
         "search": "Search members...",
         "total": "{count} total",
+        "filters": {
+            "students": "Students",
+            "teachers": "Teachers",
+            "assistants": "Assistants",
+            "deleted": "Deleted"
+        },
         "dialog": {
             "edit": "Edit Member",
             "add": "Add Member",
@@ -1564,6 +1577,7 @@
     "tasks": {
         "title": "Tasks Management",
         "description": "Manage and view all tasks from your parsed marks.",
+        "subtitle": "{count} tasks",
         "noTasks": "No tasks found.",
         "noMatch": "No tasks match your search.",
         "add": "Add Task",
@@ -1796,7 +1810,8 @@
             "dbName": "Database Name",
             "diagnosticsDescription": "Copy a diagnostics report including recent log entries, app version, and environment info to include in a bug report.",
             "copyDiagnostics": "Copy Diagnostics",
-            "copied": "Copied!"
+            "copied": "Copied!",
+            "downloadLogs": "Download Logs"
         }
     }
 }

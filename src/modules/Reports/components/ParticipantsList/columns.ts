@@ -14,6 +14,10 @@ export function createColumns(
         {
             accessorKey: 'name',
             meta: { label: t('reports.session.columns.name') },
+            sortingFn: (a, b) =>
+                (a.getValue('name') as string).localeCompare(b.getValue('name') as string, undefined, {
+                    sensitivity: 'base',
+                }),
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('reports.session.columns.name') }),
             cell: ({ row }) => h('span', { class: 'font-medium whitespace-nowrap' }, row.getValue('name') as string),
         },

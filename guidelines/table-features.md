@@ -197,15 +197,18 @@ Place the `Switch` immediately after the search input. Bulk action buttons appea
       <Input v-model="searchQuery" :placeholder="$t('module.searchPlaceholder')" class="pl-8 h-9" />
     </div>
 
-    <!-- Bulk-ops switch -->
-    <div class="flex items-center gap-2 shrink-0">
+    <!-- Bulk-ops switch — hidden when rows are selected; delete button takes its place -->
+    <div
+      v-if="!(bulkMode && table.getFilteredSelectedRowModel().rows.length > 0)"
+      class="flex items-center gap-2 shrink-0"
+    >
       <Switch :model-value="bulkMode" @update:model-value="bulkMode = $event" />
       <span class="text-sm text-muted-foreground hidden sm:inline select-none">
         {{ $t('common.bulk') }}
       </span>
     </div>
 
-    <!-- Bulk action buttons — only when mode is on and rows are selected -->
+    <!-- Bulk delete — replaces switch when rows are selected -->
     <Button
       v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
       variant="destructive" size="sm"
@@ -228,6 +231,7 @@ Rules:
 - The watch must use `{ immediate: true }` so the column is hidden on the first render. Without it, a stale `select: true` value in localStorage will leave checkboxes visible before the user ever touches the switch.
 - When `bulkMode` is turned off, selection is cleared immediately inside `DataTable.vue` — the parent does not need to handle cleanup.
 - The `Switch` label text uses the `common.bulk` i18n key (add to both locale files).
+- The switch hides when rows are selected (`v-if="!(bulkMode && ...selected > 0)"`); the delete button occupies the same slot. This conserves toolbar space on small screens.
 - Use `table.getFilteredSelectedRowModel()` (not `getSelectedRowModel()`) in the toolbar slot to count and collect selected rows. `getFilteredSelectedRowModel` respects active column/global filters, so rows hidden by a search or filter are never counted or acted upon.
 - The bulk delete button renders a `<Badge>` with the selection count rather than embedding the count in the label text — this keeps the button width stable as the count changes.
 - Modules that have no bulk use case may omit the `select` column and the `bulkMode` prop entirely.

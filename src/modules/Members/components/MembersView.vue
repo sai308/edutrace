@@ -5,6 +5,7 @@ import MemberDialog from '@Members/components/dialogs/MemberDialog.vue'
 import DataTable from '@Members/components/MembersList/DataTable.vue'
 import { useMembers } from '@Members/composables/useMembers'
 import {
+    BookOpen,
     Copy,
     FileUp,
     GraduationCap,
@@ -13,9 +14,10 @@ import {
     RotateCcw,
     Search,
     Trash2,
+    UserCheck,
     UserCog,
 } from 'lucide-vue-next'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
@@ -33,6 +35,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import DataTableViewOptions from '@/shared/components/DataTableViewOptions.vue'
 import EmptyState from '@/shared/components/EmptyState.vue'
 
 const { t } = useI18n()
@@ -61,6 +65,33 @@ const {
 } = useMembers()
 
 const bulkMode = ref(false)
+
+type MemberFilter = 'student' | 'teacher' | 'assistant' | 'deleted'
+const activeFilter = ref<MemberFilter | undefined>(undefined)
+
+const filterCounts = computed(() => {
+    const counts = { student: 0, teacher: 0, assistant: 0, deleted: 0 }
+    for (const m of members.value) {
+        if (m.hidden)
+            counts.deleted++
+        else if (m.role === 'student')
+            counts.student++
+        else if (m.role === 'teacher')
+            counts.teacher++
+        else if (m.role === 'assistant')
+            counts.assistant++
+    }
+    return counts
+})
+
+const filteredMembers = computed(() => {
+    if (!activeFilter.value)
+        return members.value
+    if (activeFilter.value === 'deleted')
+        return members.value.filter(m => m.hidden)
+    const role = activeFilter.value
+    return members.value.filter(m => m.role === role && !m.hidden)
+})
 
 function getMemberActions(member: Member): RowActionItem[] {
     const isDeleted = member.hidden
@@ -127,81 +158,129 @@ function getMemberActions(member: Member): RowActionItem[] {
                     <h1 class="text-2xl font-bold tracking-tight truncate">
                         {{ $t('members.title') }}
                     </h1>
+                    <!-- Mobile: mandatory counter -->
+                    <p class="text-sm text-muted-foreground mt-0.5 truncate sm:hidden">
+                        {{ members.length > 0 ? $t('members.total', { count: members.length }) : $t('members.description') }}
+                    </p>
+                    <!-- Desktop: description -->
                     <p class="text-sm text-muted-foreground mt-0.5 truncate hidden sm:block">
-                        {{
-                            members.length > 0
-                                ? $t('members.total', { count: members.length })
-                                : $t('members.description')
-                        }}
+                        {{ $t('members.description') }}
                     </p>
                 </div>
-                <Button
-                    v-if="members.length > 0"
-                    size="sm"
-                    class="gap-2 shrink-0"
-                    @click="openAddDialog"
-                >
-                    <Plus class="w-4 h-4" />
-                    <span class="hidden sm:inline">{{ $t('members.add') }}</span>
-                </Button>
+                <div v-if="members.length > 0" class="flex items-center gap-2 shrink-0">
+                    <Button size="sm" class="gap-2" @click="openAddDialog">
+                        <Plus class="w-4 h-4" />
+                        <span class="hidden sm:inline">{{ $t('members.add') }}</span>
+                    </Button>
+                </div>
             </div>
 
             <!-- Zone 2 + Table -->
             <DataTable
                 v-if="members.length > 0"
-                :items="members"
+                :items="filteredMembers"
                 :search-query="searchQuery"
                 :bulk-mode="bulkMode"
                 :row-actions="getMemberActions"
             >
                 <template #toolbar="{ table }">
-                    <div class="flex items-center gap-3 flex-1 min-w-0">
-                        <!-- Search -->
-                        <div class="relative max-w-xs flex-1">
-                            <Search
-                                class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"
-                            />
-                            <Input
-                                v-model="searchQuery"
-                                :placeholder="$t('members.search')"
-                                class="pl-8 h-9"
-                            />
+                    <!-- ── Mobile (< sm): 2-row layout ── -->
+                    <div class="flex flex-col gap-2 sm:hidden">
+                        <!-- Row 1: full-width search -->
+                        <div class="relative">
+                            <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input v-model="searchQuery" :placeholder="$t('members.search')" class="pl-8 h-9 w-full" />
                         </div>
-
-                        <!-- Bulk-ops switch -->
-                        <div class="flex items-center gap-2 shrink-0">
-                            <Switch
-                                :model-value="bulkMode"
-                                @update:model-value="bulkMode = $event"
-                            />
-                            <span
-                                class="text-sm text-muted-foreground hidden sm:inline select-none"
+                        <!-- Row 2: bulk (left 50%) | columns (right 50%) -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <Button
+                                v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
+                                variant="destructive" size="sm" class="h-9 gap-2 w-full"
+                                @click="confirmBulkDelete(table.getFilteredSelectedRowModel().rows.map((r) => r.original.id))"
                             >
-                                {{ $t('common.bulk') }}
-                            </span>
+                                <Trash2 class="h-4 w-4 shrink-0" />
+                                <Badge class="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums">
+                                    {{ table.getFilteredSelectedRowModel().rows.length }}
+                                </Badge>
+                            </Button>
+                            <div v-else class="flex items-center gap-2 h-9">
+                                <Switch :model-value="bulkMode" class="cursor-pointer" @update:model-value="bulkMode = $event" />
+                                <span class="text-sm text-muted-foreground select-none">{{ $t('common.bulk') }}</span>
+                            </div>
+                            <DataTableViewOptions
+                                :table="table"
+                                :compact="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
+                                button-class="w-full"
+                            />
                         </div>
-
-                        <!-- Bulk delete button — visible only when rows are selected -->
-                        <Button
-                            v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
-                            variant="destructive"
-                            size="sm"
-                            class="h-8 gap-2 shrink-0"
-                            @click="
-                                confirmBulkDelete(
-                                    table
-                                        .getFilteredSelectedRowModel()
-                                        .rows.map((r) => r.original.id),
-                                )
-                            "
-                        >
-                            <Trash2 class="h-3.5 w-3.5" />
-                            <span class="hidden sm:inline">{{ $t('common.delete') }}</span>
-                            <Badge class="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums">
-                                {{ table.getFilteredSelectedRowModel().rows.length }}
-                            </Badge>
-                        </Button>
                     </div>
+
+                    <!-- ── Desktop (≥ sm): single-row layout ── -->
+                    <div class="hidden sm:flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 flex-1 min-w-0">
+                            <div class="relative max-w-xs flex-1">
+                                <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input v-model="searchQuery" :placeholder="$t('members.search')" class="pl-8 h-9" />
+                            </div>
+                            <div
+                                v-if="!(bulkMode && table.getFilteredSelectedRowModel().rows.length > 0)"
+                                class="flex items-center gap-2 shrink-0"
+                            >
+                                <Switch :model-value="bulkMode" class="cursor-pointer" @update:model-value="bulkMode = $event" />
+                                <span class="text-sm text-muted-foreground select-none">{{ $t('common.bulk') }}</span>
+                            </div>
+                            <Button
+                                v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
+                                variant="destructive" size="sm" class="h-8 gap-2 shrink-0"
+                                @click="confirmBulkDelete(table.getFilteredSelectedRowModel().rows.map((r) => r.original.id))"
+                            >
+                                <Trash2 class="h-3.5 w-3.5" />
+                                <span>{{ $t('common.delete') }}</span>
+                                <Badge class="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums">
+                                    {{ table.getFilteredSelectedRowModel().rows.length }}
+                                </Badge>
+                            </Button>
+                        </div>
+                        <DataTableViewOptions :table="table" class="shrink-0" />
+                    </div>
+                </template>
+
+                <template #filters>
+                    <ToggleGroup
+                        type="single"
+                        variant="outline"
+                        :model-value="activeFilter"
+                        @update:model-value="activeFilter = ($event as MemberFilter) || undefined"
+                    >
+                        <ToggleGroupItem value="student" class="gap-1.5 h-8 px-2 sm:px-3 text-xs">
+                            <GraduationCap class="h-3.5 w-3.5 shrink-0" />
+                            <span class="hidden sm:inline">{{ $t('members.filters.students') }}</span>
+                            <Badge variant="secondary" class="h-4 min-w-4 rounded-full px-1 font-mono text-[10px] tabular-nums">
+                                {{ filterCounts.student }}
+                            </Badge>
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="teacher" class="gap-1.5 h-8 px-2 sm:px-3 text-xs">
+                            <BookOpen class="h-3.5 w-3.5 shrink-0" />
+                            <span class="hidden sm:inline">{{ $t('members.filters.teachers') }}</span>
+                            <Badge variant="secondary" class="h-4 min-w-4 rounded-full px-1 font-mono text-[10px] tabular-nums">
+                                {{ filterCounts.teacher }}
+                            </Badge>
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="assistant" class="gap-1.5 h-8 px-2 sm:px-3 text-xs">
+                            <UserCheck class="h-3.5 w-3.5 shrink-0" />
+                            <span class="hidden sm:inline">{{ $t('members.filters.assistants') }}</span>
+                            <Badge variant="secondary" class="h-4 min-w-4 rounded-full px-1 font-mono text-[10px] tabular-nums">
+                                {{ filterCounts.assistant }}
+                            </Badge>
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="deleted" class="gap-1.5 h-8 px-2 sm:px-3 text-xs">
+                            <Trash2 class="h-3.5 w-3.5 shrink-0" />
+                            <span class="hidden sm:inline">{{ $t('members.filters.deleted') }}</span>
+                            <Badge variant="destructive" class="h-4 min-w-4 rounded-full px-1 font-mono text-[10px] tabular-nums opacity-80">
+                                {{ filterCounts.deleted }}
+                            </Badge>
+                        </ToggleGroupItem>
+                    </ToggleGroup>
                 </template>
             </DataTable>
 

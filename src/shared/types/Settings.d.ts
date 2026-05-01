@@ -3,12 +3,15 @@ export type ExamSettings = Record<string, unknown>
 
 export interface PrintSettings {
     subject?: string
+    studyForm?: string
+    specialty?: string
     formOfControl?: string
     semester?: string
     academicYear?: string
     totalHours?: number
     examiner?: string
     practicalTeacher?: string
+    templateFileName?: string
 }
 
 export interface SummaryThresholds {

@@ -11,6 +11,8 @@ interface PrintFormData {
     recordNumber: string
     date: string
     subject: string
+    studyForm: string
+    specialty: string
     semester: string
     academicYear: string
     formOfControl: string
@@ -84,6 +86,8 @@ function makeFormData(overrides: Partial<PrintFormData> = {}): PrintFormData {
         recordNumber: '42',
         date: '10 червня 2024',
         subject: 'Mathematics',
+        studyForm: '',
+        specialty: '',
         semester: '2',
         academicYear: '2023/2024',
         formOfControl: 'exam',

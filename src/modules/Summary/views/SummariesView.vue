@@ -266,7 +266,12 @@ function getGradeActions(student: StudentSummaryData): RowActionItem[] {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" class="w-[200px] max-h-[300px] overflow-y-auto">
-                        <DropdownMenuItem v-for="group in groups" :key="group.id" @click="selectedGroup = group">
+                        <DropdownMenuItem
+                            v-for="group in groups"
+                            :key="group.id"
+                            :class="selectedGroup?.id === group.id ? 'bg-primary/15 text-primary font-medium' : ''"
+                            @click="selectedGroup = group"
+                        >
                             {{ group.name }}
                         </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -294,13 +299,22 @@ function getGradeActions(student: StudentSummaryData): RowActionItem[] {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" class="w-[180px]">
-                        <DropdownMenuItem @click="selectedFormat = '5-scale'">
+                        <DropdownMenuItem
+                            :class="selectedFormat === '5-scale' ? 'bg-primary/15 text-primary font-medium' : ''"
+                            @click="selectedFormat = '5-scale'"
+                        >
                             {{ $t('summary.scales.five') }}
                         </DropdownMenuItem>
-                        <DropdownMenuItem @click="selectedFormat = '100-scale'">
+                        <DropdownMenuItem
+                            :class="selectedFormat === '100-scale' ? 'bg-primary/15 text-primary font-medium' : ''"
+                            @click="selectedFormat = '100-scale'"
+                        >
                             {{ $t('summary.scales.hundred') }}
                         </DropdownMenuItem>
-                        <DropdownMenuItem @click="selectedFormat = 'ects'">
+                        <DropdownMenuItem
+                            :class="selectedFormat === 'ects' ? 'bg-primary/15 text-primary font-medium' : ''"
+                            @click="selectedFormat = 'ects'"
+                        >
                             {{ $t('summary.scales.ects') }}
                         </DropdownMenuItem>
                     </DropdownMenuContent>
@@ -376,7 +390,7 @@ function getGradeActions(student: StudentSummaryData): RowActionItem[] {
             @student-click="handleStudentClick"
         >
             <template #toolbar>
-                <div class="flex items-center gap-3 pb-4">
+                <div class="flex items-center gap-3">
                     <div class="relative w-full sm:flex-1 sm:max-w-[220px]">
                         <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input

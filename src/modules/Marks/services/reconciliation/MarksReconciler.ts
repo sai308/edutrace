@@ -3,6 +3,7 @@ import type { Task } from '@Tasks/types/tasks'
 import type { Mark, MarksParsedData, ReconciliationResult } from '../../types/marks'
 import { studentsRepository } from '@Students/services/students.repository'
 import { tasksRepository } from '@Tasks/services/tasks.repository'
+import { normalizeTaskName } from '@Tasks/services/tasks.service'
 import { v4 as uuidv4 } from 'uuid'
 import { IdentityReconciler } from '@/shared/services/reconciliation/IdentityReconciler'
 import { marksRepository } from '../marks.repository'
@@ -14,21 +15,13 @@ export class MarksReconciler {
         this.identityReconciler = new IdentityReconciler()
     }
 
-    private _normalizeName(name: string): string {
-        if (!name)
-            return ''
-        return name.toLowerCase().replace(/\s+/g, '')
-    }
-
     /**
      * Reconciles parsed marks data with existing database records.
      */
     async reconcile(parsedData: MarksParsedData, groupName: string): Promise<ReconciliationResult> {
         // Step A: Resolve Students
-        const [allExistingMembers, rawStudents] = await Promise.all([
-            studentsRepository.getAllMembers(),
-            parsedData.studentsData.map(d => d.student),
-        ])
+        const rawStudents = parsedData.studentsData.map(d => d.student)
+        const allExistingMembers = await studentsRepository.getAllMembers()
 
         const resolvedIdentities = await this.identityReconciler.resolveIdentities(
             rawStudents as any,
@@ -56,7 +49,7 @@ export class MarksReconciler {
         // This prevents duplicate normalizedName collisions when the same task name
         // appears more than once within a single CSV (e.g. "Task 1" and "Task1").
         const reconciledTasks: Task[] = parsedData.tasks.map((parsedTask) => {
-            const normalizedName = this._normalizeName(parsedTask.name)
+            const normalizedName = normalizeTaskName(parsedTask.name)
             const existing = taskMap.get(normalizedName)
             if (existing) {
                 // Reuse existing (DB or already-resolved within this batch)

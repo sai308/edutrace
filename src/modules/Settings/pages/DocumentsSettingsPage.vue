@@ -60,12 +60,15 @@ const plansSize = ref(0)
 
 const printSettings = ref<PrintSettings>({
     subject: '',
+    studyForm: '',
+    specialty: '',
     formOfControl: '',
     semester: '',
     academicYear: '',
     totalHours: 0,
     examiner: '',
     practicalTeacher: '',
+    templateFileName: '',
 })
 const isSavingPrint = ref(false)
 
@@ -128,6 +131,7 @@ async function loadStats() {
 async function loadPrintSettings() {
     const settings = await settingsRepository.getPrintSettings()
     printSettings.value = { ...printSettings.value, ...settings }
+    printSettings.value.totalHours = printSettings.value.totalHours ?? 0
 
     // Auto estimate academic year if not set
     if (!printSettings.value.academicYear) {
@@ -197,6 +201,8 @@ async function handleTemplateUpload(event: Event) {
     try {
         await opfs.saveFile('templates', 'print_template.docx', file)
         hasCustomTemplate.value = true
+        printSettings.value.templateFileName = file.name
+        await settingsRepository.savePrintSettings(printSettings.value)
         toast.success(t('documents.settings.print.templateUploadSuccess'))
     }
     catch (e) {
@@ -215,6 +221,8 @@ async function removeCustomTemplate() {
     try {
         await opfs.deleteFile('templates', 'print_template.docx')
         hasCustomTemplate.value = false
+        printSettings.value.templateFileName = ''
+        await settingsRepository.savePrintSettings(printSettings.value)
         toast.success(t('documents.settings.print.templateRemoveSuccess'))
     }
     catch (e) {
@@ -597,6 +605,31 @@ async function handleDeletePlans() {
                                 <Input id="subject" v-model="printSettings.subject" class="bg-background/50" />
                             </div>
 
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="grid gap-2">
+                                    <Label for="studyForm" class="text-sm font-semibold">{{
+                                        $t('documents.settings.print.studyForm')
+                                    }}</Label>
+                                    <Input
+                                        id="studyForm"
+                                        v-model="printSettings.studyForm"
+                                        class="bg-background/50"
+                                        :placeholder="$t('documents.settings.print.studyFormPlaceholder')"
+                                    />
+                                </div>
+                                <div class="grid gap-2">
+                                    <Label for="specialty" class="text-sm font-semibold">{{
+                                        $t('documents.settings.print.specialty')
+                                    }}</Label>
+                                    <Input
+                                        id="specialty"
+                                        v-model="printSettings.specialty"
+                                        class="bg-background/50"
+                                        :placeholder="$t('documents.settings.print.specialtyPlaceholder')"
+                                    />
+                                </div>
+                            </div>
+
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-end">
                                 <div class="grid gap-2">
                                     <Label class="text-sm font-semibold">{{
@@ -735,17 +768,21 @@ async function handleDeletePlans() {
                                         $t('documents.settings.print.downloadTemplateHint')
                                     }}</span>
                                 </div>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    class="gap-1.5 shrink-0 ml-4"
-                                    @click="handleDownloadStarterTemplate"
-                                >
-                                    <Download class="w-3.5 h-3.5" />
-                                    <span class="hidden sm:inline">{{
-                                        $t('documents.settings.print.downloadTemplate')
-                                    }}</span>
-                                </Button>
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger as-child>
+                                            <Button
+                                                variant="outline"
+                                                size="icon"
+                                                class="shrink-0 ml-4"
+                                                @click="handleDownloadStarterTemplate"
+                                            >
+                                                <Download class="w-4 h-4" />
+                                            </Button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>{{ $t('documents.settings.print.downloadTemplate') }}</TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
                             </div>
 
                             <div class="flex items-center justify-between rounded-lg border px-4 py-3 bg-muted/30">
@@ -760,7 +797,7 @@ async function handleDeletePlans() {
                                     >
                                         <FileText class="w-4 h-4" />
                                     </div>
-                                    <div class="flex flex-col">
+                                    <div class="flex flex-col gap-0.5">
                                         <span class="text-sm font-medium">
                                             {{
                                                 hasCustomTemplate
@@ -768,9 +805,16 @@ async function handleDeletePlans() {
                                                     : $t('documents.settings.print.templateDefault')
                                             }}
                                         </span>
+                                        <span
+                                            v-if="hasCustomTemplate && printSettings.templateFileName"
+                                            class="text-xs text-muted-foreground font-mono truncate max-w-[160px]"
+                                            :title="printSettings.templateFileName"
+                                        >
+                                            {{ printSettings.templateFileName }}
+                                        </span>
                                     </div>
                                 </div>
-                                <div class="flex gap-2">
+                                <div class="flex gap-2 shrink-0">
                                     <input
                                         ref="templateInput"
                                         type="file"
@@ -778,42 +822,49 @@ async function handleDeletePlans() {
                                         class="hidden"
                                         @change="handleTemplateUpload"
                                     >
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        class="gap-1.5"
-                                        :disabled="isUploadingTemplate"
-                                        @click="triggerTemplateUpload"
-                                    >
-                                        <UploadCloud class="w-3.5 h-3.5" />
-                                        <span class="hidden sm:inline">{{
-                                            $t('documents.settings.print.uploadTemplate')
-                                        }}</span>
-                                    </Button>
-                                    <Button
-                                        v-if="hasCustomTemplate"
-                                        variant="outline"
-                                        size="sm"
-                                        class="gap-1.5"
-                                        @click="previewTemplate"
-                                    >
-                                        <Eye class="w-3.5 h-3.5" />
-                                        <span class="hidden sm:inline">{{
-                                            $t('documents.settings.print.previewTemplate', 'Preview')
-                                        }}</span>
-                                    </Button>
-                                    <Button
-                                        v-if="hasCustomTemplate"
-                                        variant="destructive"
-                                        size="sm"
-                                        class="gap-1.5"
-                                        @click="removeCustomTemplate"
-                                    >
-                                        <Trash2 class="w-3.5 h-3.5" />
-                                        <span class="hidden sm:inline">{{
-                                            $t('documents.settings.print.removeTemplate')
-                                        }}</span>
-                                    </Button>
+                                    <TooltipProvider>
+                                        <Tooltip>
+                                            <TooltipTrigger as-child>
+                                                <Button
+                                                    variant="outline"
+                                                    size="icon"
+                                                    :disabled="isUploadingTemplate"
+                                                    @click="triggerTemplateUpload"
+                                                >
+                                                    <UploadCloud class="w-4 h-4" />
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>{{ $t('documents.settings.print.uploadTemplate') }}</TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                    <TooltipProvider v-if="hasCustomTemplate">
+                                        <Tooltip>
+                                            <TooltipTrigger as-child>
+                                                <Button
+                                                    variant="outline"
+                                                    size="icon"
+                                                    @click="previewTemplate"
+                                                >
+                                                    <Eye class="w-4 h-4" />
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>{{ $t('documents.settings.print.previewTemplate') }}</TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                    <TooltipProvider v-if="hasCustomTemplate">
+                                        <Tooltip>
+                                            <TooltipTrigger as-child>
+                                                <Button
+                                                    variant="destructive"
+                                                    size="icon"
+                                                    @click="removeCustomTemplate"
+                                                >
+                                                    <Trash2 class="w-4 h-4" />
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>{{ $t('documents.settings.print.removeTemplate') }}</TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
                                 </div>
                             </div>
                         </div>

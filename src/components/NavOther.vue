@@ -8,7 +8,6 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-    useSidebar,
 } from '@/components/ui/sidebar'
 
 defineProps<{
@@ -19,13 +18,6 @@ defineProps<{
         isActive?: boolean
     }[]
 }>()
-const { isMobile, setOpenMobile } = useSidebar()
-
-function closeSidebarOnMobile() {
-    if (isMobile?.value) {
-        setOpenMobile(false)
-    }
-}
 
 function isExternal(url: string) {
     return url.startsWith('http://') || url.startsWith('https://')
@@ -39,7 +31,7 @@ function isExternal(url: string) {
         </SidebarGroupLabel>
         <SidebarMenu>
             <SidebarMenuItem v-for="item in items" :key="item.name">
-                <SidebarMenuButton as-child :is-active="item.isActive">
+                <SidebarMenuButton as-child :is-active="item.isActive" :tooltip="item.name">
                     <a
                         v-if="isExternal(item.url)"
                         :href="item.url"
@@ -47,11 +39,11 @@ function isExternal(url: string) {
                         rel="noopener noreferrer"
                     >
                         <component :is="item.icon" />
-                        <span class="group-data-[collapsible=icon]:hidden">{{ item.name }}</span>
+                        <span>{{ item.name }}</span>
                     </a>
-                    <RouterLink v-else :to="item.url" @click="closeSidebarOnMobile">
+                    <RouterLink v-else :to="item.url">
                         <component :is="item.icon" />
-                        <span class="group-data-[collapsible=icon]:hidden">{{ item.name }}</span>
+                        <span>{{ item.name }}</span>
                     </RouterLink>
                 </SidebarMenuButton>
             </SidebarMenuItem>

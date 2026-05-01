@@ -1,5 +1,6 @@
 import type { Module, StudentSummaryData } from '@Summary/types/summary'
 import type { ColumnDef } from '@tanstack/vue-table'
+import type { Ref } from 'vue'
 import type { ComposerTranslation } from 'vue-i18n'
 import type { RowActionItem } from '@/shared/types/table'
 import {
@@ -29,6 +30,7 @@ export function createSummaryColumns(
     ordinalMap: Map<string, number>,
     formatters: Formatters,
     t: ComposerTranslation,
+    isCompact: Ref<boolean>,
 ): ColumnDef<StudentSummaryData>[] {
     const cols: ColumnDef<StudentSummaryData>[] = []
 
@@ -52,16 +54,24 @@ export function createSummaryColumns(
     cols.push({
         accessorKey: 'name',
         meta: { label: t('summary.student') },
+        sortingFn: (a, b) =>
+            (a.getValue('name') as string).localeCompare(b.getValue('name') as string, undefined, {
+                sensitivity: 'base',
+            }),
         header: ({ column }) => h(DataTableColumnHeader, { column, title: t('summary.student') }),
-        cell: ({ row }) =>
-            h(
+        cell: ({ row }) => {
+            const name = row.original.name
+            const display = isCompact.value ? (name.split(/\s+/)[0] ?? name) : name
+            return h(
                 'button',
                 {
-                    class: 'font-medium hover:text-primary transition-colors text-left cursor-pointer border-b border-dotted border-transparent hover:border-current pb-0.5',
+                    class: 'font-medium hover:text-primary transition-colors text-left cursor-pointer border-b border-dotted border-transparent hover:border-current pb-0.5 truncate max-w-full block',
+                    title: name,
                     onClick: () => onStudentClick(row.original),
                 },
-                row.original.name,
-            ),
+                display,
+            )
+        },
         enableSorting: true,
         enableHiding: false,
         filterFn: 'includesString',

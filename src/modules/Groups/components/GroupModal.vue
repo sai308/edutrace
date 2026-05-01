@@ -187,7 +187,6 @@ function handleOpenChange(val: boolean): void {
                         id="name"
                         v-model="formData.name"
                         :placeholder="$t('groups.modal.namePlaceholder')"
-                        autofocus
                     />
                 </div>
 

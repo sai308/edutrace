@@ -56,11 +56,11 @@ describe('getEntityCounts', () => {
     it('counts tasks correctly', async () => {
         const db = await databaseService.getDb()
         await db.put('tasks', {
-            id: 1,
+            id: '1',
             name: 'Count Task',
             normalizedName: 'counttask',
             maxPoints: 10,
-        })
+        } as any)
 
         const counts = await statsService.getEntityCounts()
 
@@ -71,17 +71,19 @@ describe('getEntityCounts', () => {
         const db = await databaseService.getDb()
         await db.put('marks', {
             id: 1,
-            taskId: 1,
+            taskId: '1',
             studentId: 's1',
             score: 80,
+            value: 80,
             groupName: 'G1',
             createdAt: '2024-01-01',
         })
         await db.put('marks', {
             id: 2,
-            taskId: 1,
+            taskId: '1',
             studentId: 's2',
             score: 90,
+            value: 90,
             groupName: 'G1',
             createdAt: '2024-01-01',
         })
@@ -258,9 +260,10 @@ describe('getEntitySizes', () => {
         const db = await databaseService.getDb()
         await db.put('marks', {
             id: 99,
-            taskId: 1,
+            taskId: '1',
             studentId: 'sz-s1',
             score: 95,
+            value: 95,
             groupName: 'G1',
             createdAt: '2024-01-01',
         })
