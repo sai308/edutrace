@@ -52,6 +52,7 @@ const {
     isHardDeleteDialogOpen,
     isBulkDeleteDialogOpen,
     allGroups,
+    loadMembers,
     openAddDialog,
     handleEdit,
     handleSave,
