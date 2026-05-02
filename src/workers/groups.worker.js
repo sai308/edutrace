@@ -165,17 +165,24 @@ function processGroupsData(groups, meets, members, teacherList, allTasks, allMar
     const memberCounts = calculateMemberCounts(members, meets, teacherSet, meetToGroup);
     const processedGroups = processGroupStats(groups, memberCounts.ids, allTasks, allMarks);
 
-    // Extract unique meet IDs
+    // Extract unique meet IDs and all participant names
     const meetIds = new Set();
+    const allTeacherNames = new Set();
 
     meets.forEach(meet => {
         if (meet.meetId) meetIds.add(meet.meetId);
+        if (Array.isArray(meet.participants)) {
+            meet.participants.forEach(p => {
+                if (p.name) allTeacherNames.add(p.name);
+            });
+        }
     });
 
     return {
         groups: processedGroups,
         memberCounts: memberCounts.counts,
         allMeetIds: Array.from(meetIds).sort(),
+        allTeachers: Array.from(allTeacherNames),
     };
 }
 

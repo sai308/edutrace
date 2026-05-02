@@ -32,6 +32,7 @@ vi.mock('@/shared/services/opfs', () => ({
 vi.mock('../documentGenerator', () => ({
     documentGenerator: {
         generateFromTemplate: vi.fn(),
+        generateFromBlob: vi.fn(),
     },
 }))
 
@@ -103,12 +104,13 @@ function makeFormData(overrides: Partial<PrintFormData> = {}): PrintFormData {
 describe('sessionDocumentService', () => {
     beforeEach(() => {
         vi.clearAllMocks()
+        ;(opfs.fileExists as any).mockResolvedValue(true)
         ;(studentsRepository.getIepMap as any).mockResolvedValue({})
-        ;(documentGenerator.generateFromTemplate as any).mockResolvedValue(
-            new Blob(['fake-docx'], {
-                type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            }),
-        )
+        const fakeBlob = new Blob(['fake-docx'], {
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        })
+        ;(documentGenerator.generateFromTemplate as any).mockResolvedValue(fakeBlob)
+        ;(documentGenerator.generateFromBlob as any).mockResolvedValue(fakeBlob)
     })
 
     // ─── hasTemplate ──────────────────────────────────────────────────────────
