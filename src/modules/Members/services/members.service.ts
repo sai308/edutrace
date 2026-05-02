@@ -1,7 +1,7 @@
-import type { Member, StudentFormData } from '@Students/types/students'
-import { studentsRepository } from '@Students/services/students.repository'
+import type { Member, MemberFormData } from '@Members/types/members'
+import { membersRepository } from '@Members/services/members.repository'
 
-export type MemberFormData = StudentFormData
+export type { MemberFormData } from '@Members/types/members'
 
 export interface MemberFormErrors {
     name: string
@@ -56,8 +56,28 @@ class MembersService {
             iep: formData.iep || undefined,
         }
 
-        const id = await studentsRepository.saveMember(memberToSave)
+        const id = await membersRepository.saveMember(memberToSave)
         return { ...memberToSave, id }
+    }
+
+    async getAllMembers(options?: { includeHidden?: boolean }): Promise<Member[]> {
+        return membersRepository.getAllMembers(options)
+    }
+
+    async hideMember(id: string): Promise<string | undefined> {
+        return membersRepository.hideMember(id)
+    }
+
+    async restoreMember(id: string): Promise<string | undefined> {
+        return membersRepository.restoreMember(id)
+    }
+
+    async hideMembers(ids: string[]): Promise<void> {
+        return membersRepository.hideMembers(ids)
+    }
+
+    async deleteMembers(ids: string[]): Promise<void> {
+        return membersRepository.deleteMembers(ids)
     }
 }
 

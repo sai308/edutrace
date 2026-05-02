@@ -1,8 +1,7 @@
 import type { MemberFormData } from '@Members/services/members.service'
-import type { Member } from '@Students/types/students'
+import type { Member } from '@Members/types/members'
 import { membersService } from '@Members/services/members.service'
-import { studentsRepository } from '@Students/services/students.repository'
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { logger } from '@/shared/lib/logger'
 import { useToast } from '@/shared/services/toast'
@@ -37,7 +36,7 @@ export function useMembers() {
     async function loadMembers(): Promise<void> {
         isLoading.value = true
         try {
-            members.value = await studentsRepository.getAllMembers({ includeHidden: true })
+            members.value = await membersService.getAllMembers({ includeHidden: true })
         }
         catch (error) {
             logger.error('Failed to load members:', error)
@@ -88,7 +87,7 @@ export function useMembers() {
         if (!softDeleteTarget.value)
             return
         try {
-            await studentsRepository.hideMember(softDeleteTarget.value.id)
+            await membersService.hideMember(softDeleteTarget.value.id)
             const m = members.value.find(m => m.id === softDeleteTarget.value!.id)
             if (m)
                 m.hidden = true
@@ -106,7 +105,7 @@ export function useMembers() {
 
     async function handleRestore(member: Member): Promise<void> {
         try {
-            await studentsRepository.restoreMember(member.id)
+            await membersService.restoreMember(member.id)
             const m = members.value.find(m => m.id === member.id)
             if (m)
                 m.hidden = false
@@ -132,7 +131,7 @@ export function useMembers() {
         if (!bulkMemberIds.value.length)
             return
         try {
-            await studentsRepository.hideMembers(bulkMemberIds.value)
+            await membersService.hideMembers(bulkMemberIds.value)
             const idSet = new Set(bulkMemberIds.value)
             members.value.forEach((m) => {
                 if (idSet.has(m.id))
@@ -158,7 +157,7 @@ export function useMembers() {
             return
         const id = hardDeleteTarget.value.id
         try {
-            await studentsRepository.deleteMembers([id])
+            await membersService.deleteMembers([id])
             members.value = members.value.filter(m => m.id !== id)
             toast.success(t('members.toasts.hardDeleteSuccess'))
             isHardDeleteDialogOpen.value = false
@@ -171,10 +170,6 @@ export function useMembers() {
             hardDeleteTarget.value = null
         }
     }
-
-    onMounted(() => {
-        loadMembers()
-    })
 
     return {
         // State

@@ -1,13 +1,12 @@
-import type { Member } from '@Students/types/students'
+import type { Member } from '@Members/types/members'
 import { membersService } from '@Members/services/members.service'
-import { studentsRepository } from '@Students/services/students.repository'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useMembers } from '../useMembers'
 
 // ── Mocks ──────────────────────────────────────────────────────────────────────
 
-vi.mock('@Students/services/students.repository')
 vi.mock('@Members/services/members.service')
+vi.mock('@/shared/lib/logger', () => ({ logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn() } }))
 vi.mock('vue-i18n', () => ({
     useI18n: () => ({ t: (key: string) => key }),
 }))
@@ -15,11 +14,11 @@ vi.mock('@/shared/services/toast', () => ({
     useToast: () => ({ toast: { success: vi.fn(), error: vi.fn() } }),
 }))
 
-const mockGetAllMembers = vi.mocked(studentsRepository.getAllMembers)
-const mockHideMember = vi.mocked(studentsRepository.hideMember)
-const mockRestoreMember = vi.mocked(studentsRepository.restoreMember)
-const mockHideMembers = vi.mocked(studentsRepository.hideMembers)
-const mockDeleteMembers = vi.mocked(studentsRepository.deleteMembers)
+const mockGetAllMembers = vi.mocked(membersService.getAllMembers)
+const mockHideMember = vi.mocked(membersService.hideMember)
+const mockRestoreMember = vi.mocked(membersService.restoreMember)
+const mockHideMembers = vi.mocked(membersService.hideMembers)
+const mockDeleteMembers = vi.mocked(membersService.deleteMembers)
 const mockSaveMember = vi.mocked(membersService.saveMember)
 
 function makeMembers(): Member[] {

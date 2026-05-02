@@ -55,7 +55,7 @@ The access pattern is: **Page/View → Service → Repository → DatabaseServic
 - **Repositories** (`*.repository.ts`) extend `BaseRepository<StoreName>` and provide typed CRUD + query methods for a single object store.
 - **Services** (`*.service.ts`) contain business logic, orchestrate multiple repositories, and expose data to Vue components.
 
-Object stores: `meets`, `groups`, `tasks`, `units`, `marks`, `members`, `modules`, `finalAssessments`, `sessions`, `plans`, `settings`.
+Object stores: `meets`, `groups`, `tasks`, `units`, `marks`, `members`, `modules`, `finalAssessments`, `sessions`, `plans`, `settings`. A legacy `students` store exists in the schema (key: `any`, value: `any`) for migration compatibility — do not write to it.
 
 ### Programmatic DOCX Generation
 
@@ -71,6 +71,8 @@ Two different approaches are used for `.docx` generation:
 - `exportSummaryCsv(students, groupName): Blob` — plain CSV output of the same data.
 
 The summary export strips `status`, `statusCause`, and `completedAt` fields and sorts students alphabetically (A-Z) via `localeCompare`. When adding a new raw DOCX generator (without a user-editable template), follow the OOXML helper pattern. For user-customizable documents, follow the docxtemplater + OPFS pattern.
+
+**Summary module serialization:** `src/modules/Summary/services/examSerialization.ts` defines `SummaryTask` and `SummaryModule` interfaces and exports `serializeTask(task)` / `serializeModule(module)` helpers used when persisting module data to the `modules` store.
 
 ### Web Workers
 
@@ -117,7 +119,7 @@ Modules: `Analytics`, `Groups`, `Marks`, `Members`, `Plans`, `Reports`, `Session
 |---|---|
 | `DatabaseService.ts` | IndexedDB singleton (v17), schema migrations, `getDb()` |
 | `BaseRepository.ts` | Abstract base class for all repositories — typed CRUD, bulk ops, index queries |
-| `settings.repository.ts` | Workspace-scoped settings get/set (key-value in `settings` store) |
+| `settings.repository.ts` | Workspace-scoped settings get/set (key-value in `settings` store). Keys defined in `src/shared/types/Settings.d.ts` — `SettingsMap`: `durationLimit`, `defaultTeacher`, `ignoredUsers`, `teachers`, `sessionSquash`, `sessionSquashThreshold`, `examSettings`, `printSettings`, `summaryThresholds` (per-group `SummaryThresholds` keyed by group ID) |
 | `workspace.repository.ts` | Workspace CRUD; multi-workspace export/import/wipe — workspace list and active ID in `localStorage`, full IDB data (all 11 stores) per workspace in separate named databases |
 | `backup.service.ts` | Single-workspace export/import — serializes all IDB stores of the active workspace to JSON |
 | `stats.service.ts` | App-level statistics: record counts and estimated storage size per entity |
@@ -125,6 +127,15 @@ Modules: `Analytics`, `Groups`, `Marks`, `Members`, `Plans`, `Reports`, `Session
 | `StorageService.ts` | `localStorage` abstraction with typed key access |
 | `opfs.ts` | Origin Private File System helpers — read/write/delete files in OPFS per workspace |
 | `reconciliation/IdentityReconciler.ts` | Name/email matching for CSV import: matches CSV rows to existing Member records |
+
+**`src/shared/utils/`** — pure utility functions (no Vue, no services):
+
+| File | Purpose |
+|---|---|
+| `grades.ts` | Grade scale conversions: `to5Scale`, `toECTS`, `toNationalGrade`, `to100Scale`, `normalizeImportScore`, `createMarkFormatter`, `convertGradeTo100` (any format → 100pt), `from5ScaleTo100`/`fromECTSTo100` (reverse), `computeECTSStats`, `getECTSColorClass` |
+| `download.ts` | `downloadBlob(blob, filename)` and `downloadJson(data, prefix)` — browser download helpers |
+| `groupNormalization.ts` | `normalizeGroupName(input, existingGroups)` — strips non-alphanumeric chars and matches input against existing group names, returning canonical casing |
+| `workspace-utils.ts` | Icon lists for workspace picker (`scienceIcons`, `educationIcons`, `businessIcons`, `allSelectionIcons`) and `getIconTitle(name)` — converts PascalCase icon name to display label |
 
 **`src/shared/composables/`** — cross-module Vue composables:
 
@@ -194,6 +205,12 @@ A `beforeEach` guard in `src/router/index.ts` calls `databaseService.getDb()` be
 **Global Settings** (`/settings`) — `src/pages/GlobalSettingsPage.vue` — cross-workspace settings page linked from the sidebar footer. Sections: Appearance (language + theme), Workspaces (list, per-workspace export, import, delete), Sync (coming-soon placeholder), Dev & Diagnostics (app/DB version, copy diagnostics). Uses `workspaceRepository` for workspace CRUD and `localeService` for locale persistence. Exempt from the DB guard because workspace metadata lives in `localStorage`, not IndexedDB.
 
 **Control Settings** (`/control/settings`) — `src/modules/Settings/pages/ControlSettingsPage.vue` — data management page for Marks, Tasks, and Modules (JSON export/import/delete per store) plus a **Summary Export** card. Summary Export lets the user select a group, then download the final grade table as CSV or DOCX. Status and date columns are excluded; students are sorted A-Z. The card calls `summaryService.getGroups()` on mount, then on export: fetches modules via `summaryService.getModulesByGroup()`, loads grades via `summaryService.loadExamData()`, and delegates file generation to `summaryExport.service.ts`.
+
+**Reports Settings** (`/attendance/settings`) — `src/modules/Settings/pages/ReportsSettingsPage.vue` — attendance/meet data management. Sections: meet data export/import/delete, `durationLimit` setting (auto-applies to all meets on save), `sessionSquashThreshold` setting (minutes for merging back-to-back meets).
+
+**Organization Settings** (`/org/settings`) — `src/modules/Settings/pages/OrganizationSettingsPage.vue` — data management for Students, Groups, and Members stores (JSON export/import/delete per store).
+
+**Documents Settings** (`/documents/settings`) — `src/modules/Settings/pages/DocumentsSettingsPage.vue` — manages `PrintSettings` (subject, specialty, examiner, etc.) persisted via `settings.repository`, plus OPFS template upload/download/delete for the session document generator.
 
 ### UI Components
 

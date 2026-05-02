@@ -484,7 +484,7 @@ const technologies: Technology[] = [
                         {{ t('about.openSource.description') }}
                     </p>
                     <Button variant="secondary" class="w-full font-semibold group" as-child>
-                        <a href="https://github.com/sai308/edutrace-local" target="_blank" rel="noopener noreferrer">
+                        <a href="https://github.com/sai308/edutrace" target="_blank" rel="noopener noreferrer">
                             <Github class="mr-2 size-4" />
                             {{ t('about.openSource.button') }}
                             <ExternalLink class="ml-1 size-3 opacity-50 group-hover:opacity-100 transition-opacity" />

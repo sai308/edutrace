@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { MemberFormData, MemberFormErrors } from '@Members/services/members.service'
-import type { Member } from '@Students/types/students'
+import type { Member } from '@Members/types/members'
 import { ChevronDown, FileText, Save } from 'lucide-vue-next'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'

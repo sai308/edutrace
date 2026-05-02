@@ -207,7 +207,7 @@ const data = computed(() => {
             },
             {
                 name: 'GitHub',
-                url: 'https://github.com/sai308/edutrace-local',
+                url: 'https://github.com/sai308/edutrace',
                 icon: Github,
             },
         ],

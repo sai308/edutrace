@@ -27,7 +27,7 @@ import { Book, Github, Info } from 'lucide-vue-next'
                     {{ $t('footer.guide') }}
                 </router-link>
                 <a
-                    href="https://github.com/sai308/edutrace-local"
+                    href="https://github.com/sai308/edutrace"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"

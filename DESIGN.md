@@ -51,14 +51,14 @@ No hardcoded user-visible strings. Every piece of text uses `$t('scope.key')`. B
 ├──────────────┬──────────────────────────────────┤
 │              │                                  │
 │   Sidebar    │   Main content area              │
-│  (nav tree)  │   container py-4 space-y-4       │
+│  (nav tree)  │   flex-1 p-4 md:p-6 space-y-4    │
 │              │                                  │
 └──────────────┴──────────────────────────────────┘
 ```
 
 - **Root:** `DashboardLayout.vue` — `SidebarProvider` with persistent open state (`localStorage` key `"sidebar"`), full viewport height via `h-svh overflow-hidden`.
 - **Sidebar:** `DashboardSidebar.vue` — collapsible to icon-only (`collapsible="icon"`). Auto-closes on mobile after navigation.
-- **Header:** `DashboardHeader.vue` — `h-16` with a bottom border tinted by the active workspace color at 30% opacity (`borderBottomColor: ${color}30`). Contains: sidebar trigger → separator → breadcrumbs → theme switcher.
+- **Header:** `DashboardHeader.vue` — `h-16` with a 2 px bottom border tinted by the active workspace color: `color-mix(in srgb, var(--workspace-color), transparent 81%)` (≈ 19% opacity). Collapses to `h-12` when the sidebar is in icon-only mode via `group-has-data-[collapsible=icon]/sidebar-wrapper:h-12`. Contains: sidebar trigger → separator → breadcrumbs → (centered logo on `sm:` and up) → status indicator → theme switcher.
 - **Breadcrumbs** are hidden on mobile (`hidden md:block`) and sourced from `route.meta.breadcrumbs`.
 
 ### Navigation groups
@@ -190,10 +190,10 @@ Dark mode is toggled by adding the `.dark` class to `<html>`. Managed by `@vueus
 ### Page container
 
 ```html
-<div class="container py-4 space-y-4">
+<div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
 ```
 
-This is the standard outer wrapper for all page views.
+This is the standard outer wrapper for all View-level components. `pt-2` accounts for the header's `mb-4`. No `container` class — the sidebar inset already constrains width.
 
 ### Grid layouts
 
@@ -292,6 +292,63 @@ Use `ScrollArea` from `src/components/ui/scroll-area/` for constrained scroll re
 .custom-scrollbar: scrollbar-width: thin; scrollbar-color: var(--secondary) transparent
 ```
 
+### ButtonGroup
+
+Groups related buttons into a visually fused strip (shared border, merged corners). Use for discrete option sets (e.g. view toggles, format selectors).
+
+```html
+<ButtonGroup>
+  <Button variant="outline" size="sm">Option A</Button>
+  <ButtonGroupSeparator />
+  <Button variant="outline" size="sm">Option B</Button>
+</ButtonGroup>
+```
+
+`ButtonGroupText` renders a non-interactive label segment inside the group. `orientation` prop accepts `"horizontal"` (default) or `"vertical"`.
+
+### Stepper
+
+Multi-step wizard. Use for sequential workflows where steps must be completed in order (e.g. unit creation, import wizards).
+
+```html
+<Stepper :model-value="currentStep">
+  <StepperItem :step="1">
+    <StepperTrigger><StepperIndicator /><StepperTitle>Step 1</StepperTitle></StepperTrigger>
+    <StepperSeparator />
+  </StepperItem>
+</Stepper>
+```
+
+### NativeSelect
+
+Styled native `<select>` with a `ChevronDown` icon overlay. Use in forms where Reka UI `Select` is too heavy (e.g. in-dialog dropdowns with few options, mobile-friendly pickers).
+
+```html
+<NativeSelect v-model="value">
+  <NativeSelectOption value="a">Option A</NativeSelectOption>
+  <NativeSelectOptGroup label="Group">
+    <NativeSelectOption value="b">Option B</NativeSelectOption>
+  </NativeSelectOptGroup>
+</NativeSelect>
+```
+
+Height is `h-9`, matching standard inputs. Full focus ring and `aria-invalid` styles.
+
+### NumberInput
+
+Increment/decrement input with `+`/`−` buttons. Two layout variants:
+
+| `variant` | Layout |
+|---|---|
+| `"horizontal"` | `[−] [input] [+]` — default |
+| `"vertical"` | `[input]` with `▲▼` stacked on the right |
+
+```html
+<NumberInput v-model="count" :min="0" :max="100" :step="1" />
+```
+
+Props: `min`, `max`, `step`, `variant`, `buttonClass`. All other attrs forward to the underlying `<Input>`.
+
 ---
 
 ## 7. Page Anatomy
@@ -307,7 +364,7 @@ The Page layer never renders markup directly (no Tailwind in Pages). The View la
 
 ### Standard view layout
 
-```
+```html
 <div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
   <!-- 1. Header row — always visible -->
@@ -622,24 +679,48 @@ Never show a toast for a user-initiated cancel or close. Only toast when the app
 
 ### Empty states
 
-All empty states use `src/shared/components/EmptyState.vue`:
+All empty states use `src/shared/components/EmptyState.vue`, which wraps the `Empty` primitive family (`src/components/ui/empty/`):
 
 ```html
 <EmptyState
   :title="$t('module.emptyState.title')"
   :description="$t('module.emptyState.description')"
   :icon="IconComponent"
+  :learn-more-url="optionalUrl"
   class="min-h-[400px]"
 >
+  <!-- default slot: primary CTA -->
   <Button @click="openCreate" class="mt-4 gap-2">
     <Plus class="w-4 h-4" /> {{ $t('module.add') }}
   </Button>
+
+  <!-- footer slot: secondary content below CTA -->
+  <template #footer>...</template>
 </EmptyState>
 ```
+
+Props: `title` (required), `description` (optional), `icon` (optional `Component`), `learnMoreUrl` (optional — renders an external link with `ArrowUpRight` icon).
+
+Slots: default (primary CTA area), `footer` (below CTA, e.g. secondary links).
 
 - Always include a primary CTA that resolves the empty state.
 - The description should explain how the data gets here (import, manual entry, automatic).
 - The table's in-cell empty state uses `DataTableEmptyState` (wrapped `EmptyState` with `border-none py-6`).
+
+**`Empty` primitive** — if you need a custom empty state layout without the `EmptyState` wrapper, compose the primitive directly:
+
+```html
+<Empty>
+  <EmptyHeader>
+    <EmptyMedia variant="icon"><SomeIcon /></EmptyMedia>
+    <EmptyTitle>Title</EmptyTitle>
+    <EmptyDescription>Description</EmptyDescription>
+  </EmptyHeader>
+  <EmptyContent><!-- CTA --></EmptyContent>
+</Empty>
+```
+
+`EmptyMedia` variants: `default` (transparent) | `icon` (muted rounded-lg box, `size-10`).
 
 ### Status icons (file queue / import)
 
@@ -764,11 +845,11 @@ The sidebar state persists in `localStorage` (`key: "sidebar"`). On tablet portr
 #### Page container padding
 
 ```html
-<!-- Standard outer wrapper for all page views -->
-<div class="container py-4 md:py-6 px-4 md:px-8 space-y-4">
+<!-- Standard outer wrapper for all View-level components -->
+<div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
 ```
 
-Use `p-4` at base, `md:p-8` on tablet portrait and above.
+`p-4` at base, `md:p-6` on tablet portrait and above. `pt-2` always — accounts for the header's `mb-4`. No `container` class; sidebar inset constrains width.
 
 #### Page header row (title + actions)
 

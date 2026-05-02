@@ -72,8 +72,8 @@ Reports are raw Google Meet CSV exports uploaded by the user. They are the sourc
 - Drill-down view per report: participant timeline visualization, per-participant duration and attendance percentage.
 
 **Processing options:**
-- Configurable session duration limit (minutes). Sessions exceeding the limit are capped.
-- Session squashing: merge consecutive short reconnections within a configurable threshold into a single session.
+- Configurable session duration limit (minutes). Sessions exceeding the limit are capped. Option to retroactively apply the limit to all existing meet records.
+- Session squashing: an enable/disable toggle plus a configurable threshold (minutes). When enabled, consecutive short reconnections within the threshold window are merged into a single session.
 
 ---
 
@@ -116,8 +116,8 @@ Members are individual participants: students, teachers, or assistants.
 - Add a member with: name, email, role (Student / Teacher / Assistant), group assignment.
 - Edit and delete members.
 - Roles affect statistics: Teachers and Assistants are excluded from student-facing views and computations.
-- Support alias lists per member for name deduplication (useful when a student's name appears differently across CSV exports).
-- Flag members with an IEP (Individual Education Plan) boolean.
+- `aliases` field (`string[]`) exists on the data model and is used internally by the CSV import pipeline for name deduplication (matching CSV rows to existing members). There is no UI for managing aliases directly.
+- IEP field: a free-text string (e.g. an IEP document number or descriptor) visible and editable in the member dialog for Student-role members. Not a boolean flag.
 - Bulk delete selected members.
 - Search by name.
 
@@ -130,7 +130,7 @@ The Students view provides a consolidated view of student performance.
 **Requirements:**
 - Display all members with the Student role in a sortable, searchable table.
 - Columns: name, email, groups, sessions attended (e.g. 7/8), avg. attendance %, total attendance %, avg. mark, task completion %.
-- Filter by group using chip-style toggles.
+- Filter by group: clicking a group name in the "groups" column cell activates a single-group filter, shown as a dismissible badge. Only one group can be active at a time. Filter is synced to the URL via `useQuerySync`.
 - Color-coded performance indicators: green ≥75%, yellow ≥50%, red <50%.
 - Drill-down to a student profile with: full attendance history, marks history, participant timeline.
 - Edit student: name, email, group, IEP flag.
@@ -235,8 +235,8 @@ Sessions are official exam/credit records with a defined lifecycle.
   - Placeholders cover: subject, form of control, semester, date, examiners list, practical teacher, student grade rows, ECTS distribution.
   - Institution defaults saved in settings and pre-filled in print dialog.
   - Custom uploaded templates are stored in OPFS (Origin Private File System) per workspace.
-- Mark session as synced (submitted to external system) with timestamp.
-- Session status: Open / Closed.
+- Sync session: refreshes the session's auto-calculated grades from the latest Summary data (does not imply external submission). Available as a button per session tab; a batch sync runs across all open sessions for the group simultaneously.
+- Session status: Open / Closed. No "submitted to external system" flag exists on sessions; that concept lives in Plans.
 
 ---
 
@@ -255,30 +255,31 @@ Plans track students with Individual Education Plans across exam sessions.
 
 ### 5.13 Settings
 
-Settings are organized into four sections:
+Settings are split across a global page and four route-scoped sub-pages.
 
-#### General
-- Language selection (en-US / uk-UA).
-- Default teacher name (pre-filled when creating groups).
-- Session duration limit in minutes (applied globally to attendance calculations; option to retroactively apply to all existing meets).
-- Manage ignored participants: names excluded from student statistics (e.g., the teacher's own Meet account).
+#### Global Settings (`/settings`)
+- Language selection (en-US / uk-UA), theme (light/dark/system).
+- Workspace management: create, rename, recolor, delete, export/import individual workspaces.
+- Sync section: placeholder for future cloud sync (not yet implemented).
+- Dev & Diagnostics: app version, DB version, copy diagnostics JSON (includes recent log ring-buffer).
 
-#### Data Management (per section)
-Each of the four sections (Attendance, Organization, Control, Documents) has a settings sub-page with:
-- **Export** — download all data in that section as a JSON file.
-- **Import** — restore data from a JSON backup.
-- **Delete** — permanently erase all data in that section with confirmation.
-- Storage usage display per entity type.
+#### Reports Settings (`/attendance/settings`)
+- Meet data: export / import / delete all meet records.
+- Storage usage per entity.
+- Duration limit: configurable cap in minutes; option to retroactively apply to all existing meets.
+- Session squash: enable/disable toggle + threshold in minutes for merging consecutive short reconnections.
 
-#### Documents defaults
-- Institution-level defaults: subject, form of control, semester, credit hours, examiners, practical teacher.
-- Custom .docx template upload.
+#### Organization Settings (`/org/settings`)
+- Data management (export / import / delete) for: Students, Groups, Members.
+- Storage usage per entity.
 
-#### Advanced (Workspace-level)
-- Export all workspace data as a single JSON archive.
-- Import workspace data from archive.
-- Erase all workspace data with multi-step confirmation.
-- Total record count and memory usage statistics.
+#### Control Settings (`/control/settings`)
+- Data management (export / import / delete) for: Marks, Tasks, Modules.
+- Summary Export card: select a group and download the final grade table as CSV or DOCX.
+
+#### Documents Settings (`/documents/settings`)
+- Institution-level print defaults: subject, form of control, semester, credit hours, examiners, practical teacher (persisted as `PrintSettings` in the `settings` store).
+- Custom .docx template: upload, preview name, download starter template, delete custom template (stored in OPFS per workspace).
 
 ---
 
@@ -329,6 +330,7 @@ Each of the four sections (Attendance, Organization, Control, Documents) has a s
 | `sessions` | Exam session records (Main, Retake 1, Retake 2) |
 | `plans` | Individual Education Plan records per student |
 | `settings` | Key-value store for app and workspace configuration |
+| `students` | **Legacy** — exists for migration compatibility only; no new writes |
 
 ---
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Member } from '@Students/types/students'
+import type { Member } from '@Members/types/members'
 import type { RowActionItem } from '@/shared/types/table'
 import MemberDialog from '@Members/components/dialogs/MemberDialog.vue'
 import DataTable from '@Members/components/MembersList/DataTable.vue'
@@ -17,7 +17,7 @@ import {
     UserCheck,
     UserCog,
 } from 'lucide-vue-next'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import {
@@ -63,6 +63,8 @@ const {
     confirmHardDelete,
     executeHardDelete,
 } = useMembers()
+
+onMounted(() => loadMembers())
 
 const bulkMode = ref(false)
 
