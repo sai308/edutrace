@@ -18,7 +18,29 @@ export default defineConfig({
     server: {
         host: true, // bind to 0.0.0.0 so phone on same Wi-Fi can connect
         watch: {
-            ignored: ['./**/leankg.db', './**/leankg.db-journal', './**/tests/**/.*'],
+            ignored: [
+                // Build outputs
+                '**/dist/**',
+                '**/dev-dist/**',
+                '**/.vite/**',
+                // VCS & IDE
+                '**/.git/**',
+                '**/.github/**',
+                '**/.husky/**',
+                '**/.vscode/**',
+                // AI / tool state dirs
+                '**/.agent/**',
+                '**/.claude/**',
+                '**/.gemini/**',
+                '**/.leankg/**',
+                // Content & scripts (not source)
+                '**/artifacts/**',
+                '**/landing/**',
+                '**/guidelines/**',
+                '**/scripts/**',
+                // Test snapshots
+                '**/*.snap',
+            ],
         },
     },
     preview: {

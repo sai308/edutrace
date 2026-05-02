@@ -1,7 +1,8 @@
 import type { Meet } from '@Analytics/types/analytics'
 import type { Group } from '@Groups/types/groups'
 import type { Task } from '@Marks/types/marks'
-import type { Member, StudentDashboardStats, StudentFormData } from '../types/students'
+import type { MemberFormData } from '@Members/types/members'
+import type { Member, StudentDashboardStats } from '../types/students'
 import { ref, shallowRef } from 'vue'
 import { logger } from '@/shared/lib/logger'
 import { toast } from '@/shared/services/toast'
@@ -35,10 +36,10 @@ export function useStudents() {
         }
     }
 
-    async function saveStudent(formData: StudentFormData, originalStudent: Member | null) {
+    async function saveStudent(formData: MemberFormData, originalStudent: Member | null) {
         const isNew = !originalStudent
         try {
-            await studentsService.saveStudent(formData, originalStudent)
+            await studentsService.saveMember(formData, originalStudent)
             await loadData()
             toast.success(isNew ? 'Student added' : 'Student updated')
         }
@@ -55,7 +56,7 @@ export function useStudents() {
 
     async function deleteStudent(id: string) {
         try {
-            await studentsService.deleteStudent(id)
+            await studentsService.deleteMember(id)
             await loadData()
             toast.success('Student deleted')
         }
@@ -67,7 +68,7 @@ export function useStudents() {
 
     async function bulkDeleteStudents(ids: string[]) {
         try {
-            await studentsService.bulkDeleteStudents(ids)
+            await studentsService.bulkDeleteMembers(ids)
             await loadData()
             toast.success('Selected students deleted')
         }

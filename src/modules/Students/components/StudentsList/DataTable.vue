@@ -30,8 +30,8 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import DataTableEmptyState from '@/shared/components/DataTableEmptyState.vue'
 import DataTablePagination from '@/shared/components/DataTablePagination.vue'
-import DataTableViewOptions from '@/shared/components/DataTableViewOptions.vue'
 import { useColors } from '@/shared/composables/useColors'
+import { useCompactName } from '@/shared/composables/useCompactName'
 import { valueUpdater } from '@/shared/lib/utils'
 import { createColumns } from './columns'
 
@@ -51,6 +51,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { getScoreColor } = useColors()
+const { isCompact } = useCompactName()
 
 // Stable computed so TanStack sees the same array reference when data hasn't changed.
 // The inline `get data()` getter always returns a new Array.filter result, which makes
@@ -67,7 +68,7 @@ const ordinalMap = computed<Map<string, number>>(() => {
     return new Map(sorted.map((s, i) => [s.id, i + 1]))
 })
 
-const columns = computed(() => createColumns(props.rowActions ?? (() => []), emit, t, getScoreColor, ordinalMap.value))
+const columns = computed(() => createColumns(props.rowActions ?? (() => []), emit, t, getScoreColor, ordinalMap.value, isCompact))
 
 const sorting = ref<SortingState>([{ id: 'name', desc: false }])
 const columnVisibility = useStorage<VisibilityState>('edutrace-students-columns', {
@@ -144,10 +145,7 @@ defineExpose({ table })
 
 <template>
     <div class="space-y-2">
-        <div class="flex items-center justify-between gap-2">
-            <slot name="toolbar" :table="table" />
-            <DataTableViewOptions :table="table" />
-        </div>
+        <slot name="toolbar" :table="table" />
 
         <div class="rounded-md border bg-card overflow-auto max-h-[calc(100svh-20rem)] custom-scrollbar">
             <Table class="min-w-[900px]">

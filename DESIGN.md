@@ -51,14 +51,14 @@ No hardcoded user-visible strings. Every piece of text uses `$t('scope.key')`. B
 ├──────────────┬──────────────────────────────────┤
 │              │                                  │
 │   Sidebar    │   Main content area              │
-│  (nav tree)  │   container py-4 space-y-4       │
+│  (nav tree)  │   flex-1 p-4 md:p-6 space-y-4    │
 │              │                                  │
 └──────────────┴──────────────────────────────────┘
 ```
 
 - **Root:** `DashboardLayout.vue` — `SidebarProvider` with persistent open state (`localStorage` key `"sidebar"`), full viewport height via `h-svh overflow-hidden`.
 - **Sidebar:** `DashboardSidebar.vue` — collapsible to icon-only (`collapsible="icon"`). Auto-closes on mobile after navigation.
-- **Header:** `DashboardHeader.vue` — `h-16` with a bottom border tinted by the active workspace color at 30% opacity (`borderBottomColor: ${color}30`). Contains: sidebar trigger → separator → breadcrumbs → theme switcher.
+- **Header:** `DashboardHeader.vue` — `h-16` with a 2 px bottom border tinted by the active workspace color: `color-mix(in srgb, var(--workspace-color), transparent 81%)` (≈ 19% opacity). Collapses to `h-12` when the sidebar is in icon-only mode via `group-has-data-[collapsible=icon]/sidebar-wrapper:h-12`. Contains: sidebar trigger → separator → breadcrumbs → (centered logo on `sm:` and up) → status indicator → theme switcher.
 - **Breadcrumbs** are hidden on mobile (`hidden md:block`) and sourced from `route.meta.breadcrumbs`.
 
 ### Navigation groups
@@ -81,11 +81,15 @@ Each workspace can have a custom hex color. When one is set, `DashboardLayout.vu
 document.documentElement.style.setProperty('--workspace-color', color)
 document.documentElement.style.setProperty('--primary', color)
 document.documentElement.style.setProperty('--primary-foreground', contrastForeground(color))
+document.documentElement.style.setProperty('--sidebar-accent', `color-mix(in srgb, ${color}, transparent 91%)`)
+document.documentElement.style.setProperty('--sidebar-accent-foreground', color)
 ```
 
 `contrastForeground(hex)` computes WCAG relative luminance and returns near-black (`oklch(0.145 0 0)`) for light/bright colors (e.g. amber, yellow) and white (`oklch(1 0 0)`) for dark/saturated colors. This ensures all primary-variant buttons, badges, and focus rings automatically meet contrast requirements regardless of the chosen workspace color.
 
-When the workspace has **no color**, all three `removeProperty` calls revert to the theme defaults.
+`--sidebar-accent` drives the active and hover background for all nav items via shadcn's native `data-[active=true]:bg-sidebar-accent` and `hover:bg-sidebar-accent` utilities — no per-component overrides needed.
+
+When the workspace has **no color**, all five `removeProperty` calls revert to the theme defaults.
 
 #### Where workspace color appears
 
@@ -93,14 +97,14 @@ When the workspace has **no color**, all three `removeProperty` calls revert to 
 |---|---|
 | **Workspace icon** (sidebar header) | Semi-transparent: `bg: color15`, `border: color40`, `box-shadow: 0 0 10px color20`, icon uses full color. Default workspace falls back to `bg-primary/15 text-primary border-primary/40`. |
 | **Sidebar top separator** | 1 px `<div>` with `linear-gradient(transparent → color90 → transparent)` above the workspace switcher. Hidden when no color is set. |
-| **Active nav item** | Tinted background (`color18`), 2 px left inset shadow (`colorcc`), colored SVG icon — applied via scoped `v-bind()` CSS in `DashboardSidebar.vue`. |
+| **Active nav item** | Tinted background via `--sidebar-accent` (shadcn native `data-[active=true]:bg-sidebar-accent`). 2 px left inset shadow + colored SVG icon applied via `:deep` selector in `DashboardSidebar.vue`. Hover state also picks up workspace tint via `hover:bg-sidebar-accent`. |
 | **Primary CTAs** | All `bg-primary` / `text-primary` / `border-primary` / `ring-primary` utilities inherit the `--primary` override automatically. |
 
 #### Rules
 
 - Never hardcode workspace hex colors into component styles. The three CSS variable overrides propagate the color everywhere it is needed.
 - Never add new one-off `--workspace-color` references to new components. If a new surface should be workspace-tinted, express it using the standard `bg-primary/N`, `text-primary`, or `border-primary` Tailwind utilities — they resolve through `--primary` automatically.
-- Sidebar accent (active item + separator) is applied entirely in `DashboardSidebar.vue` via `v-bind()` in a `<style scoped>` block. Do not duplicate this logic in `NavMain.vue` or individual nav items.
+- Sidebar active background flows through `--sidebar-accent` set in `DashboardLayout.vue`. The 2 px left inset shadow and SVG color are applied via `:deep` in `DashboardSidebar.vue`. Do not add per-component active-state overrides in `NavMain.vue` or individual nav items.
 
 ---
 
@@ -186,10 +190,10 @@ Dark mode is toggled by adding the `.dark` class to `<html>`. Managed by `@vueus
 ### Page container
 
 ```html
-<div class="container py-4 space-y-4">
+<div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
 ```
 
-This is the standard outer wrapper for all page views.
+This is the standard outer wrapper for all View-level components. `pt-2` accounts for the header's `mb-4`. No `container` class — the sidebar inset already constrains width.
 
 ### Grid layouts
 
@@ -288,6 +292,63 @@ Use `ScrollArea` from `src/components/ui/scroll-area/` for constrained scroll re
 .custom-scrollbar: scrollbar-width: thin; scrollbar-color: var(--secondary) transparent
 ```
 
+### ButtonGroup
+
+Groups related buttons into a visually fused strip (shared border, merged corners). Use for discrete option sets (e.g. view toggles, format selectors).
+
+```html
+<ButtonGroup>
+  <Button variant="outline" size="sm">Option A</Button>
+  <ButtonGroupSeparator />
+  <Button variant="outline" size="sm">Option B</Button>
+</ButtonGroup>
+```
+
+`ButtonGroupText` renders a non-interactive label segment inside the group. `orientation` prop accepts `"horizontal"` (default) or `"vertical"`.
+
+### Stepper
+
+Multi-step wizard. Use for sequential workflows where steps must be completed in order (e.g. unit creation, import wizards).
+
+```html
+<Stepper :model-value="currentStep">
+  <StepperItem :step="1">
+    <StepperTrigger><StepperIndicator /><StepperTitle>Step 1</StepperTitle></StepperTrigger>
+    <StepperSeparator />
+  </StepperItem>
+</Stepper>
+```
+
+### NativeSelect
+
+Styled native `<select>` with a `ChevronDown` icon overlay. Use in forms where Reka UI `Select` is too heavy (e.g. in-dialog dropdowns with few options, mobile-friendly pickers).
+
+```html
+<NativeSelect v-model="value">
+  <NativeSelectOption value="a">Option A</NativeSelectOption>
+  <NativeSelectOptGroup label="Group">
+    <NativeSelectOption value="b">Option B</NativeSelectOption>
+  </NativeSelectOptGroup>
+</NativeSelect>
+```
+
+Height is `h-9`, matching standard inputs. Full focus ring and `aria-invalid` styles.
+
+### NumberInput
+
+Increment/decrement input with `+`/`−` buttons. Two layout variants:
+
+| `variant` | Layout |
+|---|---|
+| `"horizontal"` | `[−] [input] [+]` — default |
+| `"vertical"` | `[input]` with `▲▼` stacked on the right |
+
+```html
+<NumberInput v-model="count" :min="0" :max="100" :step="1" />
+```
+
+Props: `min`, `max`, `step`, `variant`, `buttonClass`. All other attrs forward to the underlying `<Input>`.
+
 ---
 
 ## 7. Page Anatomy
@@ -303,18 +364,27 @@ The Page layer never renders markup directly (no Tailwind in Pages). The View la
 
 ### Standard view layout
 
-```
-<div class="space-y-6">                        ← outer container
+```html
+<div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
-  <!-- 1. Header row -->
-  <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-    <div>
-      <h2 class="text-2xl font-bold tracking-tight">{{ title }}</h2>
-      <p class="text-sm text-muted-foreground">{{ subtitle }}</p>
+  <!-- 1. Header row — always visible -->
+  <div class="flex flex-row items-start sm:items-center justify-between gap-4">
+    <div class="min-w-0">
+      <h1 class="text-2xl font-bold tracking-tight truncate">{{ $t('module.title') }}</h1>
+      <!-- Mobile: mandatory items counter -->
+      <p class="text-sm text-muted-foreground mt-0.5 truncate sm:hidden">
+        <template v-if="items.length > 0">{{ $t('module.subtitle', { count: filteredCount, total: items.length }) }}</template>
+        <template v-else>{{ $t('module.description') }}</template>
+      </p>
+      <!-- Desktop: static description (optional; no counter — pagination shows it) -->
+      <p class="text-sm text-muted-foreground mt-0.5 truncate hidden sm:block">{{ $t('module.description') }}</p>
     </div>
-    <Button size="sm" class="gap-2">
-      <Plus class="w-4 h-4" /> {{ $t('module.add') }}
-    </Button>
+    <div v-if="items.length > 0" class="flex items-center gap-2 shrink-0">
+      <Button size="sm" class="gap-2" @click="openCreate">
+        <Plus class="w-4 h-4" />
+        <span class="hidden sm:inline">{{ $t('module.add') }}</span>
+      </Button>
+    </div>
   </div>
 
   <!-- 2. DataTable with named slots -->
@@ -344,42 +414,63 @@ The Page layer never renders markup directly (no Tailwind in Pages). The View la
 </div>
 ```
 
-### Page Heading Pattern
+### Header Row Pattern
 
-Every page must have an `<h1>` and a subtitle paragraph that are **always rendered**, regardless of data state.
+The **header row** is the topmost section of every table page view — always visible, never inside a data guard. It contains the page title, a context line below it, and all page-level action controls on the right.
 
 **Rules:**
-1. The `<h1>` and subtitle `<p>` live in Zone 1 and are rendered unconditionally — never inside a `v-if` that checks for data existence.
-2. When data exists the subtitle shows a dynamic count (e.g. `"12 of 45 groups"`). When no data exists the subtitle shows a static description sentence from i18n (`module.description` key).
-3. Action buttons in Zone 1 (Add, Import, etc.) remain guarded with `v-if="data.length > 0"` — only the heading and subtitle are unconditional.
-4. Always use `<h1>`, never `<h2>`, for the page-level heading.
-5. Standard heading style: `text-2xl font-bold tracking-tight`. Never add responsive font overrides like `sm:text-3xl` on page headings — the size is fixed across breakpoints.
-6. Loading states are exempt — showing a full-page spinner while the page initializes may replace heading content temporarily.
+1. The `<h1>` and both subtitle paragraphs are rendered unconditionally — never inside a `v-if` that checks for data.
+2. **Mobile (below `sm:`):** show the items counter under the title (e.g. `"12 of 45 groups"`). When no data exists show the static description instead. Counter is **mandatory** — it replaces pagination context which is not visible on mobile.
+3. **Desktop (`sm:` and up):** show the static description under the title. Omit the counter — pagination already shows filtered/total counts.
+4. **Buttons are icon-only on mobile.** Wrap the label in `<span class="hidden sm:inline">`. The icon alone must be self-explanatory (`Plus`, `FileUp`, etc.).
+5. All page-level controls (Add button, scope selectors, import button) live **inside the header row** — never between the header row and the toolbar.
+6. Never add `border-b`, `pb-4`, or `shrink-0` to the header row container. Vertical rhythm comes from the parent `space-y-4`.
+7. Action buttons remain guarded with `v-if="data.length > 0"` — only the heading and subtitles are unconditional.
+8. Always use `<h1>`, never `<h2>`, for the page-level heading.
+9. Standard heading style: `text-2xl font-bold tracking-tight truncate`. Size is fixed across breakpoints — no `sm:text-3xl` overrides.
+10. Loading states are exempt — a full-page spinner may temporarily replace the heading.
 
-**Pattern:**
+**Variant A — simple primary action (Add/Import button):**
 ```html
-<!-- Zone 1: always visible -->
-<div class="flex items-start justify-between gap-4">
-  <div>
-    <h1 class="text-2xl font-bold tracking-tight">{{ $t('module.title') }}</h1>
-    <p class="text-sm text-muted-foreground mt-0.5">
-      <template v-if="items.length > 0">
-        {{ $t('module.subtitle', { count: filteredCount, total: items.length }) }}
-      </template>
+<!-- Header row -->
+<div class="flex flex-row items-start sm:items-center justify-between gap-4">
+  <div class="min-w-0">
+    <h1 class="text-2xl font-bold tracking-tight truncate">{{ $t('module.title') }}</h1>
+    <!-- Mobile: mandatory counter -->
+    <p class="text-sm text-muted-foreground mt-0.5 truncate sm:hidden">
+      <template v-if="items.length > 0">{{ $t('module.subtitle', { count: filteredCount, total: items.length }) }}</template>
       <template v-else>{{ $t('module.description') }}</template>
     </p>
+    <!-- Desktop: description only -->
+    <p class="text-sm text-muted-foreground mt-0.5 truncate hidden sm:block">{{ $t('module.description') }}</p>
   </div>
-  <Button v-if="items.length > 0" size="sm" class="gap-2" @click="openCreate">
-    <Plus class="w-4 h-4" /> {{ $t('module.add') }}
-  </Button>
+  <div v-if="items.length > 0" class="flex items-center gap-2 shrink-0">
+    <Button size="sm" class="gap-2" @click="openCreate">
+      <Plus class="w-4 h-4" />
+      <span class="hidden sm:inline">{{ $t('module.add') }}</span>
+    </Button>
+  </div>
 </div>
-
-<!-- Zone 2 / Empty state — mutually exclusive -->
-<DataTable v-if="items.length > 0" ... />
-<EmptyState v-else :title="$t('module.emptyTitle')" ... />
 ```
 
-**i18n convention:** every module section must have both a `subtitle` key (used when data exists, interpolates `count`/`total`) and a `description` key (static sentence shown when no data).
+**Variant B — scope selector required (group/format dropdown):**
+
+Use when the user must choose a data scope before the table is meaningful (e.g. Summary, Plans, Sessions). Controls go full-width on mobile.
+
+```html
+<!-- Header row -->
+<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+  <div>
+    <h1 class="text-2xl font-bold tracking-tight">{{ $t('module.title') }}</h1>
+    <p class="text-sm text-muted-foreground mt-0.5">{{ $t('module.description') }}</p>
+  </div>
+  <div class="flex flex-row items-center gap-2 w-full sm:w-auto sm:shrink-0">
+    <DropdownMenu>...</DropdownMenu>  <!-- full-width on mobile via flex-1 sm:flex-none -->
+  </div>
+</div>
+```
+
+**i18n convention:** every module must have both a `subtitle` key (interpolates `count`/`total`; shown on mobile when data exists) and a `description` key (static sentence; shown on desktop always, on mobile only when no data).
 
 ### Toolbar anatomy
 
@@ -588,24 +679,48 @@ Never show a toast for a user-initiated cancel or close. Only toast when the app
 
 ### Empty states
 
-All empty states use `src/shared/components/EmptyState.vue`:
+All empty states use `src/shared/components/EmptyState.vue`, which wraps the `Empty` primitive family (`src/components/ui/empty/`):
 
 ```html
 <EmptyState
   :title="$t('module.emptyState.title')"
   :description="$t('module.emptyState.description')"
   :icon="IconComponent"
+  :learn-more-url="optionalUrl"
   class="min-h-[400px]"
 >
+  <!-- default slot: primary CTA -->
   <Button @click="openCreate" class="mt-4 gap-2">
     <Plus class="w-4 h-4" /> {{ $t('module.add') }}
   </Button>
+
+  <!-- footer slot: secondary content below CTA -->
+  <template #footer>...</template>
 </EmptyState>
 ```
+
+Props: `title` (required), `description` (optional), `icon` (optional `Component`), `learnMoreUrl` (optional — renders an external link with `ArrowUpRight` icon).
+
+Slots: default (primary CTA area), `footer` (below CTA, e.g. secondary links).
 
 - Always include a primary CTA that resolves the empty state.
 - The description should explain how the data gets here (import, manual entry, automatic).
 - The table's in-cell empty state uses `DataTableEmptyState` (wrapped `EmptyState` with `border-none py-6`).
+
+**`Empty` primitive** — if you need a custom empty state layout without the `EmptyState` wrapper, compose the primitive directly:
+
+```html
+<Empty>
+  <EmptyHeader>
+    <EmptyMedia variant="icon"><SomeIcon /></EmptyMedia>
+    <EmptyTitle>Title</EmptyTitle>
+    <EmptyDescription>Description</EmptyDescription>
+  </EmptyHeader>
+  <EmptyContent><!-- CTA --></EmptyContent>
+</Empty>
+```
+
+`EmptyMedia` variants: `default` (transparent) | `icon` (muted rounded-lg box, `size-10`).
 
 ### Status icons (file queue / import)
 
@@ -730,24 +845,31 @@ The sidebar state persists in `localStorage` (`key: "sidebar"`). On tablet portr
 #### Page container padding
 
 ```html
-<!-- Standard outer wrapper for all page views -->
-<div class="container py-4 md:py-6 px-4 md:px-8 space-y-4">
+<!-- Standard outer wrapper for all View-level components -->
+<div class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500">
 ```
 
-Use `p-4` at base, `md:p-8` on tablet portrait and above.
+`p-4` at base, `md:p-6` on tablet portrait and above. `pt-2` always — accounts for the header's `mb-4`. No `container` class; sidebar inset constrains width.
 
 #### Page header row (title + actions)
 
-Stacks vertically at base, becomes a single horizontal row from `md:` onward:
+Stays horizontal at all widths (Variant A). The subtitle line switches content between mobile and desktop:
 
 ```html
-<div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-  <div>
-    <h2 class="text-2xl font-bold tracking-tight">{{ $t('module.title') }}</h2>
-    <p class="text-sm text-muted-foreground mt-0.5">{{ $t('module.description') }}</p>
+<div class="flex flex-row items-start sm:items-center justify-between gap-4">
+  <div class="min-w-0">
+    <h1 class="text-2xl font-bold tracking-tight truncate">{{ $t('module.title') }}</h1>
+    <!-- sm: hidden — counter visible only on mobile -->
+    <p class="text-sm text-muted-foreground mt-0.5 truncate sm:hidden">{{ counter }}</p>
+    <!-- hidden sm:block — description visible only on desktop -->
+    <p class="text-sm text-muted-foreground mt-0.5 truncate hidden sm:block">{{ $t('module.description') }}</p>
   </div>
-  <div class="flex items-center gap-2 shrink-0">
-    <Button size="sm">...</Button>
+  <div v-if="items.length > 0" class="flex items-center gap-2 shrink-0">
+    <!-- Icon always visible; label hidden on mobile -->
+    <Button size="sm" class="gap-2">
+      <Plus class="w-4 h-4" />
+      <span class="hidden sm:inline">{{ $t('module.add') }}</span>
+    </Button>
   </div>
 </div>
 ```

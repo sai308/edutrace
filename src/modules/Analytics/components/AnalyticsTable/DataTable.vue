@@ -9,6 +9,7 @@ import { useI18n } from 'vue-i18n'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import DataTableEmptyState from '@/shared/components/DataTableEmptyState.vue'
 import DataTableViewOptions from '@/shared/components/DataTableViewOptions.vue'
+import { useCompactName } from '@/shared/composables/useCompactName'
 import { useFormatters } from '@/shared/composables/useFormatters'
 import { valueUpdater } from '@/shared/lib/utils'
 import { createColumns } from './columns'
@@ -20,8 +21,9 @@ const props = defineProps<{
 
 const { t } = useI18n()
 const { formatDate, formatSurname } = useFormatters()
+const { isCompact } = useCompactName()
 
-const columns = computed(() => createColumns(t, props.stats.dates, { formatDate, formatSurname }))
+const columns = computed(() => createColumns(t, props.stats.dates, { formatDate, formatSurname }, isCompact))
 
 const sorting = ref<SortingState>([{ id: 'name', desc: false }])
 const rowSelection = ref<RowSelectionState>({})
@@ -75,7 +77,7 @@ defineExpose({ table })
 
         <div class="rounded-md border bg-card overflow-x-auto custom-scrollbar">
             <Table class="min-w-full">
-                <TableHeader class="sticky top-0 z-30 bg-background">
+                <TableHeader class="sticky top-0 z-30 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
                     <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
                         <TableHead
                             v-for="header in headerGroup.headers"
@@ -83,10 +85,10 @@ defineExpose({ table })
                             :class="[
                                 header.id === 'select' ? 'w-10' : '',
                                 header.id === 'name'
-                                    ? 'w-[140px] sm:w-[200px] z-40 sticky left-0 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.1)]'
+                                    ? 'w-[140px] sm:w-[200px] z-40 sticky left-0 bg-muted/50 backdrop-blur supports-backdrop-filter:bg-muted/40 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.1)]'
                                     : '',
                                 header.id === 'totalPercentage'
-                                    ? 'text-center w-[80px] z-40 sticky right-0 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-l shadow-[-1px_0_0_0_hsl(var(--border)),-2px_0_4px_-1px_rgba(0,0,0,0.1)]'
+                                    ? 'text-center w-[80px] z-40 sticky right-0 bg-muted/50 backdrop-blur supports-backdrop-filter:bg-muted/40 border-l shadow-[-1px_0_0_0_hsl(var(--border)),-2px_0_4px_-1px_rgba(0,0,0,0.1)]'
                                     : '',
                                 !['select', 'name', 'totalPercentage'].includes(header.id) ? 'text-center px-4' : '',
                             ]"
@@ -112,10 +114,10 @@ defineExpose({ table })
                                 :key="cell.id"
                                 :class="[
                                     cell.column.id === 'name'
-                                        ? 'sticky left-0 z-20 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)] font-medium text-xs sm:text-sm'
+                                        ? 'sticky left-0 z-20 bg-muted/50 backdrop-blur supports-backdrop-filter:bg-muted/40 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)] font-medium text-xs sm:text-sm'
                                         : '',
                                     cell.column.id === 'totalPercentage'
-                                        ? 'text-center sticky right-0 z-20 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 border-l shadow-[-1px_0_0_0_hsl(var(--border)),-2px_0_4px_-1px_rgba(0,0,0,0.05)]'
+                                        ? 'text-center sticky right-0 z-20 bg-muted/50 backdrop-blur supports-backdrop-filter:bg-muted/40 border-l shadow-[-1px_0_0_0_hsl(var(--border)),-2px_0_4px_-1px_rgba(0,0,0,0.05)]'
                                         : '',
                                     !['select', 'name', 'totalPercentage'].includes(cell.column.id)
                                         ? 'text-center p-2 min-w-[100px]'

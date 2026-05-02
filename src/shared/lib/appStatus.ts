@@ -5,7 +5,7 @@ export const hasRecentError = ref(false)
 
 let errorClearTimer: ReturnType<typeof setTimeout> | null = null
 
-export function reportWorkerError() {
+export function reportError() {
     hasRecentError.value = true
     if (errorClearTimer)
         clearTimeout(errorClearTimer)
@@ -14,3 +14,5 @@ export function reportWorkerError() {
         errorClearTimer = null
     }, 5000)
 }
+
+export const reportWorkerError = reportError

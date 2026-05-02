@@ -23,11 +23,15 @@ watchEffect(() => {
         document.documentElement.style.setProperty('--workspace-color', color)
         document.documentElement.style.setProperty('--primary', color)
         document.documentElement.style.setProperty('--primary-foreground', contrastForeground(color))
+        document.documentElement.style.setProperty('--sidebar-accent', `color-mix(in srgb, ${color}, transparent 91%)`)
+        document.documentElement.style.setProperty('--sidebar-accent-foreground', color)
     }
     else {
         document.documentElement.style.removeProperty('--workspace-color')
         document.documentElement.style.removeProperty('--primary')
         document.documentElement.style.removeProperty('--primary-foreground')
+        document.documentElement.style.removeProperty('--sidebar-accent')
+        document.documentElement.style.removeProperty('--sidebar-accent-foreground')
     }
 })
 </script>

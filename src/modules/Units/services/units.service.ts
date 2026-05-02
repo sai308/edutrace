@@ -45,9 +45,6 @@ export function buildUnit(formData: Partial<Unit>, existingUnit?: Unit | null): 
  */
 export async function saveUnit(formData: Partial<Unit>, existingUnit?: Unit | null): Promise<void> {
     const name = formData.name?.trim() ?? ''
-    if (!name)
-        throw new Error('Unit name is required')
-
     const normalizedName = normalizeUnitName(name)
     const duplicate = await unitsRepository.findUnitByNormalizedName(normalizedName)
     if (duplicate && duplicate.id !== existingUnit?.id) {

@@ -37,9 +37,11 @@ class MarksRepository extends BaseRepository<'marks'> {
                 const updated: Mark = {
                     ...existing,
                     ...mark,
+                    maxPoints: mark.maxPoints ?? existing.maxPoints,
                     id: existing.id,
                     synced: false,
                     syncedAt: null,
+                    updatedAt: new Date().toISOString(),
                 }
                 await store.put(updated)
                 await tx.done
@@ -51,6 +53,7 @@ class MarksRepository extends BaseRepository<'marks'> {
         const id = await store.add({
             ...mark,
             createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
         } as Mark)
         await tx.done
         return { id, isNew: true, updated: false }
@@ -65,7 +68,7 @@ class MarksRepository extends BaseRepository<'marks'> {
 
         for (const mark of marks) {
             this._validateMark(mark)
-            const existing = mark.id != null ? await store.get(mark.id as unknown as number) : undefined
+            const existing = mark.id != null ? await store.get(mark.id as number) : undefined
 
             if (existing) {
                 if (existing.synced) {
@@ -104,7 +107,7 @@ class MarksRepository extends BaseRepository<'marks'> {
         const tx = db.transaction(this.storeName, 'readwrite')
         const store = tx.objectStore(this.storeName)
 
-        const mark = await store.get(id as unknown as number)
+        const mark = await store.get(id as number)
         if (mark) {
             if (mark.synced !== synced) {
                 mark.synced = synced
@@ -119,17 +122,18 @@ class MarksRepository extends BaseRepository<'marks'> {
         const db = await this.getDb()
         const tx = db.transaction(this.storeName, 'readwrite')
         const store = tx.objectStore(this.storeName)
-        await Promise.all(ids.map(id => store.delete(id as unknown as number)))
+        await Promise.all(ids.map(id => store.delete(id as number)))
         await tx.done
     }
 
     async getAllMarksWithRelations(): Promise<FlatMark[]> {
         const db = await this.getDb()
+        const tx = db.transaction(['marks', 'tasks', 'members'], 'readonly')
 
         const [allMarks, allTasks, allMembers] = (await Promise.all([
-            db.getAll('marks'),
-            db.getAll('tasks'),
-            db.getAll('members'),
+            tx.objectStore('marks').getAll(),
+            tx.objectStore('tasks').getAll(),
+            tx.objectStore('members').getAll(),
         ])) as [Mark[], Task[], Member[]]
 
         const taskMap = new Map(allTasks.map(t => [t.id.toString(), t]))
@@ -183,8 +187,6 @@ class MarksRepository extends BaseRepository<'marks'> {
         // 2. Collect unique taskIds and fetch tasks by primary key
         const uniqueTaskIds = [...new Set(groupMarks.map(m => m.taskId))]
         const tasksStore = tx.objectStore('tasks')
-        // taskId is stored as string in Mark but the tasks store key is number in the schema;
-        // cast through unknown to avoid idb type error while preserving runtime behaviour.
         const taskResults = await Promise.all(uniqueTaskIds.map(id => tasksStore.get(id as unknown as number)))
         const taskMap = new Map<string, Task>()
         taskResults.forEach((t: Task | undefined) => {
@@ -192,10 +194,10 @@ class MarksRepository extends BaseRepository<'marks'> {
                 taskMap.set(t.id.toString(), t)
         })
 
-        // 3. Get all members for name lookup
+        // 3. Get only members in this group for name lookup
         const membersStore = tx.objectStore('members')
-        const allMembers = (await membersStore.getAll()) as Member[]
-        const memberMap = new Map(allMembers.map(m => [m.id.toString(), m]))
+        const groupMembers = (await membersStore.index('groupName').getAll(groupName)) as Member[]
+        const memberMap = new Map(groupMembers.map(m => [m.id.toString(), m]))
 
         const flatMarks: FlatMark[] = []
         for (const mark of groupMarks) {

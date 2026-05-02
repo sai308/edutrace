@@ -632,9 +632,10 @@ describe('clearMarks', () => {
         const db = await databaseService.getDb()
         await db.put('marks', {
             id: 1,
-            taskId: 10,
+            taskId: '10',
             studentId: 'cm-s1',
             score: 80,
+            value: 80,
             groupName: 'G1',
             createdAt: '2024-01-01',
         })
@@ -648,9 +649,10 @@ describe('clearMarks', () => {
         const db = await databaseService.getDb()
         await db.put('marks', {
             id: 2,
-            taskId: 10,
+            taskId: '10',
             studentId: 'cm-s2',
             score: 90,
+            value: 90,
             groupName: 'G1',
             createdAt: '2024-01-01',
         })
@@ -690,9 +692,10 @@ describe('exportMarks', () => {
         const db = await databaseService.getDb()
         await db.put('marks', {
             id: 3,
-            taskId: 10,
+            taskId: '10',
             studentId: 'em-s3',
             score: 75,
+            value: 75,
             groupName: 'G1',
             createdAt: '2024-01-01',
         })
@@ -725,9 +728,10 @@ describe('importMarks', () => {
         const db = await databaseService.getDb()
         await db.put('marks', {
             id: 4,
-            taskId: 20,
+            taskId: '20',
             studentId: 'im-s4',
             score: 70,
+            value: 70,
             groupName: 'G1',
             createdAt: '2024-01-01',
         })
@@ -794,9 +798,10 @@ describe('importMarks', () => {
         const db = await databaseService.getDb()
         await db.put('marks', {
             id: 6,
-            taskId: 40,
+            taskId: '40',
             studentId: 'rt-s6',
             score: 92,
+            value: 92,
             groupName: 'G3',
             createdAt: '2024-01-02',
         })
@@ -816,7 +821,7 @@ describe('importMarks', () => {
 describe('clearTasks', () => {
     it('removes all tasks from the store', async () => {
         const db = await databaseService.getDb()
-        await db.put('tasks', { name: 'Clear Task A', normalizedName: 'clr-task-a' })
+        await db.put('tasks', { name: 'Clear Task A', normalizedName: 'clr-task-a', maxPoints: 0 } as any)
 
         await backupService.clearTasks()
 
@@ -825,7 +830,7 @@ describe('clearTasks', () => {
 
     it('does not affect other stores', async () => {
         const db = await databaseService.getDb()
-        await db.put('tasks', { name: 'Clear Task B', normalizedName: 'clr-task-b' })
+        await db.put('tasks', { name: 'Clear Task B', normalizedName: 'clr-task-b', maxPoints: 0 } as any)
         await db.put('groups', { id: 'tsk-g', meetId: 'clrt-001', name: 'Task Test Group' })
 
         await backupService.clearTasks()
@@ -859,8 +864,8 @@ describe('exportTasks', () => {
 
     it('includes all stored tasks', async () => {
         const db = await databaseService.getDb()
-        await db.put('tasks', { name: 'Export Task A', normalizedName: 'exp-task-a' })
-        await db.put('tasks', { name: 'Export Task B', normalizedName: 'exp-task-b' })
+        await db.put('tasks', { name: 'Export Task A', normalizedName: 'exp-task-a', maxPoints: 0 } as any)
+        await db.put('tasks', { name: 'Export Task B', normalizedName: 'exp-task-b', maxPoints: 0 } as any)
 
         const result = await backupService.exportTasks()
 
@@ -884,7 +889,7 @@ describe('importTasks', () => {
 
     it('clears existing tasks before restoring', async () => {
         const db = await databaseService.getDb()
-        await db.put('tasks', { name: 'Old Task', normalizedName: 'old-task' })
+        await db.put('tasks', { name: 'Old Task', normalizedName: 'old-task', maxPoints: 0 } as any)
 
         await backupService.importTasks({ tasks: [] })
 
@@ -907,7 +912,7 @@ describe('importTasks', () => {
 
     it('full round-trip: exported tasks are faithfully restored after import', async () => {
         const db = await databaseService.getDb()
-        await db.put('tasks', { name: 'RT Task', normalizedName: 'rt-task' })
+        await db.put('tasks', { name: 'RT Task', normalizedName: 'rt-task', maxPoints: 0 } as any)
 
         const exported = await backupService.exportTasks()
         await backupService.clearTasks()
@@ -935,7 +940,7 @@ describe('clearSummary', () => {
             testCoef: 1,
             ordinal: 1,
         })
-        await db.put('finalAssessments', { id: 1, studentId: 'clrs-s1', assessmentType: 'exam' })
+        await db.put('finalAssessments', { id: 1, studentId: 'clrs-s1', assessmentType: 'exam', value: '' })
 
         await backupService.clearSummary()
 
@@ -1037,7 +1042,7 @@ describe('importSummary', () => {
             testCoef: 1,
             ordinal: 1,
         })
-        await db.put('finalAssessments', { id: 4, studentId: 'iss-s4', assessmentType: 'quiz' })
+        await db.put('finalAssessments', { id: 4, studentId: 'iss-s4', assessmentType: 'quiz', value: '' })
 
         await backupService.importSummary({ modules: [], finalAssessments: [], units: [] })
 
@@ -1082,7 +1087,7 @@ describe('importSummary', () => {
     it('full round-trip: exported summary is faithfully restored after import', async () => {
         const db = await databaseService.getDb()
         await db.put('modules', { id: 7, groupId: 'sg7', groupName: 'G7', name: 'RT Module' })
-        await db.put('finalAssessments', { id: 7, studentId: 'rt-s7', assessmentType: 'test' })
+        await db.put('finalAssessments', { id: 7, studentId: 'rt-s7', assessmentType: 'test', value: '' })
         await settingsRepository.saveExamSettings({ subject: 'Physics' })
 
         const exported = await backupService.exportSummary()

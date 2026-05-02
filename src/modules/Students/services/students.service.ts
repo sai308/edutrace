@@ -1,4 +1,4 @@
-import type { Member, StudentFormData } from '../types/students'
+import type { Member, MemberFormData } from '@Members/types/members'
 import { groupsRepository } from '@Groups/services/groups.repository'
 import { normalizeGroupName } from '@/shared/utils/groupNormalization'
 import { studentsRepository } from './students.repository'
@@ -8,7 +8,7 @@ function generateId(): string {
 }
 
 export class StudentsService {
-    async saveStudent(formData: StudentFormData, originalStudent: Member | null): Promise<void> {
+    async saveMember(formData: MemberFormData, originalStudent: Member | null): Promise<void> {
         const isNew = !originalStudent
         const oldName = originalStudent?.name ?? ''
         const newName = formData.name
@@ -50,11 +50,11 @@ export class StudentsService {
         await studentsRepository.saveMember(memberData)
     }
 
-    async deleteStudent(id: string): Promise<void> {
+    async deleteMember(id: string): Promise<void> {
         await studentsRepository.hideMember(id)
     }
 
-    async bulkDeleteStudents(ids: string[]): Promise<void> {
+    async bulkDeleteMembers(ids: string[]): Promise<void> {
         await studentsRepository.hideMembers(ids)
     }
 }

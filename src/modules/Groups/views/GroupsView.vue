@@ -19,6 +19,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
+import DataTableViewOptions from '@/shared/components/DataTableViewOptions.vue'
 import EmptyState from '@/shared/components/EmptyState.vue'
 import QrCodeModal from '@/shared/components/QrCodeModal.vue'
 
@@ -139,7 +140,8 @@ function getGroupActions(group: EnrichedGroup): RowActionItem[] {
                 <h1 class="text-2xl font-bold tracking-tight truncate">
                     {{ $t('groups.title') }}
                 </h1>
-                <p class="text-sm text-muted-foreground mt-0.5 truncate hidden sm:block">
+                <!-- Mobile: mandatory counter -->
+                <p class="text-sm text-muted-foreground mt-0.5 truncate sm:hidden">
                     <template v-if="groups.length > 0">
                         {{
                             $t('groups.subtitle', {
@@ -151,6 +153,10 @@ function getGroupActions(group: EnrichedGroup): RowActionItem[] {
                     <template v-else>
                         {{ $t('groups.description') }}
                     </template>
+                </p>
+                <!-- Desktop: description -->
+                <p class="text-sm text-muted-foreground mt-0.5 truncate hidden sm:block">
+                    {{ $t('groups.description') }}
                 </p>
             </div>
             <div v-if="groups.length > 0" class="flex items-center gap-2 shrink-0">
@@ -175,41 +181,64 @@ function getGroupActions(group: EnrichedGroup): RowActionItem[] {
                 @update:sort="handleSortUpdate"
             >
                 <template #toolbar="{ table }">
-                    <div class="flex items-center justify-between gap-3 flex-1">
-                        <!-- Left: search → bulk switch → bulk delete -->
+                    <!-- ── Mobile (< sm): 2-row layout ── -->
+                    <div class="flex flex-col gap-2 sm:hidden">
+                        <!-- Row 1: full-width search -->
+                        <div class="relative">
+                            <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input v-model="searchQuery" :placeholder="$t('groups.searchPlaceholder')" class="pl-8 h-9 w-full" />
+                        </div>
+                        <!-- Row 2: bulk (left 50%) | columns (right 50%) -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <Button
+                                v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
+                                variant="destructive" size="sm" class="h-9 gap-2 w-full"
+                                @click="handleBulkDelete(table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id))"
+                            >
+                                <Trash2 class="h-4 w-4 shrink-0" />
+                                <Badge class="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums">
+                                    {{ table.getFilteredSelectedRowModel().rows.length }}
+                                </Badge>
+                            </Button>
+                            <div v-else class="flex items-center gap-2 h-9">
+                                <Switch :model-value="bulkMode" class="cursor-pointer" @update:model-value="bulkMode = $event" />
+                                <span class="text-sm text-muted-foreground select-none">{{ $t('common.bulk') }}</span>
+                            </div>
+                            <DataTableViewOptions
+                                :table="table"
+                                :compact="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
+                                button-class="w-full"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- ── Desktop (≥ sm): single-row layout ── -->
+                    <div class="hidden sm:flex items-center justify-between gap-3">
                         <div class="flex items-center gap-3 flex-1 min-w-0">
                             <div class="relative max-w-xs flex-1">
                                 <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    v-model="searchQuery"
-                                    :placeholder="$t('groups.searchPlaceholder')"
-                                    class="pl-8 h-9"
-                                />
+                                <Input v-model="searchQuery" :placeholder="$t('groups.searchPlaceholder')" class="pl-8 h-9" />
                             </div>
-                            <div class="flex items-center gap-2 shrink-0">
-                                <Switch :model-value="bulkMode" @update:model-value="bulkMode = $event" />
-                                <span class="text-sm text-muted-foreground hidden sm:inline select-none">
-                                    {{ $t('common.bulk') }}
-                                </span>
+                            <div
+                                v-if="!(bulkMode && table.getFilteredSelectedRowModel().rows.length > 0)"
+                                class="flex items-center gap-2 shrink-0"
+                            >
+                                <Switch :model-value="bulkMode" class="cursor-pointer" @update:model-value="bulkMode = $event" />
+                                <span class="text-sm text-muted-foreground select-none">{{ $t('common.bulk') }}</span>
                             </div>
                             <Button
                                 v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
-                                variant="destructive"
-                                size="sm"
-                                class="h-8 gap-2 shrink-0"
-                                @click="
-                                    handleBulkDelete(
-                                        table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id),
-                                    )
-                                "
+                                variant="destructive" size="sm" class="h-8 gap-2 shrink-0"
+                                @click="handleBulkDelete(table.getFilteredSelectedRowModel().rows.map((r: any) => r.original.id))"
                             >
                                 <Trash2 class="h-3.5 w-3.5" />
-                                <span class="hidden sm:inline">{{ $t('common.delete') }}</span>
+                                <span>{{ $t('common.delete') }}</span>
                                 <Badge class="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums">
                                     {{ table.getFilteredSelectedRowModel().rows.length }}
                                 </Badge>
                             </Button>
                         </div>
+                        <DataTableViewOptions :table="table" class="shrink-0" />
                     </div>
                 </template>
             </GroupsDataTable>

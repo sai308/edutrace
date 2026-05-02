@@ -15,48 +15,31 @@ export interface DocumentGeneratorOptions {
     outputName?: string
 }
 
+const DOCX_MIME = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+
+function renderTemplate(arrayBuffer: ArrayBuffer, data: Record<string, any>): Blob {
+    const zip = new PizZip(arrayBuffer)
+    const doc = new Docxtemplater(zip, { paragraphLoop: true, linebreaks: true })
+    doc.render(data)
+    const outBuffer = doc.getZip().generate({ type: 'arraybuffer', compression: 'DEFLATE' })
+    return new Blob([outBuffer], { type: DOCX_MIME })
+}
+
 export const documentGenerator = {
-    /**
-     * Integrates with docxtemplater and OPFS to generate documents.
-     * Extracts the template from OPFS, renders data into it, and optionally saves the result back.
-     *
-     * @param options Document generation options
-     * @returns A Promise resolving to the generated Blob
-     */
     async generateFromTemplate(options: DocumentGeneratorOptions): Promise<Blob> {
         const { templateDir, templateName, data, outputDir, outputName } = options
 
-        // 1. Fetch template from OPFS
         const templateFile = await opfs.getFile(templateDir, templateName)
-        const arrayBuffer = await templateFile.arrayBuffer()
+        const blob = renderTemplate(await templateFile.arrayBuffer(), data)
 
-        // 2. Load into PizZip
-        const zip = new PizZip(arrayBuffer)
-
-        // 3. Initialize Docxtemplater
-        const doc = new Docxtemplater(zip, {
-            paragraphLoop: true,
-            linebreaks: true,
-        })
-
-        // 4. Render template
-        doc.render(data)
-
-        // 5. Generate output ArrayBuffer
-        const outputBuffer = doc.getZip().generate({
-            type: 'arraybuffer',
-            compression: 'DEFLATE',
-        })
-
-        const outputBlob = new Blob([outputBuffer], {
-            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        })
-
-        // 6. Optionally save back to OPFS
         if (outputDir && outputName) {
-            await opfs.saveFile(outputDir, outputName, outputBlob)
+            await opfs.saveFile(outputDir, outputName, blob)
         }
 
-        return outputBlob
+        return blob
+    },
+
+    async generateFromBlob(templateBlob: Blob, data: Record<string, any>): Promise<Blob> {
+        return renderTemplate(await templateBlob.arrayBuffer(), data)
     },
 }

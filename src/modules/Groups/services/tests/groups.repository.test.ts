@@ -1,22 +1,8 @@
-import { meetsRepository } from '@Analytics/services/meets.repository'
-import { studentsRepository } from '@Students/services/students.repository'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { databaseService } from '@/shared/services/DatabaseService'
 import { groupsRepository } from '../groups.repository'
 
-vi.mock('@Analytics/services/meets.repository')
-vi.mock('@Students/services/students.repository')
-
-const mockGetMeetsByMeetId = vi.mocked(meetsRepository.getMeetsByMeetId)
-const mockSyncParticipants = vi.mocked(studentsRepository.syncParticipants)
-
 describe('groupsRepository', () => {
-    beforeEach(() => {
-        vi.clearAllMocks()
-        mockGetMeetsByMeetId.mockResolvedValue([])
-        mockSyncParticipants.mockResolvedValue(undefined)
-    })
-
     // ─── getGroups ─────────────────────────────────────────────────────────
 
     describe('getGroups', () => {
@@ -121,29 +107,6 @@ describe('groupsRepository', () => {
 
             expect(returned).toBe('ret-id-g')
         })
-
-        it('calls syncMembersFromMeets with the group meetId after saving', async () => {
-            await groupsRepository.saveGroup({
-                id: 'uuid-sync',
-                name: 'Sync Test Group',
-                meetId: 'sg-sync',
-            })
-
-            expect(mockGetMeetsByMeetId).toHaveBeenCalledWith('sg-sync')
-        })
-
-        it('passes meets to studentsRepository.syncParticipants with the group name', async () => {
-            const fakeMeets = [{ id: 'm1', meetId: 'sg-sync2', participants: [] }] as any[]
-            mockGetMeetsByMeetId.mockResolvedValue(fakeMeets)
-
-            await groupsRepository.saveGroup({
-                id: 'uuid-sync2',
-                name: 'Participant Sync Group',
-                meetId: 'sg-sync2',
-            })
-
-            expect(mockSyncParticipants).toHaveBeenCalledWith(fakeMeets, 'Participant Sync Group')
-        })
     })
 
     // ─── deleteGroup ───────────────────────────────────────────────────────
@@ -227,52 +190,6 @@ describe('groupsRepository', () => {
             const map = await groupsRepository.getGroupMap()
 
             expect(Object.keys(map)).toHaveLength(3)
-        })
-    })
-
-    // ─── syncMembersFromMeets ──────────────────────────────────────────────
-
-    describe('syncMembersFromMeets', () => {
-        it('does nothing when meetId is empty string', async () => {
-            await groupsRepository.syncMembersFromMeets({
-                name: 'No Sync Group',
-                meetId: '',
-            } as any)
-
-            expect(mockGetMeetsByMeetId).not.toHaveBeenCalled()
-            expect(mockSyncParticipants).not.toHaveBeenCalled()
-        })
-
-        it('fetches meets for the given meetId', async () => {
-            await groupsRepository.syncMembersFromMeets({
-                name: 'Fetch Group',
-                meetId: 'fetch-001',
-            } as any)
-
-            expect(mockGetMeetsByMeetId).toHaveBeenCalledWith('fetch-001')
-        })
-
-        it('delegates participant sync to studentsRepository with correct group name', async () => {
-            const fakeMeets = [{ id: 'fm1', meetId: 'sync-m', participants: [{ name: 'Alice' }] }] as any[]
-            mockGetMeetsByMeetId.mockResolvedValue(fakeMeets)
-
-            await groupsRepository.syncMembersFromMeets({
-                name: 'Delegated Group',
-                meetId: 'sync-m',
-            } as any)
-
-            expect(mockSyncParticipants).toHaveBeenCalledWith(fakeMeets, 'Delegated Group')
-        })
-
-        it('passes an empty meets array when no meets exist for the meetId', async () => {
-            mockGetMeetsByMeetId.mockResolvedValue([])
-
-            await groupsRepository.syncMembersFromMeets({
-                name: 'Empty Meets Group',
-                meetId: 'empty-m',
-            } as any)
-
-            expect(mockSyncParticipants).toHaveBeenCalledWith([], 'Empty Meets Group')
         })
     })
 })

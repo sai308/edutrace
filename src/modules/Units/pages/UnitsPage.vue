@@ -110,6 +110,11 @@ function getUnitActions(unit: Unit): RowActionItem[] {
                 <h1 class="text-2xl font-bold tracking-tight truncate">
                     {{ t('modules.title') }}
                 </h1>
+                <!-- Mobile: mandatory counter -->
+                <p class="text-sm text-muted-foreground mt-0.5 truncate sm:hidden">
+                    {{ t('modules.subtitle', { count: units.length }) }}
+                </p>
+                <!-- Desktop: description -->
                 <p class="text-sm text-muted-foreground mt-0.5 truncate hidden sm:block">
                     {{ t('modules.description') }}
                 </p>
@@ -144,13 +149,11 @@ function getUnitActions(unit: Unit): RowActionItem[] {
                                 class="pl-8 h-9 w-full"
                             />
                         </div>
-                        <!-- Row 2: bulk (left) | reorder + columns (right) -->
-                        <div class="flex items-center gap-2">
+                        <!-- Row 2: bulk (col 1) | reorder (col 2) | columns (col 3) -->
+                        <div class="grid grid-cols-3 gap-2">
                             <Button
                                 v-if="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
-                                variant="destructive"
-                                size="sm"
-                                class="h-9 gap-2"
+                                variant="destructive" size="sm" class="h-9 gap-2 w-full"
                                 @click="handleBulkDelete(table)"
                             >
                                 <Trash2 class="h-4 w-4 shrink-0" />
@@ -159,25 +162,27 @@ function getUnitActions(unit: Unit): RowActionItem[] {
                                 </Badge>
                             </Button>
                             <div v-else class="flex items-center gap-2 h-9">
-                                <Switch :model-value="bulkMode" @update:model-value="bulkMode = $event" />
+                                <Switch :model-value="bulkMode" class="cursor-pointer" @update:model-value="bulkMode = $event" />
                                 <span class="text-sm text-muted-foreground select-none">{{ t('common.bulk') }}</span>
                             </div>
-                            <div class="flex items-center gap-2 ml-auto">
-                                <Button
-                                    :variant="isReordering ? 'secondary' : 'ghost'"
-                                    size="sm"
-                                    class="h-9 shrink-0"
-                                    @click="toggleReordering"
-                                >
-                                    <ArrowUpDown class="h-4 w-4" />
-                                </Button>
-                                <DataTableViewOptions :table="table" />
-                            </div>
+                            <Button
+                                variant="outline"
+                                size="sm" class="h-9 w-full transition-colors"
+                                :class="isReordering && 'border-primary text-primary hover:text-primary'"
+                                @click="toggleReordering"
+                            >
+                                <ArrowUpDown class="h-4 w-4" />
+                            </Button>
+                            <DataTableViewOptions
+                                :table="table"
+                                :compact="bulkMode && table.getFilteredSelectedRowModel().rows.length > 0"
+                                button-class="w-full"
+                            />
                         </div>
                     </div>
 
                     <!-- ── Desktop (≥ sm): single-row layout ── -->
-                    <div class="hidden sm:flex items-center justify-between gap-3 flex-1">
+                    <div class="hidden sm:flex items-center justify-between gap-3">
                         <!-- Left: search → bulk switch → bulk delete -->
                         <div class="flex items-center gap-3 flex-1 min-w-0">
                             <div class="relative max-w-xs flex-1">
@@ -188,7 +193,10 @@ function getUnitActions(unit: Unit): RowActionItem[] {
                                     class="pl-8 h-9"
                                 />
                             </div>
-                            <div class="flex items-center gap-2 shrink-0">
+                            <div
+                                v-if="!(bulkMode && table.getFilteredSelectedRowModel().rows.length > 0)"
+                                class="flex items-center gap-2 shrink-0"
+                            >
                                 <Switch :model-value="bulkMode" @update:model-value="bulkMode = $event" />
                                 <span class="text-sm text-muted-foreground select-none">{{ t('common.bulk') }}</span>
                             </div>
@@ -209,13 +217,14 @@ function getUnitActions(unit: Unit): RowActionItem[] {
                         <!-- Right: reorder toggle + columns picker -->
                         <div class="flex items-center gap-2 shrink-0">
                             <Button
-                                :variant="isReordering ? 'secondary' : 'ghost'"
+                                variant="outline"
                                 size="sm"
-                                class="shrink-0"
+                                class="shrink-0 transition-colors"
+                                :class="isReordering && 'border-primary text-primary hover:text-primary'"
                                 @click="toggleReordering"
                             >
-                                <ArrowUpDown class="mr-2 h-4 w-4" />
-                                {{ isReordering ? t('modules.list.saveOrder') : t('modules.list.reorder') }}
+                                <ArrowUpDown class="h-4 w-4" />
+                                <span>{{ isReordering ? t('modules.list.saveOrder') : t('modules.list.reorder') }}</span>
                             </Button>
                             <DataTableViewOptions :table="table" />
                         </div>

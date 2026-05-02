@@ -2,9 +2,8 @@
 import type { SessionEntry, SessionReport } from '../models/session.model'
 import type { PrintFormData } from './dialogs/SessionPrintDialog.vue'
 import type { Group } from '@/modules/Groups/types/groups'
-import { studentsRepository } from '@Students/services/students.repository'
-import { FileDown, Printer, RefreshCw, Search, UserX } from 'lucide-vue-next'
-import { computed, onMounted, ref, watch } from 'vue'
+import { FileDown, RefreshCw, Search, UserX } from 'lucide-vue-next'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -20,7 +19,6 @@ import { sessionDocumentService } from '../services/sessionDocument.service'
 import { sessionsService } from '../services/sessions.service'
 import SessionCloseDialog from './dialogs/SessionCloseDialog.vue'
 import SessionPrintDialog from './dialogs/SessionPrintDialog.vue'
-import SessionPrintTemplate from './SessionPrintTemplate.vue'
 import SessionsDataTable from './SessionsList/DataTable.vue'
 
 const props = defineProps<{
@@ -41,54 +39,17 @@ const { formatDateTime } = useFormatters()
 const isClosing = ref(false)
 const isCloseDialogOpen = ref(false)
 const isPrintDialogOpen = ref(false)
-const printFormData = ref<PrintFormData | null>(null)
 const searchQuery = ref('')
 
-// Download DOCX state
 const hasTemplate = ref(false)
 const isDocxGenerating = ref(false)
-/** Tracks which action opened the shared print dialog */
-const printDialogMode = ref<'print' | 'download'>('print')
-
-/** Live studentId → IEP map, resolved from Member records */
-const iepMap = ref<Record<string, string | undefined>>({})
 
 onMounted(async () => {
-    const [templateExists, map] = await Promise.all([
-        sessionDocumentService.hasTemplate(),
-        studentsRepository.getIepMap({ includeHidden: true }),
-    ])
-    hasTemplate.value = templateExists
-    iepMap.value = map
+    hasTemplate.value = await sessionDocumentService.hasTemplate()
 })
 
-// Clear cached print form when the session changes so stale data from a
-// previous session isn't shown; same-session reprints reuse the cached form.
-watch(
-    () => props.session.id,
-    () => {
-        printFormData.value = null
-    },
-)
-
-function handlePrintClick() {
-    printDialogMode.value = 'print'
-    isPrintDialogOpen.value = true
-}
-
 function handleDownloadClick() {
-    printDialogMode.value = 'download'
     isPrintDialogOpen.value = true
-}
-
-async function handleDialogAction(formData: PrintFormData) {
-    if (printDialogMode.value === 'print') {
-        printFormData.value = formData
-        setTimeout(() => window.print(), 50)
-    }
-    else {
-        await handleDocxDownload(formData)
-    }
 }
 
 async function handleDocxDownload(formData: PrintFormData) {
@@ -217,12 +178,7 @@ async function handleConfirmClose() {
                 </Button>
             </div>
             <div v-else class="flex flex-wrap justify-center lg:justify-end gap-2">
-                <Button variant="outline" class="w-full sm:w-auto" @click="handlePrintClick">
-                    <Printer class="w-4 h-4 mr-2" />
-                    {{ $t('sessions.actions.print') }}
-                </Button>
                 <Button
-                    v-if="hasTemplate"
                     variant="outline"
                     :disabled="isDocxGenerating"
                     class="w-full sm:w-auto"
@@ -243,7 +199,7 @@ async function handleConfirmClose() {
             >
                 <template #toolbar>
                     <div class="relative flex-1 max-w-xs">
-                        <Search class="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                        <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
                             v-model="searchQuery"
                             :placeholder="$t('sessions.table.searchPlaceholder')"
@@ -265,21 +221,8 @@ async function handleConfirmClose() {
             v-model:open="isPrintDialogOpen"
             :session="session"
             :group="group ?? null"
-            :mode="printDialogMode"
-            @confirm="handleDialogAction"
+            mode="download"
+            @confirm="handleDocxDownload"
         />
-
-        <!-- Print template rendered into a dedicated portal so @media print can isolate it -->
-        <Teleport to="body">
-            <div id="session-print-root-portal">
-                <SessionPrintTemplate
-                    v-if="printFormData"
-                    :session="session"
-                    :group="group ?? null"
-                    :form-data="printFormData"
-                    :iep-map="iepMap"
-                />
-            </div>
-        </Teleport>
     </div>
 </template>

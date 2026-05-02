@@ -334,7 +334,7 @@ Place `ordinal` as the **first** data column (after `select` if bulk mode is pre
 
 ## Rule 17: Compact name display on mobile via `useCompactName`
 
-On narrow viewports the student/name column is the most valuable column, but displaying a full multi-part name (e.g. "Іваненко Олексій Петрович") wastes horizontal space. `useCompactName` (at `src/shared/composables/useCompactName.ts`) returns a reactive flag that is `true` when the viewport is below the Tailwind `sm` breakpoint (640 px). Pass it into `createColumns` so the name cell renders only the first word (surname in Ukrainian/Eastern name-order) on small screens.
+Any table with a **sticky person-name column** (student names, member names, participant names) must apply compact rendering on mobile. On narrow viewports displaying a full multi-part name (e.g. "Іваненко Олексій Петрович") wastes horizontal space — the sticky column takes up too much of the viewport and crowds scrollable data columns. `useCompactName` (at `src/shared/composables/useCompactName.ts`) returns a reactive flag that is `true` when the viewport is below the Tailwind `sm` breakpoint (640 px). Pass it into `createColumns` so the name cell renders only the first word (surname in Ukrainian/Eastern name-order) on small screens.
 
 ### Composable
 
@@ -403,3 +403,41 @@ export function createColumns(
 - `columns` must be `computed(() => createColumns(..., isCompact))`, and `useVueTable` must use `get columns() { return columns.value }` — not the plain array. This is necessary so TanStack picks up the updated cell functions when the breakpoint changes.
 - The `colspan` on `DataTableEmptyState` must reference `columns.value.length`, not `columns.length`.
 - Use `name.split(/\s+/)[0] ?? name` — splits on any whitespace, falls back to the full name if there is no space.
+
+---
+
+## Rule 18: Use `localeCompare` for all sortable text columns
+
+TanStack's default string sort uses JavaScript code-point order. This produces wrong results for Cyrillic (Ukrainian) text — names like "Є", "І", "Ш" sort in wrong positions relative to ASCII expectations.
+
+**Every sortable column that contains human-readable text must declare a `sortingFn` using `localeCompare`:**
+
+```ts
+{
+    accessorKey: 'name',
+    sortingFn: (a, b) =>
+        (a.getValue('name') as string).localeCompare(b.getValue('name') as string, undefined, {
+            sensitivity: 'base',
+        }),
+    header: ({ column }) => h(DataTableColumnHeader, { column, title: t('...') }),
+    cell: ({ row }) => h('div', {}, row.getValue('name')),
+},
+```
+
+`sensitivity: 'base'` makes the comparison accent- and case-insensitive (А = а = а̀), which matches user expectations for Ukrainian names.
+
+### Applies to
+
+Any column where:
+- values are person names, group names, task names, unit names, or other free-text entered by users
+- the column has `enableSorting` not explicitly set to `false`
+
+### Does NOT apply to
+
+- Numeric columns (`accessorFn: row => row.count`) — TanStack's default numeric sort is correct.
+- Date columns where the accessor returns an ISO string or timestamp — these sort correctly by string/numeric comparison.
+- Columns with `enableSorting: false` — they never sort.
+
+### Rule
+
+Never rely on TanStack's built-in `'text'` or `'alphanumeric'` sorters for columns that can contain Cyrillic content. Always supply an explicit `sortingFn` with `localeCompare`.

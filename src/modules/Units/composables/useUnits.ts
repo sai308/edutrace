@@ -8,12 +8,16 @@ import { toast } from '@/shared/services/toast'
 import { unitsRepository } from '../services/units.repository'
 import { saveUnit as serviceSaveUnit } from '../services/units.service'
 
+// Module-level singleton state — shared across all components that call useUnits()
+const units = ref<Unit[]>([])
+const availableTasks = ref<Task[]>([])
+const isLoading = ref(false)
+
 export function useUnits() {
     const { t } = useI18n()
-    const units = ref<Unit[]>([])
-    const availableTasks = ref<Task[]>([])
 
     async function loadData(): Promise<void> {
+        isLoading.value = true
         try {
             const [rawUnits, tasks] = await Promise.all([unitsRepository.getAllUnits(), tasksRepository.getAllTasks()])
             units.value = rawUnits.sort((a, b) => (a.ordinal ?? 0) - (b.ordinal ?? 0))
@@ -22,6 +26,9 @@ export function useUnits() {
         catch (e: unknown) {
             logger.error('Load units failed', e)
             toast.error(t('modules.toasts.loadError'))
+        }
+        finally {
+            isLoading.value = false
         }
     }
 
@@ -50,6 +57,8 @@ export function useUnits() {
     }
 
     async function deleteUnit(unit: Unit): Promise<void> {
+        if (!unit.id)
+            return
         try {
             await unitsRepository.bulkDelete([unit.id!])
             await loadData()
@@ -80,7 +89,7 @@ export function useUnits() {
                 ordinal: index + 1,
             }))
             await unitsRepository.updateOrdinals(updates)
-            await loadData()
+            units.value = orderedUnits.map((unit, index) => ({ ...unit, ordinal: index + 1 }))
             toast.success(t('modules.toasts.orderSaved'))
         }
         catch (e: unknown) {
@@ -89,5 +98,5 @@ export function useUnits() {
         }
     }
 
-    return { units, availableTasks, loadData, saveUnit, deleteUnit, bulkDeleteUnits, saveOrder }
+    return { units, availableTasks, isLoading, loadData, saveUnit, deleteUnit, bulkDeleteUnits, saveOrder }
 }

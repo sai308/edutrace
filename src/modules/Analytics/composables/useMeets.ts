@@ -14,8 +14,11 @@ const groupsMap = ref<Record<string, Group>>({})
 export function useMeets() {
     async function loadMeets(): Promise<void> {
         const [allMeets, groupMap] = await Promise.all([meetsRepository.getAllMeets(), groupsRepository.getGroupMap()])
-        meets.value = allMeets
         groupsMap.value = groupMap
+        meets.value = allMeets.map(meet => ({
+            ...meet,
+            groupName: groupMap[meet.meetId]?.name ?? meet.groupName,
+        }))
     }
 
     async function deleteMeet(id: string): Promise<void> {

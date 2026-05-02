@@ -12,7 +12,7 @@ import {
 } from '@tanstack/vue-table'
 import { useStorage } from '@vueuse/core'
 import { UserCog } from 'lucide-vue-next'
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import {
     ContextMenu,
@@ -24,7 +24,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import DataTableEmptyState from '@/shared/components/DataTableEmptyState.vue'
 import DataTablePagination from '@/shared/components/DataTablePagination.vue'
-import DataTableViewOptions from '@/shared/components/DataTableViewOptions.vue'
+import { useCompactName } from '@/shared/composables/useCompactName'
 import { valueUpdater } from '@/shared/lib/utils'
 import { createColumns } from './columns'
 
@@ -36,8 +36,9 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const { isCompact } = useCompactName()
 
-const columns = createColumns(props.rowActions ?? (() => []), t)
+const columns = createColumns(props.rowActions ?? (() => []), t, isCompact)
 
 const sorting = ref<SortingState>([{ id: 'name', desc: false }])
 const rowSelection = ref<RowSelectionState>({})
@@ -98,26 +99,33 @@ watch(
     { immediate: true },
 )
 
+const rows = computed(() => table.getRowModel().rows)
+
 defineExpose({ table })
 </script>
 
 <template>
     <div class="space-y-2">
-        <div class="flex items-center justify-between gap-2">
+        <div>
             <slot name="toolbar" :table="table" />
-            <DataTableViewOptions :table="table" />
+            <template v-if="$slots.filters">
+                <div class="border-t border-border mt-2" />
+                <div class="flex justify-center pt-2">
+                    <slot name="filters" :table="table" />
+                </div>
+            </template>
         </div>
 
         <div class="rounded-md border bg-card overflow-auto max-h-[calc(100svh-20rem)] custom-scrollbar">
             <Table class="min-w-[640px]">
-                <TableHeader class="sticky top-0 z-10 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
+                <TableHeader class="sticky top-0 z-30 bg-card shadow-[0_1px_0_0_hsl(var(--border))]">
                     <TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
                         <TableHead
                             v-for="header in headerGroup.headers"
                             :key="header.id"
                             :class="[
                                 header.id === 'name'
-                                    ? 'sticky left-0 z-40 w-[200px] bg-card shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
+                                    ? 'sticky left-0 z-40 w-[200px] bg-muted/50 backdrop-blur supports-backdrop-filter:bg-muted/40 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
                                     : header.id === 'actions'
                                         ? 'w-10'
                                         : !['select'].includes(header.id)
@@ -134,8 +142,8 @@ defineExpose({ table })
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    <template v-if="table.getRowModel().rows.length">
-                        <ContextMenu v-for="row in table.getRowModel().rows" :key="row.id">
+                    <template v-if="rows.length">
+                        <ContextMenu v-for="row in rows" :key="row.id">
                             <ContextMenuTrigger as-child>
                                 <TableRow
                                     :data-state="row.getIsSelected() ? 'selected' : undefined"
@@ -147,7 +155,7 @@ defineExpose({ table })
                                         class="p-3"
                                         :class="
                                             cell.column.id === 'name'
-                                                ? 'sticky left-0 z-20 bg-card shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)] font-medium'
+                                                ? 'sticky left-0 z-20 bg-muted/50 backdrop-blur supports-backdrop-filter:bg-muted/40 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)] font-medium'
                                                 : ''
                                         "
                                     >

@@ -11,6 +11,8 @@ interface PrintFormData {
     recordNumber: string
     date: string
     subject: string
+    studyForm: string
+    specialty: string
     semester: string
     academicYear: string
     formOfControl: string
@@ -30,6 +32,7 @@ vi.mock('@/shared/services/opfs', () => ({
 vi.mock('../documentGenerator', () => ({
     documentGenerator: {
         generateFromTemplate: vi.fn(),
+        generateFromBlob: vi.fn(),
     },
 }))
 
@@ -84,6 +87,8 @@ function makeFormData(overrides: Partial<PrintFormData> = {}): PrintFormData {
         recordNumber: '42',
         date: '10 червня 2024',
         subject: 'Mathematics',
+        studyForm: '',
+        specialty: '',
         semester: '2',
         academicYear: '2023/2024',
         formOfControl: 'exam',
@@ -99,12 +104,13 @@ function makeFormData(overrides: Partial<PrintFormData> = {}): PrintFormData {
 describe('sessionDocumentService', () => {
     beforeEach(() => {
         vi.clearAllMocks()
+        ;(opfs.fileExists as any).mockResolvedValue(true)
         ;(studentsRepository.getIepMap as any).mockResolvedValue({})
-        ;(documentGenerator.generateFromTemplate as any).mockResolvedValue(
-            new Blob(['fake-docx'], {
-                type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            }),
-        )
+        const fakeBlob = new Blob(['fake-docx'], {
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        })
+        ;(documentGenerator.generateFromTemplate as any).mockResolvedValue(fakeBlob)
+        ;(documentGenerator.generateFromBlob as any).mockResolvedValue(fakeBlob)
     })
 
     // ─── hasTemplate ──────────────────────────────────────────────────────────

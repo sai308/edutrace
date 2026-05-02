@@ -22,14 +22,14 @@ class TasksRepository extends BaseRepository<'tasks'> {
     }
 
     async findTaskByNormalizedName(normalizedName: string): Promise<Task | undefined> {
-        return this.getFromIndex('normalizedName' as any, normalizedName)
+        return this.getFromIndex('normalizedName', normalizedName)
     }
 
     async deleteTasks(ids: (string | number)[]): Promise<void> {
         const db = await this.getDb()
         const tx = db.transaction(this.storeName, 'readwrite')
         const store = tx.objectStore(this.storeName)
-        await Promise.all(ids.map(id => store.delete(id as any)))
+        await Promise.all(ids.map(id => store.delete(id as number)))
         await tx.done
     }
 }

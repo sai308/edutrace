@@ -41,7 +41,7 @@ export function toECTS(percent: number): string {
  */
 export function toNationalGrade(grade: number | null, formOfControl: string, t: (key: string) => string): string {
     if (grade === null)
-        return t('sessions.grades.absentTooltip')
+        return t('sessions.grades.absent')
     const isExam = formOfControl === t('sessions.printDialog.forms.exam')
     if (grade >= 90)
         return isExam ? t('sessions.grades.excellent') : t('sessions.grades.passed')
@@ -57,6 +57,18 @@ export function toNationalGrade(grade: number | null, formOfControl: string, t: 
  */
 export function to100Scale(percent: number): number {
     return Math.round(percent)
+}
+
+/**
+ * Normalizes a raw CSV import score to 100-point scale.
+ * maxPoints=0 means the CSV didn't specify — heuristic applies.
+ */
+export function normalizeImportScore(score: number, maxPoints: number): number {
+    if (maxPoints > 0 && maxPoints !== 100)
+        return Math.min(100, Math.round((score / maxPoints) * 100))
+    if (maxPoints === 0 && score <= 5)
+        return Math.min(100, Math.max(0, Math.round(score * 20)))
+    return Math.min(100, Math.max(0, Math.round(score)))
 }
 
 export type MarkFormat = '5-scale' | 'ects' | '100-scale'

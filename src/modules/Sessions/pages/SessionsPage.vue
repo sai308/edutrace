@@ -2,13 +2,13 @@
 import SessionTabItem from '@Sessions/components/SessionTabItem.vue'
 import { useSessionsPage } from '@Sessions/composables/useSessionsPage'
 import { SessionStatusEnum, SessionTypeEnum } from '@Sessions/models/session.model'
-import { Check, FileText, Layers, RotateCcw, Users } from 'lucide-vue-next'
+import { Check, ChevronDown, FileText, Layers, RotateCcw, Users } from 'lucide-vue-next'
 import { computed, markRaw, onMounted } from 'vue'
 
 import { useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import {
     Stepper,
     StepperIndicator,
@@ -79,10 +79,10 @@ onMounted(() => initialize())
 
 <template>
     <div
-        class="h-full flex-1 flex flex-col space-y-4 p-4 md:p-6 pt-2 md:flex max-w-[1400px] mx-auto w-full min-h-0 animate-in fade-in slide-in-from-bottom-4 duration-500"
+        class="flex-1 space-y-4 p-4 md:p-6 pt-2 animate-in fade-in slide-in-from-bottom-4 duration-500"
     >
         <!-- Zone 1: Page header — always visible -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b gap-4 shrink-0">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
                 <h1 class="text-2xl font-bold tracking-tight">
                     {{ $t('sessions.title') }}
@@ -92,16 +92,25 @@ onMounted(() => initialize())
                 </p>
             </div>
             <div v-if="groups.length > 0" class="w-full sm:w-auto flex justify-center">
-                <Select v-model="selectedGroupId" class="w-full sm:w-[200px]">
-                    <SelectTrigger class="w-[200px] sm:w-[200px] mx-auto sm:mx-0">
-                        <SelectValue :placeholder="$t('sessions.selectGroup')" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem v-for="group in groups" :key="group.id" :value="group.id!.toString()">
+                <DropdownMenu>
+                    <DropdownMenuTrigger as-child>
+                        <Button variant="outline" size="sm" class="h-9 gap-1 w-full sm:w-[200px] mx-auto sm:mx-0">
+                            <span class="text-xs text-muted-foreground mr-1 whitespace-nowrap">{{ $t('marks.table.group') }}:</span>
+                            <span class="font-medium truncate max-w-[100px]">{{ currentGroup?.name || $t('sessions.selectGroup') }}</span>
+                            <ChevronDown class="h-3 w-3 opacity-50 shrink-0" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" class="w-[200px] max-h-[300px] overflow-y-auto">
+                        <DropdownMenuItem
+                            v-for="group in groups"
+                            :key="group.id"
+                            :class="group.id!.toString() === selectedGroupId ? 'bg-primary/15 text-primary font-medium' : ''"
+                            @click="selectedGroupId = group.id!.toString()"
+                        >
                             {{ group.name }}
-                        </SelectItem>
-                    </SelectContent>
-                </Select>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
         </div>
 

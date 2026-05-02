@@ -74,8 +74,8 @@ describe('unitsRepository', () => {
             }
             await unitsRepository.saveUnit(unit)
             expect(getNextOrdinalSpy).toHaveBeenCalled()
-            expect(unit).toMatchObject({ ordinal: 3 })
-            expect(addSpy).toHaveBeenCalled()
+            expect(addSpy).toHaveBeenCalledWith(expect.objectContaining({ ordinal: 3 }))
+            expect(unit).not.toHaveProperty('ordinal') // original object NOT mutated
         })
 
         it('does not call getNextOrdinal when ordinal is already set', async () => {

@@ -65,7 +65,11 @@ function processGroupStats(groups, groupMemberIds, allTasks, allMarks) {
         marksByStudentList[mark.studentId].push(mark);
     });
 
-    // 3. Calculate for each group
+    // 3. Build task lookup map for O(1) access
+    const taskById = {};
+    allTasks.forEach(task => { taskById[task.id] = task; });
+
+    // 4. Calculate for each group
     return groups.map(group => {
         const g = { ...group }; // Clone to avoid mutation of original if cached
         const groupName = g.name;
@@ -101,7 +105,7 @@ function processGroupStats(groups, groupMemberIds, allTasks, allMarks) {
         memberIds.forEach(studentId => {
             const studentMarks = marksByStudentList[studentId] || [];
             studentMarks.forEach(mark => {
-                const task = allTasks.find(t => t.id === mark.taskId);
+                const task = taskById[mark.taskId];
                 if (task) {
                     const grade = formatMarkToFiveScale(mark.score, task.maxPoints);
                     groupMarks.push(grade);
@@ -161,14 +165,16 @@ function processGroupsData(groups, meets, members, teacherList, allTasks, allMar
     const memberCounts = calculateMemberCounts(members, meets, teacherSet, meetToGroup);
     const processedGroups = processGroupStats(groups, memberCounts.ids, allTasks, allMarks);
 
-    // Extract unique meet IDs and potential teachers
+    // Extract unique meet IDs and all participant names
     const meetIds = new Set();
-    const teachers = new Set();
+    const allTeacherNames = new Set();
 
     meets.forEach(meet => {
         if (meet.meetId) meetIds.add(meet.meetId);
-        if (meet.participants) {
-            meet.participants.forEach(p => teachers.add(p.name));
+        if (Array.isArray(meet.participants)) {
+            meet.participants.forEach(p => {
+                if (p.name) allTeacherNames.add(p.name);
+            });
         }
     });
 
@@ -176,8 +182,7 @@ function processGroupsData(groups, meets, members, teacherList, allTasks, allMar
         groups: processedGroups,
         memberCounts: memberCounts.counts,
         allMeetIds: Array.from(meetIds).sort(),
-        allTeachers: Array.from(teachers).sort(),
-        teacherSet: teacherSet
+        allTeachers: Array.from(allTeacherNames),
     };
 }
 

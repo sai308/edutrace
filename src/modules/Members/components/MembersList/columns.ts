@@ -1,5 +1,6 @@
 import type { Member } from '@Students/types/students'
 import type { ColumnDef } from '@tanstack/vue-table'
+import type { Ref } from 'vue'
 import type { ComposerTranslation } from 'vue-i18n'
 import type { RowActionItem } from '@/shared/types/table'
 import { h } from 'vue'
@@ -9,6 +10,13 @@ import DataTableColumnHeader from '@/shared/components/DataTableColumnHeader.vue
 import DataTableRowActions from '@/shared/components/DataTableRowActions.vue'
 
 type RoleBadgeVariant = 'default' | 'secondary' | 'outline'
+
+function compactName(name: string): string {
+    const parts = name.trim().split(/\s+/)
+    if (parts.length < 2)
+        return name
+    return `${parts[0]} ${parts[1]![0]!.toUpperCase()}.`
+}
 
 function getRoleBadgeVariant(role: Member['role']): RoleBadgeVariant {
     if (role === 'teacher')
@@ -21,6 +29,7 @@ function getRoleBadgeVariant(role: Member['role']): RoleBadgeVariant {
 export function createColumns(
     rowActions: (member: Member) => RowActionItem[],
     t: ComposerTranslation,
+    isCompact: Ref<boolean>,
 ): ColumnDef<Member>[] {
     return [
         {
@@ -46,8 +55,16 @@ export function createColumns(
         {
             accessorKey: 'name',
             meta: { label: t('members.columns.name') },
+            sortingFn: (a, b) =>
+                (a.getValue('name') as string).localeCompare(b.getValue('name') as string, undefined, {
+                    sensitivity: 'base',
+                }),
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('members.columns.name') }),
-            cell: ({ row }) => h('div', { class: 'font-medium' }, row.getValue('name')),
+            cell: ({ row }) => {
+                const name = row.getValue('name') as string
+                const display = isCompact.value ? compactName(name) : name
+                return h('div', { class: 'font-medium truncate', title: name }, display)
+            },
         },
         {
             accessorKey: 'email',

@@ -17,6 +17,7 @@ import {
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import DataTableEmptyState from '@/shared/components/DataTableEmptyState.vue'
+import { useCompactName } from '@/shared/composables/useCompactName'
 import { useFormatters } from '@/shared/composables/useFormatters'
 import { createSummaryColumns } from './columns'
 
@@ -39,6 +40,7 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 const { formatDate, formatTime } = useFormatters()
+const { isCompact } = useCompactName()
 
 const sorting = ref<SortingState>([])
 const columnFilters = ref<ColumnFiltersState>([])
@@ -56,6 +58,7 @@ const columns = computed(() =>
         ordinalMap.value,
         { formatDate, formatTime },
         t,
+        isCompact,
     ),
 )
 
@@ -99,7 +102,7 @@ defineExpose({ table })
 </script>
 
 <template>
-    <div>
+    <div class="space-y-2">
         <slot name="toolbar" :table="table" />
 
         <div class="rounded-md border bg-card overflow-auto max-h-[calc(100svh-20rem)] custom-scrollbar">
@@ -111,7 +114,7 @@ defineExpose({ table })
                             :key="header.id"
                             :class="[
                                 header.column.id === 'name'
-                                    ? 'min-w-[200px] sticky left-0 z-40 bg-card shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
+                                    ? 'min-w-[200px] sticky left-0 z-40 bg-muted/50 backdrop-blur supports-backdrop-filter:bg-muted/40 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
                                     : ['actions', 'ordinal'].includes(header.column.id)
                                         ? 'w-10'
                                         : '',
@@ -139,7 +142,7 @@ defineExpose({ table })
                                         class="py-2.5"
                                         :class="[
                                             cell.column.id === 'name'
-                                                ? 'sticky left-0 z-20 bg-card shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
+                                                ? 'sticky left-0 z-20 bg-muted/50 backdrop-blur supports-backdrop-filter:bg-muted/40 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)]'
                                                 : '',
                                         ]"
                                     >

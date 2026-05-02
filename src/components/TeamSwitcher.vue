@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Check, ChevronsUpDown, Database, HelpCircle, Pencil, Plus, Trash2 } from 'lucide-vue-next'
 import * as LucideIcons from 'lucide-vue-next'
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 import {
@@ -26,9 +26,6 @@ const router = useRouter()
 const { workspaces, currentWorkspaceId, activeWorkspace } = useWorkspace()
 const { openCreateModal, openEditModal, openDeleteConfirm } = useWorkspaceModals()
 const isSwitching = ref(false)
-
-// --- Computed ---
-const sortedWorkspaces = computed(() => workspaces.value)
 
 // --- Actions ---
 function fadeOutAndReload() {
@@ -114,7 +111,7 @@ function getIcon(name?: string) {
                         </button>
                     </DropdownMenuLabel>
                     <DropdownMenuItem
-                        v-for="ws in sortedWorkspaces"
+                        v-for="ws in workspaces"
                         :key="ws.id"
                         class="gap-2 p-2 group relative cursor-pointer"
                         @click="handleSwitch(ws.id)"

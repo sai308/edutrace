@@ -42,40 +42,20 @@ export function useSessionsPage() {
         if (!selectedGroupId.value)
             return
 
-        const allSessions = await sessionRepository.getByGroupId(selectedGroupId.value)
+        let sessions = await sessionRepository.getByGroupId(selectedGroupId.value)
 
-        let main = allSessions.find(s => s.sessionType === SessionTypeEnum.MAIN) ?? null
-        if (main && main.status === SessionStatusEnum.OPEN && currentGroup.value) {
+        if (currentGroup.value) {
             try {
-                main = await sessionsService.syncMainSession(currentGroup.value, main.id)
+                sessions = await sessionsService.batchSyncSessions(currentGroup.value, sessions)
             }
             catch (e) {
-                logger.error('Failed to sync main session', e)
+                logger.error('Failed to sync sessions', e)
             }
         }
-        mainSession.value = main
 
-        let firstRetake = allSessions.find(s => s.sessionType === SessionTypeEnum.FIRST_RETAKE) ?? null
-        if (firstRetake && firstRetake.status === SessionStatusEnum.OPEN && currentGroup.value) {
-            try {
-                firstRetake = await sessionsService.syncRetakeSession(currentGroup.value, firstRetake.id)
-            }
-            catch (e) {
-                logger.error('Failed to sync first retake session', e)
-            }
-        }
-        firstRetakeSession.value = firstRetake
-
-        let secondRetake = allSessions.find(s => s.sessionType === SessionTypeEnum.SECOND_RETAKE) ?? null
-        if (secondRetake && secondRetake.status === SessionStatusEnum.OPEN && currentGroup.value) {
-            try {
-                secondRetake = await sessionsService.syncRetakeSession(currentGroup.value, secondRetake.id)
-            }
-            catch (e) {
-                logger.error('Failed to sync second retake session', e)
-            }
-        }
-        secondRetakeSession.value = secondRetake
+        mainSession.value = sessions.find(s => s.sessionType === SessionTypeEnum.MAIN) ?? null
+        firstRetakeSession.value = sessions.find(s => s.sessionType === SessionTypeEnum.FIRST_RETAKE) ?? null
+        secondRetakeSession.value = sessions.find(s => s.sessionType === SessionTypeEnum.SECOND_RETAKE) ?? null
 
         // Default active tab to the furthest available session
         if (secondRetakeSession.value)
@@ -156,12 +136,12 @@ export function useSessionsPage() {
 
     /**
      * Loads all groups and pre-selects the first one. Call this from onMounted.
+     * The watch on selectedGroupId triggers loadSessions automatically.
      */
     async function initialize() {
         groups.value = await groupsRepository.getAll()
         if (groups.value.length > 0) {
             selectedGroupId.value = groups.value[0]!.id!.toString()
-            await loadSessions()
         }
     }
 

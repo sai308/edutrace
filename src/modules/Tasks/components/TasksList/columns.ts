@@ -42,6 +42,10 @@ export function createColumns(
         {
             accessorKey: 'name',
             meta: { label: t('tasks.columns.name') },
+            sortingFn: (a, b) =>
+                (a.getValue('name') as string).localeCompare(b.getValue('name') as string, undefined, {
+                    sensitivity: 'base',
+                }),
             header: ({ column }) => h(DataTableColumnHeader, { column, title: t('tasks.columns.name') }),
             cell: ({ row }) => h('div', { class: 'font-medium' }, row.getValue('name')),
         },

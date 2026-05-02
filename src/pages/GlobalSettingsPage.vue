@@ -165,13 +165,24 @@ const dbName = ref('')
 const copied = ref(false)
 
 function copyDiagnostics() {
-    const report = logger.buildReport(DB_VERSION, locale.value)
+    const report = logger.buildReport(DB_VERSION, locale.value, 10)
     navigator.clipboard.writeText(JSON.stringify(report, null, 2)).then(() => {
         copied.value = true
         setTimeout(() => {
             copied.value = false
         }, 2000)
     })
+}
+
+function downloadLogs() {
+    const report = logger.buildReport(DB_VERSION, locale.value)
+    const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `edutrace-logs-${getTimestamp()}.json`
+    a.click()
+    URL.revokeObjectURL(url)
 }
 
 // ─── Lifecycle ────────────────────────────────────────────────────────────────
@@ -398,18 +409,29 @@ function getTimestamp() {
                     <p class="text-[0.8rem] text-muted-foreground flex-1 pr-4">
                         {{ $t('globalSettings.dev.diagnosticsDescription') }}
                     </p>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        class="w-full sm:w-auto gap-1.5 shrink-0"
-                        @click="copyDiagnostics"
-                    >
-                        <ClipboardCheck v-if="copied" class="size-3.5 shrink-0 text-green-500" />
-                        <ClipboardCopy v-else class="size-3.5 shrink-0" />
-                        <span class="truncate">{{
-                            copied ? $t('globalSettings.dev.copied') : $t('globalSettings.dev.copyDiagnostics')
-                        }}</span>
-                    </Button>
+                    <div class="flex gap-2 shrink-0">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            class="flex-1 sm:flex-none gap-1.5"
+                            @click="copyDiagnostics"
+                        >
+                            <ClipboardCheck v-if="copied" class="size-3.5 shrink-0 text-green-500" />
+                            <ClipboardCopy v-else class="size-3.5 shrink-0" />
+                            <span class="truncate">{{
+                                copied ? $t('globalSettings.dev.copied') : $t('globalSettings.dev.copyDiagnostics')
+                            }}</span>
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            class="flex-1 sm:flex-none gap-1.5"
+                            @click="downloadLogs"
+                        >
+                            <Download class="size-3.5 shrink-0" />
+                            <span class="truncate">{{ $t('globalSettings.dev.downloadLogs') }}</span>
+                        </Button>
+                    </div>
                 </div>
             </CardContent>
         </Card>

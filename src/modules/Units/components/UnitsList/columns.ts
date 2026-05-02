@@ -31,6 +31,10 @@ export function createColumns(rowActions: (unit: Unit) => RowActionItem[], t: Co
         {
             accessorKey: 'name',
             meta: { label: t('modules.columns.name') },
+            sortingFn: (a, b) =>
+                (a.getValue('name') as string).localeCompare(b.getValue('name') as string, undefined, {
+                    sensitivity: 'base',
+                }),
             header: t('modules.columns.name'),
             cell: ({ row }) => h('div', { class: 'font-medium' }, row.getValue('name')),
         },

@@ -27,18 +27,22 @@ pnpm vitest run src/modules/Marks/services/tests/marks.service.test.ts
 pnpm vitest run --reporter=verbose -t "test name pattern"
 ```
 
-## MANDATORY: Use LeanKG First
-Before ANY codebase search/navigation, use LeanKG tools:
-1. mcp_status - check if ready
-2. Use tool: search_code, find_function, query_file, get_impact_radius
-3. Only fallback to grep/read if LeanKG fails
+## MANDATORY: Use LeanKG — No Exceptions
 
-| Task              | Use |
-|-------------------|-----|
-| Where is X?       | search_code or find_function |
-| What breaks if I change Y? | get_impact_radius |
-| What tests cover Y? | get_tested_by |
-| How does X work?  | get_context |
+**NEVER use grep, find, or Read to navigate code without trying LeanKG first.**
+
+Before ANY codebase search or navigation task, use LeanKG MCP tools. This is a hard rule, not a suggestion.
+
+| Task                          | Required tool                  |
+|-------------------------------|--------------------------------|
+| Where is X defined?           | `search_code` or `find_function` |
+| What breaks if I change Y?    | `get_impact_radius`            |
+| What tests cover Y?           | `get_tested_by`                |
+| How does X work?              | `get_context`                  |
+| Overview of a file            | `query_file`                   |
+| Dependencies of X             | `get_dependencies`             |
+
+Fallback to `grep`/`Read` **only** if LeanKG returns no result or errors. If you fall back, note why.
 
 ## Architecture
 
@@ -51,7 +55,7 @@ The access pattern is: **Page/View → Service → Repository → DatabaseServic
 - **Repositories** (`*.repository.ts`) extend `BaseRepository<StoreName>` and provide typed CRUD + query methods for a single object store.
 - **Services** (`*.service.ts`) contain business logic, orchestrate multiple repositories, and expose data to Vue components.
 
-Object stores: `meets`, `groups`, `tasks`, `units`, `marks`, `members`, `modules`, `finalAssessments`, `sessions`, `plans`, `settings`.
+Object stores: `meets`, `groups`, `tasks`, `units`, `marks`, `members`, `modules`, `finalAssessments`, `sessions`, `plans`, `settings`. A legacy `students` store exists in the schema (key: `any`, value: `any`) for migration compatibility — do not write to it.
 
 ### Programmatic DOCX Generation
 
@@ -67,6 +71,8 @@ Two different approaches are used for `.docx` generation:
 - `exportSummaryCsv(students, groupName): Blob` — plain CSV output of the same data.
 
 The summary export strips `status`, `statusCause`, and `completedAt` fields and sorts students alphabetically (A-Z) via `localeCompare`. When adding a new raw DOCX generator (without a user-editable template), follow the OOXML helper pattern. For user-customizable documents, follow the docxtemplater + OPFS pattern.
+
+**Summary module serialization:** `src/modules/Summary/services/examSerialization.ts` defines `SummaryTask` and `SummaryModule` interfaces and exports `serializeTask(task)` / `serializeModule(module)` helpers used when persisting module data to the `modules` store.
 
 ### Web Workers
 
@@ -113,14 +119,23 @@ Modules: `Analytics`, `Groups`, `Marks`, `Members`, `Plans`, `Reports`, `Session
 |---|---|
 | `DatabaseService.ts` | IndexedDB singleton (v17), schema migrations, `getDb()` |
 | `BaseRepository.ts` | Abstract base class for all repositories — typed CRUD, bulk ops, index queries |
-| `settings.repository.ts` | Workspace-scoped settings get/set (key-value in `settings` store) |
-| `workspace.repository.ts` | Workspace CRUD + export/import (metadata lives in `localStorage`) |
-| `backup.service.ts` | Full-workspace export/import — serializes all IDB stores to JSON |
+| `settings.repository.ts` | Workspace-scoped settings get/set (key-value in `settings` store). Keys defined in `src/shared/types/Settings.d.ts` — `SettingsMap`: `durationLimit`, `defaultTeacher`, `ignoredUsers`, `teachers`, `sessionSquash`, `sessionSquashThreshold`, `examSettings`, `printSettings`, `summaryThresholds` (per-group `SummaryThresholds` keyed by group ID) |
+| `workspace.repository.ts` | Workspace CRUD; multi-workspace export/import/wipe — workspace list and active ID in `localStorage`, full IDB data (all 11 stores) per workspace in separate named databases |
+| `backup.service.ts` | Single-workspace export/import — serializes all IDB stores of the active workspace to JSON |
 | `stats.service.ts` | App-level statistics: record counts and estimated storage size per entity |
 | `toast.ts` | Toast notification singleton — `toast.success/error/info/warning(msg, ms?)` |
 | `StorageService.ts` | `localStorage` abstraction with typed key access |
 | `opfs.ts` | Origin Private File System helpers — read/write/delete files in OPFS per workspace |
 | `reconciliation/IdentityReconciler.ts` | Name/email matching for CSV import: matches CSV rows to existing Member records |
+
+**`src/shared/utils/`** — pure utility functions (no Vue, no services):
+
+| File | Purpose |
+|---|---|
+| `grades.ts` | Grade scale conversions: `to5Scale`, `toECTS`, `toNationalGrade`, `to100Scale`, `normalizeImportScore`, `createMarkFormatter`, `convertGradeTo100` (any format → 100pt), `from5ScaleTo100`/`fromECTSTo100` (reverse), `computeECTSStats`, `getECTSColorClass` |
+| `download.ts` | `downloadBlob(blob, filename)` and `downloadJson(data, prefix)` — browser download helpers |
+| `groupNormalization.ts` | `normalizeGroupName(input, existingGroups)` — strips non-alphanumeric chars and matches input against existing group names, returning canonical casing |
+| `workspace-utils.ts` | Icon lists for workspace picker (`scienceIcons`, `educationIcons`, `businessIcons`, `allSelectionIcons`) and `getIconTitle(name)` — converts PascalCase icon name to display label |
 
 **`src/shared/composables/`** — cross-module Vue composables:
 
@@ -131,7 +146,7 @@ Modules: `Analytics`, `Groups`, `Marks`, `Members`, `Plans`, `Reports`, `Session
 | `useCompactName` | Formats full name as "First L." for compact display |
 | `useCalendar` | Calendar grid generation (`generateCalendarDays`), month navigation, localized weekday names |
 | `useQuerySync` | Two-way URL query ↔ ref binding for sort/filter persistence across navigation |
-| `useWorkspace` | Active workspace ref + switch action. `DashboardLayout` uses it in a `watchEffect` to override `--primary`, `--primary-foreground`, and `--workspace-color` on `:root` whenever the workspace changes. |
+| `useWorkspace` | Module-level singleton refs: `workspaces`, `currentWorkspaceId`, `activeWorkspace`. Exposes `loadWorkspaces()` to refresh from `localStorage`. `DashboardLayout` uses it in a `watchEffect` to override `--primary`, `--primary-foreground`, `--workspace-color`, `--sidebar-accent`, and `--sidebar-accent-foreground` on `:root` whenever the workspace changes. Actual switching is done by `workspaceRepository.switchWorkspace()` followed by `window.location.reload()`. |
 | `useWorkspaceModals` | Workspace management dialog state (create/edit/delete/import) |
 | `useFileDrop` | File drag-drop event handler |
 | `useColors` | Attendance score → Tailwind class mapping (`getScoreColor`) |
@@ -175,7 +190,7 @@ Defined in `vite.config.ts` and mirrored in `tsconfig.app.json`:
 
 ### Routing
 
-All routes are under `DashboardLayout` (sidebar + header). `DashboardLayout` runs a `watchEffect` that overrides `--primary`, `--primary-foreground`, and `--workspace-color` on `:root` from the active workspace color. `--primary-foreground` is auto-computed for WCAG contrast using `contrastForeground(hex)`. This makes all `bg-primary`/`text-primary` utilities and the sidebar accent automatically workspace-colored with no per-component logic. See `DESIGN.md §2 — Workspace color accent` for the full surface inventory.
+All routes are under `DashboardLayout` (sidebar + header). `DashboardLayout` runs a `watchEffect` that overrides `--primary`, `--primary-foreground`, `--workspace-color`, `--sidebar-accent`, and `--sidebar-accent-foreground` on `:root` from the active workspace color. `--primary-foreground` is auto-computed for WCAG contrast using `contrastForeground(hex)`. This makes all `bg-primary`/`text-primary` utilities, hover states, and the sidebar active accent automatically workspace-colored with no per-component logic. See `DESIGN.md §2 — Workspace color accent` for the full surface inventory.
 
 Route groups by nav section:
 - `/attendance/` — analytics, reports, settings
@@ -190,6 +205,12 @@ A `beforeEach` guard in `src/router/index.ts` calls `databaseService.getDb()` be
 **Global Settings** (`/settings`) — `src/pages/GlobalSettingsPage.vue` — cross-workspace settings page linked from the sidebar footer. Sections: Appearance (language + theme), Workspaces (list, per-workspace export, import, delete), Sync (coming-soon placeholder), Dev & Diagnostics (app/DB version, copy diagnostics). Uses `workspaceRepository` for workspace CRUD and `localeService` for locale persistence. Exempt from the DB guard because workspace metadata lives in `localStorage`, not IndexedDB.
 
 **Control Settings** (`/control/settings`) — `src/modules/Settings/pages/ControlSettingsPage.vue` — data management page for Marks, Tasks, and Modules (JSON export/import/delete per store) plus a **Summary Export** card. Summary Export lets the user select a group, then download the final grade table as CSV or DOCX. Status and date columns are excluded; students are sorted A-Z. The card calls `summaryService.getGroups()` on mount, then on export: fetches modules via `summaryService.getModulesByGroup()`, loads grades via `summaryService.loadExamData()`, and delegates file generation to `summaryExport.service.ts`.
+
+**Reports Settings** (`/attendance/settings`) — `src/modules/Settings/pages/ReportsSettingsPage.vue` — attendance/meet data management. Sections: meet data export/import/delete, `durationLimit` setting (auto-applies to all meets on save), `sessionSquashThreshold` setting (minutes for merging back-to-back meets).
+
+**Organization Settings** (`/org/settings`) — `src/modules/Settings/pages/OrganizationSettingsPage.vue` — data management for Students, Groups, and Members stores (JSON export/import/delete per store).
+
+**Documents Settings** (`/documents/settings`) — `src/modules/Settings/pages/DocumentsSettingsPage.vue` — manages `PrintSettings` (subject, specialty, examiner, etc.) persisted via `settings.repository`, plus OPFS template upload/download/delete for the session document generator.
 
 ### UI Components
 
@@ -305,13 +326,15 @@ If the app starts serving a new static asset type (e.g. `.wasm`, `.json`), add t
 
 Architectural decisions and coding conventions are documented in `guidelines/` and at the repo root:
 
-- `DESIGN.md` — UI/UX principles: layout, color tokens, typography, spacing, component patterns, page anatomy (including the **Page Heading Pattern** rule — h1 always unconditional, description fallback when no data, `text-2xl` fixed size), modal rules, feedback, icons, animation, and responsive conventions.
+- `DESIGN.md` — UI/UX principles: layout, color tokens, typography, spacing, component patterns, page anatomy (including the **Header Row Pattern** — always `flex-row`, mandatory items counter on mobile, static description on desktop, icon-only buttons on mobile, no `border-b`, `text-2xl` fixed), modal rules, feedback, icons, animation, and responsive conventions.
 - `guidelines/tables.md` — canonical rules for data tables: core pattern (Rules 1–3) + checklist. Sub-documents: `table-features.md` (filtering, pagination, bulk), `table-layout.md` (page anatomy, mobile toolbar), `table-columns.md` (date cells, row actions, ordinal, compact names), `table-sticky.md` (sticky header/columns, z-index).
 - `guidelines/detail-pages.md` — canonical structure for entity detail pages with a multi-view tab switcher (header zone, stats strip, view content, URL sync, loading/not-found states).
 - `guidelines/dialogs.md` — surface types (Dialog / AlertDialog / Sheet), sizing, anatomy, props API, stack depth, scrollable dialogs, profile dialog pattern, and migration plan for hand-rolled overlays.
 - `guidelines/calendar-views.md` — canonical structure for calendar views inside detail pages: multi-session variant (AnalyticsCalendarView) vs. single-session variant (ReportCalendarView), `useCalendar` composable usage, month jump-on-mount pattern.
 - `guidelines/edge-cases.md` — diagnosed performance and correctness edge cases with fixes and rules to prevent recurrence (e.g. TanStack search freeze, memory leak from unstable data references, Set/Array type mismatches).
-- `guidelines/empty-states.md` — canonical rules for empty state rendering: two-scenario model (no-data-at-all vs. filtered-empty), Zone 1 header visibility matrix, data-source selector persistence rule, no-selection placeholder variant, and navigation CTA patterns.
+- `guidelines/empty-states.md` — canonical rules for empty state rendering: two-scenario model (no-data-at-all vs. filtered-empty), header row visibility matrix, data-source selector persistence rule, no-selection placeholder variant, and navigation CTA patterns.
+- `guidelines/dropdown-pickers.md` — canonical shape for single-value selector dropdowns (`DropdownMenu` + `Button` trigger, `bg-primary/15 text-primary font-medium` on active item). Covers group pickers and format/scale pickers. Includes exclusion: `TeamSwitcher.vue` uses `Check` icon instead.
+- `guidelines/observability.md` — client-side observability architecture: logger (ring buffer, sessionStorage persistence, Error serialization, categories), app status indicator, worker error handling pattern (`withTimeout` + `classifyWorkerError` + `activeWorkerTasks`), stats service, diagnostics export, and checklist for new modules.
 
 ## First-load UX
 

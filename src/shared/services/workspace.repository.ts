@@ -19,6 +19,9 @@ const MAINTENANCE_STORES = [
     'members',
     'finalAssessments',
     'modules',
+    'sessions',
+    'plans',
+    'settings',
 ] as const
 
 export class WorkspaceRepository {
@@ -110,9 +113,9 @@ export class WorkspaceRepository {
         if (!workspaces.some(w => w.id === id)) {
             throw new Error('Workspace not found')
         }
+        onLoading()
         this.setCurrentWorkspaceId(id)
         await databaseService.resetConnection()
-        onLoading()
     }
 
     async deleteWorkspace(id: string): Promise<void> {
@@ -130,8 +133,8 @@ export class WorkspaceRepository {
             req.onsuccess = () => resolve()
             req.onerror = e => reject(e)
             req.onblocked = () => {
-                logger.warn(`Deletion of ${workspace.dbName} blocked.`)
-                resolve()
+                logger.warn(`Deletion of ${workspace.dbName} blocked — another connection holds it open.`)
+                reject(new Error(`Could not delete workspace: database is in use by another tab`))
             }
         })
 
@@ -186,7 +189,10 @@ export class WorkspaceRepository {
         for (const ws of workspacesToExport) {
             let db: IDBPDatabase<IDBCustomSchema> | null = null
             try {
-                db = await openDB<IDBCustomSchema>(ws.dbName, DB_VERSION)
+                db = await openDB<IDBCustomSchema>(ws.dbName, DB_VERSION, {
+                    upgrade: (db, oldVer, newVer, trans) =>
+                        databaseService.initSchema(db, oldVer, newVer, trans as any),
+                })
                 const storeEntries = await Promise.all(
                     MAINTENANCE_STORES.map(async name => [name, await db!.getAll(name)]),
                 )
@@ -195,6 +201,7 @@ export class WorkspaceRepository {
                     id: ws.id,
                     name: ws.name,
                     icon: ws.icon,
+                    color: ws.color,
                     dbName: ws.dbName,
                     data: Object.fromEntries(storeEntries),
                 })
@@ -222,6 +229,7 @@ export class WorkspaceRepository {
                     id: wsData.id,
                     name: wsData.name,
                     icon: wsData.icon || 'Database',
+                    color: wsData.color,
                     dbName: wsData.dbName || `meet-attendance-db-${wsData.id}`,
                     createdAt: new Date().toISOString(),
                 }
@@ -270,10 +278,10 @@ export class WorkspaceRepository {
             let size = 0
             let db: IDBPDatabase<IDBCustomSchema> | null = null
             try {
-                // Approximate size by counting records if we don't have a better way,
-                // but usually size means byte size.
-                // Since it's for stats, let's try to get estimate.
-                db = await openDB<IDBCustomSchema>(ws.dbName, DB_VERSION)
+                db = await openDB<IDBCustomSchema>(ws.dbName, DB_VERSION, {
+                    upgrade: (db, oldVer, newVer, trans) =>
+                        databaseService.initSchema(db, oldVer, newVer, trans as any),
+                })
                 const storeEntries = await Promise.all(MAINTENANCE_STORES.map(async name => await db!.getAll(name)))
 
                 size = storeEntries.reduce((acc, items) => {

@@ -1,6 +1,4 @@
 import type { Group } from '../types/groups'
-import { meetsRepository } from '@Analytics/services/meets.repository'
-import { studentsRepository } from '@Students/services/students.repository'
 import { BaseRepository } from '@/shared/services/BaseRepository'
 
 class GroupsRepository extends BaseRepository<'groups'> {
@@ -27,8 +25,6 @@ class GroupsRepository extends BaseRepository<'groups'> {
             group.id = id
         }
 
-        // Sync members from existing meets for this group (side effect)
-        await this.syncMembersFromMeets(group)
         return id
     }
 
@@ -46,13 +42,6 @@ class GroupsRepository extends BaseRepository<'groups'> {
             map[g.meetId] = g
         })
         return map
-    }
-
-    async syncMembersFromMeets(group: Group): Promise<void> {
-        if (!group.meetId)
-            return
-        const meets = await meetsRepository.getMeetsByMeetId(group.meetId)
-        await studentsRepository.syncParticipants(meets, group.name)
     }
 }
 

@@ -2,6 +2,7 @@
 import type { LucideIcon } from 'lucide-vue-next'
 
 import { ChevronRight } from 'lucide-vue-next'
+import { ref, watch } from 'vue'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
     SidebarGroup,
@@ -15,27 +16,44 @@ import {
     useSidebar,
 } from '@/components/ui/sidebar'
 
-defineProps<{
-    items: {
-        title: string
-        url: string
-        icon?: LucideIcon
-        isOpened?: boolean
-        items?: {
-            isActive?: boolean
-            icon?: LucideIcon
-            title: string
-            url: string
-        }[]
-    }[]
-}>()
+interface NavSubItem {
+    isActive?: boolean
+    icon?: LucideIcon
+    title: string
+    url: string
+}
 
-const { open, setOpen, isMobile, setOpenMobile } = useSidebar()
+interface NavItem {
+    title: string
+    url: string
+    icon?: LucideIcon
+    isOpened?: boolean
+    items?: NavSubItem[]
+}
 
-function closeSidebarOnMobile() {
-    if (isMobile?.value) {
-        setOpenMobile(false)
-    }
+const props = defineProps<{ items: NavItem[] }>()
+
+const { open, setOpen } = useSidebar()
+
+const sectionState = ref<Record<string, boolean>>({})
+
+watch(
+    () => props.items,
+    (items) => {
+        items.forEach((item) => {
+            if (item.isOpened)
+                sectionState.value[item.url] = true
+        })
+    },
+    { immediate: true },
+)
+
+function getOpen(item: NavItem) {
+    return sectionState.value[item.url] ?? item.isOpened ?? false
+}
+
+function setItemOpen(item: NavItem, val: boolean) {
+    sectionState.value[item.url] = val
 }
 </script>
 
@@ -48,8 +66,9 @@ function closeSidebarOnMobile() {
                 v-for="item in items"
                 :key="item.title"
                 as-child
-                :default-open="item.isOpened"
+                :open="getOpen(item)"
                 class="group/collapsible"
+                @update:open="val => setItemOpen(item, val)"
             >
                 <SidebarMenuItem>
                     <CollapsibleTrigger as-child>
@@ -67,7 +86,7 @@ function closeSidebarOnMobile() {
                         <SidebarMenuSub>
                             <SidebarMenuSubItem v-for="subItem in item.items" :key="subItem.title">
                                 <SidebarMenuSubButton as-child :is-active="subItem.isActive">
-                                    <router-link :to="subItem.url" @click="closeSidebarOnMobile">
+                                    <router-link :to="subItem.url">
                                         <component :is="subItem.icon" v-if="subItem.icon" />
                                         <span>{{ subItem.title }}</span>
                                     </router-link>

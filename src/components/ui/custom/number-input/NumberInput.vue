@@ -5,13 +5,11 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/shared/lib/utils'
 
-// Tell Vue NOT to put attributes on the root <div> automatically
 defineOptions({
     inheritAttrs: false,
 })
 
 const props = defineProps({
-    // Accept both Strings and Numbers
     min: { type: [Number, String], default: -Infinity },
     max: { type: [Number, String], default: Infinity },
     step: { type: [Number, String], default: 1 },
@@ -20,22 +18,26 @@ const props = defineProps({
         default: 'horizontal',
         validator: (value: string) => ['horizontal', 'vertical'].includes(value),
     },
-    // Controls the size of the buttons. Defaults to Shadcn's standard icon size.
     buttonClass: {
         type: String,
         default: 'w-10 h-10',
     },
 })
 
-// Grab all the attributes passed from the parent component
 const attrs = useAttrs()
 
 const modelValue = defineModel({ type: Number, default: 0 })
 
-// Safely parse everything to numbers for our math operations
 const numMin = computed(() => Number(props.min))
 const numMax = computed(() => Number(props.max))
 const numStep = computed(() => Number(props.step))
+
+// All attrs except class forwarded to <Input> so <Label for="id"> association works.
+// class is handled separately via cn().
+const inputAttrs = computed(() => {
+    const { class: _class, ...rest } = attrs as Record<string, unknown>
+    return rest
+})
 
 function increment() {
     if (modelValue.value < numMax.value) {
@@ -47,6 +49,11 @@ function decrement() {
     if (modelValue.value > numMin.value) {
         modelValue.value -= numStep.value
     }
+}
+
+function clamp() {
+    const val = Number(modelValue.value) || 0
+    modelValue.value = Math.min(numMax.value, Math.max(numMin.value, val))
 }
 </script>
 
@@ -64,6 +71,7 @@ function decrement() {
         </Button>
 
         <Input
+            v-bind="inputAttrs"
             v-model="modelValue"
             type="number"
             :min="numMin"
@@ -75,6 +83,7 @@ function decrement() {
                     attrs.class as string,
                 )
             "
+            @change="clamp"
         />
 
         <Button
@@ -91,6 +100,7 @@ function decrement() {
 
     <div v-else-if="variant === 'vertical'" class="relative flex items-center">
         <Input
+            v-bind="inputAttrs"
             v-model="modelValue"
             type="number"
             :min="numMin"
@@ -102,6 +112,7 @@ function decrement() {
                     attrs.class as string,
                 )
             "
+            @change="clamp"
         />
 
         <div class="absolute right-1 top-1 bottom-1 flex flex-col justify-between w-6">

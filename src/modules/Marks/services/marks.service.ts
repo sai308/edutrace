@@ -168,7 +168,8 @@ export class MarksService {
 
             return [...meetIdScores.entries()].sort((a, b) => b[1] - a[1]).map(([id]) => id)
         }
-        catch {
+        catch (e) {
+            logger.error('suggestMeetIdsForFile failed:', e)
             return []
         }
     }

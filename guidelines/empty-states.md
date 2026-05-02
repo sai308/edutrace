@@ -26,7 +26,7 @@ Use the full `<EmptyState>` component (or `<DataTableEmptyState>` inside a table
 ### Control visibility when empty
 
 **Always hide:**
-- Zone 1 action buttons ("Add", "Import", "Create…") — guard with `v-if="data.length > 0"` on the button wrapper
+- header row action buttons ("Add", "Import", "Create…") — guard with `v-if="data.length > 0"` on the button wrapper
 - Zone 2 toolbar (search, filter, sort, bulk switch, column picker) — already hidden because the table block is inside `<template v-if="data.length > 0">`
 
 **Always keep:**
@@ -35,7 +35,7 @@ Use the full `<EmptyState>` component (or `<DataTableEmptyState>` inside a table
 
 ### CTA placement
 
-When the Zone 1 action buttons are hidden, the `<EmptyState>` body becomes the sole source of CTAs. Use the default slot:
+When the header row action buttons are hidden, the `<EmptyState>` body becomes the sole source of CTAs. Use the default slot:
 
 ```vue
 <EmptyState
@@ -92,11 +92,13 @@ Rules for this variant:
 
 ---
 
-## Zone 1 visibility matrix
+## Header Row Visibility Matrix
 
 | UI element | `data.length === 0` | `data.length > 0` |
 |---|---|---|
-| Page `h1` / `h2` title | ✅ always | ✅ always |
+| Page `h1` title | ✅ always | ✅ always |
+| Mobile subtitle (counter, `sm:hidden`) | ✅ shows description fallback | ✅ shows item count |
+| Desktop subtitle (description, `hidden sm:block`) | ✅ always | ✅ always |
 | Data-source selector (group picker) | ✅ always | ✅ always |
 | Action buttons (Add / Import / Create) | ❌ hidden | ✅ shown |
 | Filter / search / sort toolbar | ❌ hidden (table block not rendered) | ✅ shown |

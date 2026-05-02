@@ -5,7 +5,6 @@ import {
     BookOpenCheck,
     Download,
     FileBadge,
-    // new
     FileClock,
     FileSpreadsheet,
     FileText,
@@ -63,7 +62,6 @@ watch(
     },
 )
 
-// This is sample data.
 const data = computed(() => {
     return {
         navMain: [
@@ -209,7 +207,7 @@ const data = computed(() => {
             },
             {
                 name: 'GitHub',
-                url: 'https://github.com/sai308/edutrace-local',
+                url: 'https://github.com/sai308/edutrace',
                 icon: Github,
             },
         ],
@@ -230,11 +228,9 @@ const data = computed(() => {
         <SidebarFooter class="group-data-[collapsible=icon]:p-0">
             <SidebarMenu v-if="isInstallable" class="px-2 pb-1">
                 <SidebarMenuItem>
-                    <SidebarMenuButton @click="install">
+                    <SidebarMenuButton :tooltip="$t('pwa.install')" @click="install">
                         <Download />
-                        <span class="group-data-[collapsible=icon]:hidden">{{
-                            $t('pwa.install')
-                        }}</span>
+                        <span>{{ $t('pwa.install') }}</span>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
@@ -254,7 +250,6 @@ const data = computed(() => {
 }
 
 :deep([data-active='true']) {
-    background-color: color-mix(in srgb, var(--workspace-color), transparent 91%) !important;
     box-shadow: inset 2px 0 0 color-mix(in srgb, var(--workspace-color), transparent 20%);
 }
 

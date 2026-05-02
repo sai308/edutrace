@@ -2,6 +2,7 @@ import type { Workspace } from '@/shared/types/workspaces'
 import { ref } from 'vue'
 import { logger } from '@/shared/lib/logger'
 import { settingsRepository } from '@/shared/services/settings.repository'
+import { toast } from '@/shared/services/toast'
 import { workspaceRepository } from '@/shared/services/workspace.repository'
 import { currentWorkspaceId, loadWorkspaces } from './useWorkspace'
 
@@ -105,6 +106,7 @@ export function useWorkspaceModals() {
         }
         catch (e) {
             logger.error('Failed to delete workspace', e)
+            toast.error(e instanceof Error ? e.message : 'Failed to delete workspace')
         }
     }
 

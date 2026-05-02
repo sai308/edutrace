@@ -6,6 +6,7 @@ import i18n from '@/i18n'
 import { opfs } from '@/shared/services/opfs'
 import { computeECTSStats, toECTS, toNationalGrade } from '@/shared/utils/grades'
 import { documentGenerator } from './documentGenerator'
+import { generateTemplateBlob } from './templateGenerator'
 
 const TEMPLATE_DIR = 'templates'
 const TEMPLATE_NAME = 'print_template.docx'
@@ -37,6 +38,8 @@ export const sessionDocumentService = {
      *   {recordNumber}      — Відомість №
      *   {date}              — date string as entered in the dialog
      *   {course}            — курс (from Group)
+     *   {studyForm}         — форма навчання (from Group or from settings as fallback)
+     *   {specialty}         — спеціальність (from settings)
      *   {groupName}         — назва групи
      *   {subject}           — навчальна дисципліна
      *   {semester}          — семестр
@@ -90,6 +93,8 @@ export const sessionDocumentService = {
             // Subject block
             subject: formData.subject,
             semester: formData.semester,
+            studyForm: formData.studyForm,
+            specialty: formData.specialty,
             academicYear: formData.academicYear,
             formOfControl: formData.formOfControl,
             totalHours: String(formData.totalHours),
@@ -109,11 +114,15 @@ export const sessionDocumentService = {
             countAbsent: stats.absent || '',
         }
 
-        const blob = await documentGenerator.generateFromTemplate({
-            templateDir: TEMPLATE_DIR,
-            templateName: TEMPLATE_NAME,
-            data,
-        })
+        const hasCustomTemplate = await opfs.fileExists(TEMPLATE_DIR, TEMPLATE_NAME)
+
+        const blob = hasCustomTemplate
+            ? await documentGenerator.generateFromTemplate({
+                    templateDir: TEMPLATE_DIR,
+                    templateName: TEMPLATE_NAME,
+                    data,
+                })
+            : await documentGenerator.generateFromBlob(generateTemplateBlob(), data)
 
         return {
             blob,

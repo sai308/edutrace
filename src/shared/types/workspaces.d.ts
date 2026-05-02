@@ -23,6 +23,7 @@ export interface WorkspaceExportData {
         id: string
         name: string
         icon?: string
+        color?: string
         dbName: string
         data: Record<string, any[]>
     }>

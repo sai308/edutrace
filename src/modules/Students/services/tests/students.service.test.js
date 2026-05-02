@@ -15,12 +15,12 @@ describe('studentsService', () => {
         vi.clearAllMocks()
     })
 
-    describe('saveStudent', () => {
+    describe('saveMember', () => {
         it('should delegate to repository and handle aliases logic', async () => {
             const originalUser = { id: '1', name: 'OldName', aliases: [] }
             const formData = { name: 'NewName', email: 'new@example.com' }
 
-            await studentsService.saveStudent(formData, originalUser)
+            await studentsService.saveMember(formData, originalUser)
 
             expect(studentsRepository.saveMember).toHaveBeenCalledWith(expect.objectContaining({
                 id: '1',

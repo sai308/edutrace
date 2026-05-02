@@ -12,14 +12,16 @@ class UnitsRepository extends BaseRepository<'units'> {
         if (!unit.normalizedName?.trim())
             throw new Error('Unit normalizedName is required')
 
+        let unitToSave = unit
         if (!unit.id && typeof unit.ordinal === 'undefined') {
-            unit.ordinal = await this.getNextOrdinal()
+            const ordinal = await this.getNextOrdinal()
+            unitToSave = { ...unit, ordinal }
         }
 
-        if (unit.id) {
-            return this.put(unit)
+        if (unitToSave.id) {
+            return this.put(unitToSave)
         }
-        return this.add(unit)
+        return this.add(unitToSave)
     }
 
     async getAllUnits(): Promise<Unit[]> {
@@ -27,7 +29,7 @@ class UnitsRepository extends BaseRepository<'units'> {
     }
 
     async findUnitByNormalizedName(normalizedName: string): Promise<Unit | undefined> {
-        return this.getFromIndex('normalizedName' as any, normalizedName)
+        return this.getFromIndex('normalizedName', normalizedName)
     }
 
     async getNextOrdinal(): Promise<number> {

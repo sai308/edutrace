@@ -8,7 +8,7 @@ export interface Mark {
     taskId: string
     studentId: string
     score?: number
-    value: string | number
+    value: number
     maxPoints?: number
     synced?: boolean
     syncedAt?: string | null

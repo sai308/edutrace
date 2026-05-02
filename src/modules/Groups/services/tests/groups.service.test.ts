@@ -80,8 +80,6 @@ describe('groupsService', () => {
                 ],
                 memberCounts: { Group1: 1 },
                 allMeetIds: ['m1'],
-                allTeachers: ['Teacher1'],
-                teacherSet: new Set(['Teacher1']),
             }
             mockProcessGroupsData.mockResolvedValue(mockWorkerResult)
 
@@ -115,8 +113,6 @@ describe('groupsService', () => {
                 groups: [],
                 memberCounts: {},
                 allMeetIds: [],
-                allTeachers: [],
-                teacherSet: new Set(),
             })
 
             const result = await service.loadGroupsData()
@@ -179,6 +175,14 @@ describe('groupsService', () => {
             const saved = (groupsRepository.saveGroup as any).mock.calls[0][0] as Group
             expect(saved.name).toBe('Group B')
             expect(saved.meetId).toBe('abc-defg-hij')
+        })
+
+        it('syncs members from meets after saving', async () => {
+            ;(meetsRepository.getMeetsByMeetId as any).mockResolvedValue([])
+            ;(studentsRepository.syncParticipants as any).mockResolvedValue(undefined)
+            await service.saveGroup({ meetId: 'm1', name: 'Sync Group' })
+            expect(meetsRepository.getMeetsByMeetId).toHaveBeenCalledWith('m1')
+            expect(studentsRepository.syncParticipants).toHaveBeenCalled()
         })
     })
 

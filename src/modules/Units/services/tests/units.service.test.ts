@@ -93,7 +93,6 @@ describe('saveUnit', () => {
 
     it('throws when name is empty', async () => {
         await expect(saveUnit({ name: '' })).rejects.toThrow('Unit name is required')
-        expect(unitsRepository.findUnitByNormalizedName).not.toHaveBeenCalled()
     })
 
     it('throws DuplicateUnitError when another unit with same name exists', async () => {

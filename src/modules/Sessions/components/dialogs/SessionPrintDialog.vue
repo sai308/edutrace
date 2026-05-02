@@ -23,6 +23,8 @@ import { SessionTypeEnum } from '../../models/session.model'
 export interface PrintFormData {
     recordNumber: string
     subject: string
+    studyForm: string
+    specialty: string
     formOfControl: string
     semester: string
     academicYear: string
@@ -61,6 +63,10 @@ onMounted(async () => {
     // Apply defaults from settings if they exist
     if (settings.subject)
         form.value.subject = settings.subject
+    if (settings.studyForm)
+        form.value.studyForm = settings.studyForm
+    if (settings.specialty)
+        form.value.specialty = settings.specialty
     if (settings.formOfControl)
         form.value.formOfControl = settings.formOfControl
     if (settings.semester)
@@ -105,6 +111,8 @@ const academicYearDefault = today.getMonth() >= 8 ? `${year}/${year + 1}` : `${y
 const form = ref<PrintFormData>({
     recordNumber: '',
     subject: '',
+    studyForm: '',
+    specialty: '',
     formOfControl: i18n.global.t('sessions.printDialog.forms.exam'),
     semester: '',
     academicYear: academicYearDefault,

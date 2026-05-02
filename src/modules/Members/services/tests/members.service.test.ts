@@ -1,11 +1,14 @@
-import type { Member } from '@Students/types/students'
 import { studentsRepository } from '@Students/services/students.repository'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { membersService, validateMemberForm } from '../members.service'
 
-vi.mock('@Students/services/students.repository')
-
-const mockSaveMember = vi.mocked(studentsRepository.saveMember)
+const baseFormData = {
+    name: 'Alice',
+    email: 'alice@example.com',
+    groupName: 'Math',
+    role: 'student' as const,
+    iep: '',
+}
 
 describe('validateMemberForm', () => {
     it('should return valid when name and groupName are provided for a student', () => {
@@ -54,63 +57,60 @@ describe('validateMemberForm', () => {
 })
 
 describe('membersService.saveMember', () => {
-    beforeEach(() => {
-        vi.clearAllMocks()
-        mockSaveMember.mockResolvedValue('member-id')
+    it('creates new member and persists it', async () => {
+        const result = await membersService.saveMember(baseFormData, null)
+
+        expect(result.id).toBeTruthy()
+        expect(result.name).toBe('Alice')
+        expect(result.groupName).toBe('Math')
+        expect(result.createdAt).toBeTruthy()
+
+        const all = await studentsRepository.getAllMembers()
+        expect(all).toHaveLength(1)
+        expect(all[0]!.id).toBe(result.id)
     })
 
-    const baseFormData = {
-        name: 'Alice',
-        email: 'alice@example.com',
-        groupName: 'Math',
-        role: 'student' as const,
-        iep: '',
-    }
+    it('updates existing member without creating a duplicate', async () => {
+        const created = await membersService.saveMember(baseFormData, null)
+        const updated = await membersService.saveMember({ ...baseFormData, name: 'Alice Updated' }, created)
 
-    it('should call saveMember with merged data when editing an existing member', async () => {
-        const existing: Member = {
-            id: 'existing-id',
-            name: 'Old Name',
-            groupName: 'Old Group',
-            role: 'student',
-            createdAt: '2025-01-01T00:00:00.000Z',
-        }
+        expect(updated.id).toBe(created.id)
+        expect(updated.name).toBe('Alice Updated')
 
-        await membersService.saveMember(baseFormData, existing)
+        const all = await studentsRepository.getAllMembers()
+        expect(all).toHaveLength(1)
+        expect(all[0]!.name).toBe('Alice Updated')
+    })
 
-        expect(mockSaveMember).toHaveBeenCalledWith(
-            expect.objectContaining({
-                id: 'existing-id',
-                name: 'Alice',
-                email: 'alice@example.com',
-                groupName: 'Math',
-                role: 'student',
-                createdAt: '2025-01-01T00:00:00.000Z',
-            }),
+    it('preserves createdAt when editing', async () => {
+        const created = await membersService.saveMember(baseFormData, null)
+        const updated = await membersService.saveMember(baseFormData, created)
+        expect(updated.createdAt).toBe(created.createdAt)
+    })
+
+    it('sets iep to undefined when empty string', async () => {
+        const result = await membersService.saveMember({ ...baseFormData, iep: '' }, null)
+        expect(result.iep).toBeUndefined()
+    })
+
+    it('sets iep when provided', async () => {
+        const result = await membersService.saveMember({ ...baseFormData, iep: 'IEP-001' }, null)
+        expect(result.iep).toBe('IEP-001')
+    })
+
+    it('stores null groupName for teacher role (repository enforces)', async () => {
+        const result = await membersService.saveMember(
+            { ...baseFormData, role: 'teacher', groupName: 'SomeGroup' },
+            null,
         )
+        expect(result.groupName).toBeNull()
+
+        const all = await studentsRepository.getAllMembers()
+        expect(all[0]!.groupName).toBeNull()
     })
 
-    it('should call saveMember with new createdAt when creating a member (existingMember = null)', async () => {
-        await membersService.saveMember(baseFormData, null)
-
-        expect(mockSaveMember).toHaveBeenCalledWith(
-            expect.objectContaining({
-                id: '',
-                name: 'Alice',
-                createdAt: expect.any(String),
-            }),
-        )
-    })
-
-    it('should set iep to undefined when iep is empty string', async () => {
-        await membersService.saveMember({ ...baseFormData, iep: '' }, null)
-
-        expect(mockSaveMember).toHaveBeenCalledWith(expect.objectContaining({ iep: undefined }))
-    })
-
-    it('should set iep when provided', async () => {
-        await membersService.saveMember({ ...baseFormData, iep: 'IEP-001' }, null)
-
-        expect(mockSaveMember).toHaveBeenCalledWith(expect.objectContaining({ iep: 'IEP-001' }))
+    it('passes groupName as-is for student (no null coercion to empty string)', async () => {
+        const result = await membersService.saveMember({ ...baseFormData, groupName: 'CS101' }, null)
+        expect(result.groupName).toBe('CS101')
     })
 })

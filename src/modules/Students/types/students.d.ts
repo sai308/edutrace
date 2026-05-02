@@ -1,23 +1,9 @@
-export interface Member {
-    id: string
-    name: string
-    email?: string
-    groupName: string | null
-    role: 'student' | 'teacher' | 'assistant'
-    hidden?: boolean
-    aliases?: string[]
-    createdAt?: string
-    iep?: string
-    [key: string]: any
-}
+import type { Member, MemberFormData } from '@Members/types/members'
 
-export interface StudentFormData {
-    name: string
-    email: string
-    groupName: string | null
-    role: 'student' | 'teacher' | 'assistant'
-    iep: string
-}
+export type { Member, MemberFormData }
+
+// backward-compat alias — Students module still uses this name
+export type { MemberFormData as StudentFormData }
 
 export interface StudentDashboardStats extends Member {
     totalDuration: number

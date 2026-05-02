@@ -73,7 +73,8 @@ function getMeetActions(meet: Meet): RowActionItem[] {
                 <h1 class="text-2xl font-bold tracking-tight truncate">
                     {{ t('reports.title') }}
                 </h1>
-                <p class="text-sm text-muted-foreground mt-0.5 truncate hidden sm:block">
+                <!-- Mobile: mandatory counter -->
+                <p class="text-sm text-muted-foreground mt-0.5 truncate sm:hidden">
                     <template v-if="meets.length > 0">
                         {{
                             t('reports.subtitle', {
@@ -85,6 +86,10 @@ function getMeetActions(meet: Meet): RowActionItem[] {
                     <template v-else>
                         {{ t('reports.description') }}
                     </template>
+                </p>
+                <!-- Desktop: description -->
+                <p class="text-sm text-muted-foreground mt-0.5 truncate hidden sm:block">
+                    {{ t('reports.description') }}
                 </p>
             </div>
             <div v-if="meets.length > 0" class="flex items-center gap-2 shrink-0">
@@ -163,7 +168,10 @@ function getMeetActions(meet: Meet): RowActionItem[] {
                                     class="pl-8 h-9"
                                 />
                             </div>
-                            <div class="flex items-center gap-2 shrink-0">
+                            <div
+                                v-if="!(bulkMode && table.getFilteredSelectedRowModel().rows.length > 0)"
+                                class="flex items-center gap-2 shrink-0"
+                            >
                                 <Switch
                                     :model-value="bulkMode"
                                     class="cursor-pointer"

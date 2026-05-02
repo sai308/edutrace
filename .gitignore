@@ -28,6 +28,7 @@ artifacts
 # local states
 local
 leankg.db
+.claude/worktrees/
 
 # lock files
 # pnpm-lock.yaml

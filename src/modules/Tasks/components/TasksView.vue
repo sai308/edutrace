@@ -112,6 +112,11 @@ function getTaskActions(task: Task): RowActionItem[] {
                 <h1 class="text-2xl font-bold tracking-tight truncate">
                     {{ $t('tasks.title') }}
                 </h1>
+                <!-- Mobile: mandatory counter -->
+                <p class="text-sm text-muted-foreground mt-0.5 truncate sm:hidden">
+                    {{ $t('tasks.subtitle', { count: tasks.length }) }}
+                </p>
+                <!-- Desktop: description -->
                 <p class="text-sm text-muted-foreground mt-0.5 truncate hidden sm:block">
                     {{ $t('tasks.description') }}
                 </p>
@@ -187,7 +192,10 @@ function getTaskActions(task: Task): RowActionItem[] {
                                 <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                                 <Input v-model="searchQuery" :placeholder="$t('tasks.search')" class="pl-8 h-9" />
                             </div>
-                            <div class="flex items-center gap-2 shrink-0">
+                            <div
+                                v-if="!(bulkMode && table.getFilteredSelectedRowModel().rows.length > 0)"
+                                class="flex items-center gap-2 shrink-0"
+                            >
                                 <Switch
                                     :model-value="bulkMode"
                                     class="cursor-pointer"

@@ -44,14 +44,13 @@ export function usePlans() {
 
         plans.value = await plansService.getAllPlans()
 
-        groups.value = await groupsRepository.getAll()
+        const iepGroupNames = new Set(students.value.filter(s => !!s.groupName).map(s => s.groupName))
+        const allGroups = await groupsRepository.getAll()
+        groups.value = allGroups.filter(g => iepGroupNames.has(g.name))
 
         // Auto-select the first group that has students with IEP (if no URL param set)
-        if (!filterGroup.value && students.value.length > 0) {
-            const groupsWithIep = [...new Set(students.value.filter(s => !!s.groupName).map(s => s.groupName))]
-            if (groupsWithIep.length > 0) {
-                filterGroup.value = groupsWithIep[0] as string
-            }
+        if (!filterGroup.value && groups.value.length > 0) {
+            filterGroup.value = groups.value[0]!.name
         }
 
         // Pre-load grade snapshots for students who don't have a persisted plan yet
@@ -92,7 +91,7 @@ export function usePlans() {
             return { student, plan: displayPlan, hasPlan: !!existingPlan }
         })
 
-        if (filterGroup.value && filterGroup.value !== '_all') {
+        if (filterGroup.value) {
             result = result.filter(item => item.student.groupName === filterGroup.value)
         }
 

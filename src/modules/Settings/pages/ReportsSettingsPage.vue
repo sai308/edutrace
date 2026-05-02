@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { meetsRepository } from '@Analytics/services/meets.repository'
 import { Database, FileBracesCorner, HardDriveDownload, HardDriveUpload, HelpCircle, Trash2 } from 'lucide-vue-next'
 import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -32,6 +33,7 @@ const { t } = useI18n()
 
 // Parsing Settings
 const durationLimit = ref(0)
+const isReconciling = ref(false)
 const isSquashEnabled = ref(false)
 const sessionSquashThreshold = ref(10)
 const reportsCount = ref(0)
@@ -68,6 +70,23 @@ async function loadSettings() {
 async function saveDurationLimit() {
     await settingsRepository.saveDurationLimit(durationLimit.value)
     toast.success(t('reports.settings.durationSaved'))
+}
+
+async function reapplyDurationLimit() {
+    if (durationLimit.value <= 0)
+        return
+    isReconciling.value = true
+    try {
+        const count = await meetsRepository.applyDurationLimitToAll(durationLimit.value)
+        toast.success(t('toast.durationLimitApplied', { count }))
+    }
+    catch (e) {
+        logger.error('Failed to reapply duration limit:', e)
+        toast.error(t('reports.settings.exportFail'))
+    }
+    finally {
+        isReconciling.value = false
+    }
 }
 
 watch(isSquashEnabled, async (val) => {
@@ -179,6 +198,20 @@ async function handleDeleteReports() {
                         </div>
                         <p class="text-[0.8rem] text-muted-foreground">
                             {{ $t('reports.settings.durationLimitHelp') }}
+                        </p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <Button
+                            variant="outline"
+                            :disabled="durationLimit <= 0 || reportsCount === 0 || isReconciling"
+                            class="w-full sm:w-auto"
+                            @click="reapplyDurationLimit"
+                        >
+                            {{ isReconciling ? '...' : $t('reports.settings.reapplyLimitBtn') }}
+                        </Button>
+                        <p class="text-[0.8rem] text-muted-foreground">
+                            {{ $t('reports.settings.reapplyLimitHelp') }}
                         </p>
                     </div>
 
