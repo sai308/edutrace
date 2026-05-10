@@ -50,6 +50,7 @@ import { settingsRepository } from '@/shared/services/settings.repository'
 const { t } = useI18n()
 const router = useRouter()
 const { students, isLoading, loadExamData, meets, tasks, groupsMap } = useSummaryData()
+const isInitializing = ref(false)
 
 const groups = ref<Group[]>([])
 const selectedGroup = ref<Group | null>(null)
@@ -134,13 +135,19 @@ function handleSettingsChange(settings: typeof settingsForm.value) {
 }
 
 async function initialize() {
-    groups.value = await summaryService.getGroups()
-    if (groups.value.length > 0) {
-        // If a group name came from the URL query param, preselect it; otherwise default to first
-        const fromQuery = selectedGroupName.value
-            ? (groups.value.find(g => g.name === selectedGroupName.value) ?? null)
-            : null
-        selectedGroup.value = fromQuery ?? groups.value[0] ?? null
+    isInitializing.value = true
+    try {
+        groups.value = await summaryService.getGroups()
+        if (groups.value.length > 0) {
+            // If a group name came from the URL query param, preselect it; otherwise default to first
+            const fromQuery = selectedGroupName.value
+                ? (groups.value.find(g => g.name === selectedGroupName.value) ?? null)
+                : null
+            selectedGroup.value = fromQuery ?? groups.value[0] ?? null
+        }
+    }
+    finally {
+        isInitializing.value = false
     }
 }
 
@@ -352,8 +359,14 @@ function getGradeActions(student: StudentSummaryData): RowActionItem[] {
 
         <!-- ── Content area ── -->
 
-        <!-- Loading -->
-        <div v-if="isLoading" class="flex flex-col items-center justify-center min-h-[400px] text-muted-foreground">
+        <!-- Initializing (first load, no groups yet fetched) -->
+        <div v-if="isInitializing" class="flex flex-col items-center justify-center min-h-[400px] text-muted-foreground">
+            <Loader2 class="w-8 h-8 animate-spin mb-4 text-primary" />
+            <p>{{ $t('summary.loading') }}</p>
+        </div>
+
+        <!-- Loading first batch for a group (no data yet to show underneath) -->
+        <div v-else-if="isLoading && students.length === 0" class="flex flex-col items-center justify-center min-h-[400px] text-muted-foreground">
             <Loader2 class="w-8 h-8 animate-spin mb-4 text-primary" />
             <p>{{ $t('summary.loading') }}</p>
         </div>
@@ -380,29 +393,35 @@ function getGradeActions(student: StudentSummaryData): RowActionItem[] {
             class="min-h-[400px] border-dashed bg-card/50"
         />
 
-        <!-- Data table -->
-        <DataTable
-            v-else
-            :students="students"
-            :modules="currentModules"
-            :search-query="searchQuery"
-            :row-actions="getGradeActions"
-            @student-click="handleStudentClick"
-        >
-            <template #toolbar>
-                <div class="flex items-center gap-3">
-                    <div class="relative w-full sm:flex-1 sm:max-w-[220px]">
-                        <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                        <Input
-                            v-model="searchQuery"
-                            type="search"
-                            :placeholder="$t('summary.searchPlaceholder')"
-                            class="pl-8 h-9 text-sm"
-                        />
+        <!-- Data table (with overlay while reloading over existing data) -->
+        <div v-else class="relative">
+            <DataTable
+                :students="students"
+                :modules="currentModules"
+                :search-query="searchQuery"
+                :row-actions="getGradeActions"
+                :class="isLoading ? 'opacity-50 pointer-events-none' : ''"
+                class="transition-opacity duration-150"
+                @student-click="handleStudentClick"
+            >
+                <template #toolbar>
+                    <div class="flex items-center gap-3">
+                        <div class="relative w-full sm:flex-1 sm:max-w-[220px]">
+                            <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                v-model="searchQuery"
+                                type="search"
+                                :placeholder="$t('summary.searchPlaceholder')"
+                                class="pl-8 h-9 text-sm"
+                            />
+                        </div>
                     </div>
-                </div>
-            </template>
-        </DataTable>
+                </template>
+            </DataTable>
+            <div v-if="isLoading" class="absolute inset-0 flex items-center justify-center">
+                <Loader2 class="w-8 h-8 animate-spin text-primary" />
+            </div>
+        </div>
 
         <StudentProfileModal
             :open="isProfileOpen"

@@ -142,122 +142,124 @@ const { groups, filterGroup, studentPlans, stats, handleToggleSync, students } =
             </div>
 
             <div class="flex-1 min-h-0 w-full flex flex-col space-y-4">
-                <div class="rounded-md border bg-card flex-1 min-h-0 overflow-hidden relative [&>div]:h-full">
-                    <Table class="min-w-[800px] lg:min-w-[1000px]">
-                        <TableHeader class="sticky top-0 z-40 bg-background shadow-sm">
-                            <TableRow>
-                                <TableHead
-                                    class="w-[120px] min-w-[120px] h-12 sm:w-[300px] sm:min-w-[300px] sticky left-0 z-50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)] border-b"
-                                >
-                                    {{ t('members.fields.fullName') }}
-                                </TableHead>
-                                <TableHead class="bg-background border-b">
-                                    {{ t('plans.table.iep') }}
-                                </TableHead>
-                                <TableHead class="bg-background border-b">
-                                    {{ t('plans.table.grade') }}
-                                </TableHead>
-                                <TableHead class="bg-background border-b">
-                                    {{ t('plans.table.dateApplied') }}
-                                </TableHead>
-                                <TableHead class="bg-background border-b">
-                                    {{ t('plans.table.isSynced') }}
-                                </TableHead>
-                                <TableHead class="bg-background border-b">
-                                    {{ t('plans.table.syncedAt') }}
-                                </TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            <TableRow v-for="item in studentPlans" :key="item.student.id">
-                                <TableCell
-                                    class="font-medium sticky left-0 z-20 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)] max-w-[120px] sm:max-w-[300px] border-b"
-                                >
-                                    <span class="hidden sm:block truncate">{{ item.student.name }}</span>
-                                    <span class="block sm:hidden truncate" :title="item.student.name">{{
-                                        item.student.name.split(' ')[0] || ''
-                                    }}</span>
-                                </TableCell>
-                                <TableCell class="border-b">
-                                    <Badge variant="outline">
-                                        {{ item.student.iep }}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell class="border-b">
-                                    <div
-                                        v-if="item.plan?.grade !== null && item.plan?.grade !== undefined"
-                                        class="flex items-center gap-2"
+                <div class="rounded-md border bg-card flex-1 min-h-0 overflow-hidden relative">
+                    <div class="overflow-x-auto">
+                        <Table class="min-w-[800px] lg:min-w-[1000px]">
+                            <TableHeader class="sticky top-0 z-40 bg-background shadow-sm">
+                                <TableRow>
+                                    <TableHead
+                                        class="w-[120px] min-w-[120px] h-12 sm:w-[300px] sm:min-w-[300px] sticky left-0 z-50 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)] border-b"
                                     >
-                                        <span class="font-medium">{{ item.plan.grade }}</span>
-                                        <span class="text-muted-foreground">/</span>
-                                        <span
-                                            class="font-mono bg-muted px-1.5 py-0.5 rounded text-xs"
-                                            :class="getECTSColorClass(toECTS(item.plan.grade))"
+                                        {{ t('members.fields.fullName') }}
+                                    </TableHead>
+                                    <TableHead class="bg-background border-b">
+                                        {{ t('plans.table.iep') }}
+                                    </TableHead>
+                                    <TableHead class="bg-background border-b">
+                                        {{ t('plans.table.grade') }}
+                                    </TableHead>
+                                    <TableHead class="bg-background border-b">
+                                        {{ t('plans.table.dateApplied') }}
+                                    </TableHead>
+                                    <TableHead class="bg-background border-b">
+                                        {{ t('plans.table.isSynced') }}
+                                    </TableHead>
+                                    <TableHead class="bg-background border-b">
+                                        {{ t('plans.table.syncedAt') }}
+                                    </TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                <TableRow v-for="item in studentPlans" :key="item.student.id">
+                                    <TableCell
+                                        class="font-medium sticky left-0 z-20 bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60 shadow-[1px_0_0_0_hsl(var(--border)),2px_0_4px_-1px_rgba(0,0,0,0.05)] max-w-[120px] sm:max-w-[300px] border-b"
+                                    >
+                                        <span class="hidden sm:block truncate">{{ item.student.name }}</span>
+                                        <span class="block sm:hidden truncate" :title="item.student.name">{{
+                                            item.student.name.split(' ')[0] || ''
+                                        }}</span>
+                                    </TableCell>
+                                    <TableCell class="border-b">
+                                        <Badge variant="outline">
+                                            {{ item.student.iep }}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell class="border-b">
+                                        <div
+                                            v-if="item.plan?.grade !== null && item.plan?.grade !== undefined"
+                                            class="flex items-center gap-2"
                                         >
-                                            {{ toECTS(item.plan.grade) }}
-                                        </span>
-                                    </div>
-                                    <div v-else class="text-muted-foreground">
-                                        -
-                                    </div>
-                                </TableCell>
-                                <TableCell class="border-b">
-                                    <div v-if="item.plan" class="flex flex-col gap-1">
-                                        <div class="flex items-center gap-1 text-sm">
-                                            <Calendar class="w-3.5 h-3.5 text-muted-foreground" />
-                                            <span>{{ formatDate(item.plan.dateApplied) }}</span>
+                                            <span class="font-medium">{{ item.plan.grade }}</span>
+                                            <span class="text-muted-foreground">/</span>
+                                            <span
+                                                class="font-mono bg-muted px-1.5 py-0.5 rounded text-xs"
+                                                :class="getECTSColorClass(toECTS(item.plan.grade))"
+                                            >
+                                                {{ toECTS(item.plan.grade) }}
+                                            </span>
                                         </div>
-                                        <div class="flex items-center gap-1 text-[10px] text-muted-foreground">
-                                            <Clock class="w-3 h-3" />
-                                            <span>{{ formatTime(item.plan.dateApplied) }}</span>
-                                            <span class="ml-1 opacity-60">·</span>
-                                            <span class="ml-1 uppercase">{{
-                                                t(`plans.sessionTypes.${item.plan.sessionType}`)
-                                            }}</span>
+                                        <div v-else class="text-muted-foreground">
+                                            -
                                         </div>
-                                    </div>
-                                    <div v-else class="text-muted-foreground">
-                                        -
-                                    </div>
-                                </TableCell>
-                                <TableCell class="border-b">
-                                    <Switch
-                                        :model-value="item.plan?.isSynced ?? false"
-                                        @update:model-value="
-                                            (val: boolean) =>
-                                                handleToggleSync(
-                                                    item.student.id!,
-                                                    item.student.iep!,
-                                                    val,
-                                                    item.hasPlan,
-                                                    item.plan,
-                                                )
-                                        "
-                                    />
-                                </TableCell>
-                                <TableCell class="border-b">
-                                    <div v-if="item.plan?.syncedAt" class="flex flex-col gap-1">
-                                        <div class="flex items-center gap-1 text-sm">
-                                            <Calendar class="w-3.5 h-3.5 text-muted-foreground" />
-                                            <span>{{ formatDate(item.plan.syncedAt) }}</span>
+                                    </TableCell>
+                                    <TableCell class="border-b">
+                                        <div v-if="item.plan" class="flex flex-col gap-1">
+                                            <div class="flex items-center gap-1 text-sm">
+                                                <Calendar class="w-3.5 h-3.5 text-muted-foreground" />
+                                                <span>{{ formatDate(item.plan.dateApplied) }}</span>
+                                            </div>
+                                            <div class="flex items-center gap-1 text-[10px] text-muted-foreground">
+                                                <Clock class="w-3 h-3" />
+                                                <span>{{ formatTime(item.plan.dateApplied) }}</span>
+                                                <span class="ml-1 opacity-60">·</span>
+                                                <span class="ml-1 uppercase">{{
+                                                    t(`plans.sessionTypes.${item.plan.sessionType}`)
+                                                }}</span>
+                                            </div>
                                         </div>
-                                        <div class="flex items-center gap-1 text-[10px] text-muted-foreground">
-                                            <Clock class="w-3 h-3" />
-                                            <span>{{ formatTime(item.plan.syncedAt) }}</span>
+                                        <div v-else class="text-muted-foreground">
+                                            -
                                         </div>
-                                    </div>
-                                    <div v-else class="text-muted-foreground">
-                                        -
-                                    </div>
-                                </TableCell>
-                            </TableRow>
-                            <TableRow v-if="studentPlans.length === 0">
-                                <TableCell colspan="6" class="text-center py-8 text-muted-foreground">
-                                    {{ t('plans.table.noStudents') }}
-                                </TableCell>
-                            </TableRow>
-                        </TableBody>
-                    </Table>
+                                    </TableCell>
+                                    <TableCell class="border-b">
+                                        <Switch
+                                            :model-value="item.plan?.isSynced ?? false"
+                                            @update:model-value="
+                                                (val: boolean) =>
+                                                    handleToggleSync(
+                                                        item.student.id!,
+                                                        item.student.iep!,
+                                                        val,
+                                                        item.hasPlan,
+                                                        item.plan,
+                                                    )
+                                            "
+                                        />
+                                    </TableCell>
+                                    <TableCell class="border-b">
+                                        <div v-if="item.plan?.syncedAt" class="flex flex-col gap-1">
+                                            <div class="flex items-center gap-1 text-sm">
+                                                <Calendar class="w-3.5 h-3.5 text-muted-foreground" />
+                                                <span>{{ formatDate(item.plan.syncedAt) }}</span>
+                                            </div>
+                                            <div class="flex items-center gap-1 text-[10px] text-muted-foreground">
+                                                <Clock class="w-3 h-3" />
+                                                <span>{{ formatTime(item.plan.syncedAt) }}</span>
+                                            </div>
+                                        </div>
+                                        <div v-else class="text-muted-foreground">
+                                            -
+                                        </div>
+                                    </TableCell>
+                                </TableRow>
+                                <TableRow v-if="studentPlans.length === 0">
+                                    <TableCell colspan="6" class="text-center py-8 text-muted-foreground">
+                                        {{ t('plans.table.noStudents') }}
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </div>
                 </div>
             </div>
         </template>

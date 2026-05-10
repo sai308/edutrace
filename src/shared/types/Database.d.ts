@@ -1,6 +1,7 @@
 import type { Meet } from '@Analytics/types/analytics'
 import type { Group } from '@Groups/types/groups'
 import type { Mark } from '@Marks/types/marks'
+import type { Plan } from '@Plans/types/plans'
 import type { Member } from '@Students/types/students'
 import type { FinalAssessment, Module } from '@Summary/types/summary'
 import type { Task } from '@Tasks/types/tasks'
@@ -8,7 +9,6 @@ import type { Unit } from '@Units/types/units'
 // Helper for the idb library
 import type { DBSchema } from 'idb'
 import type { SettingsMap } from './Settings'
-import type { Plan } from '@/modules/Plans/models/plan.model'
 import type { SessionReport } from '@/modules/Sessions/models/session.model'
 
 export interface IDBCustomSchema extends DBSchema {

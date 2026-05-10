@@ -21,6 +21,7 @@ const { mockParseMeetReport } = vi.hoisted(() => ({
 
 vi.mock('comlink', () => ({
     wrap: vi.fn().mockReturnValue({
+        setDebug: vi.fn().mockResolvedValue(undefined),
         parseMeetReport: mockParseMeetReport,
     }),
     expose: vi.fn(),

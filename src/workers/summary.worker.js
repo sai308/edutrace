@@ -1,6 +1,13 @@
 import * as Comlink from 'comlink';
 import { createMarkFormatter } from '../shared/utils/grades';
 
+let debug = import.meta.env.DEV
+const workerLog = {
+    error: (...args) => { if (debug) console.error(...args) },
+    warn: (...args) => { if (debug) console.warn(...args) },
+    log: (...args) => { if (debug) console.log(...args) },
+}
+
 /**
  * --- Pure Helper Functions ---
  */
@@ -215,6 +222,7 @@ function calculateModuleStats(modules, studentMarks, taskMap, formatMark) {
  */
 
 const summaryWorker = {
+    setDebug(flag) { debug = flag },
     /**
      * Calculates stats for all members.
      * @param {Array} members 

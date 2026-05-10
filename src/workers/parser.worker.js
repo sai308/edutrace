@@ -3,6 +3,13 @@ import Papa from 'papaparse';
 import { v4 as uuidv4 } from 'uuid';
 import { MEET_REPORT_KEYWORDS, MARKS_CSV_REQUIRED_HEADERS, MARKS_CSV_KEYWORDS } from '../shared/constants/headers';
 
+let debug = import.meta.env.DEV
+const workerLog = {
+    error: (...args) => { if (debug) console.error(...args) },
+    warn: (...args) => { if (debug) console.warn(...args) },
+    log: (...args) => { if (debug) console.log(...args) },
+}
+
 function detectEffectiveMaxPoints(rawMaxPoints, maxObservedScore) {
     if (rawMaxPoints === 0)
         return maxObservedScore <= 5 ? 5 : 100
@@ -100,7 +107,7 @@ function extractMetadata(lines, filename) {
                     date = d.toISOString().split('T')[0];
                     startTime = d.toISOString();
                 } catch (e) {
-                    console.error('Failed to parse creation date from metadata', createdOnMatch[1], e);
+                    workerLog.error('Failed to parse creation date from metadata', createdOnMatch[1], e);
                 }
             }
 
@@ -109,7 +116,7 @@ function extractMetadata(lines, filename) {
                 try {
                     endTime = new Date(endedOnMatch[1].trim()).toISOString();
                 } catch (e) {
-                    console.error('Failed to parse end date from metadata', endedOnMatch[1], e);
+                    workerLog.error('Failed to parse end date from metadata', endedOnMatch[1], e);
                 }
             }
         } else if (MEET_REPORT_KEYWORDS.name.some(keyword => line.toLowerCase().includes(keyword.toLowerCase()))) {
@@ -164,6 +171,7 @@ function parseDuration(str) {
  */
 
 const parser = {
+    setDebug(flag) { debug = flag },
     parseMeetReport(fileContent, filename) {
         // fileContent is expected to be a string (text) read from File
         const text = fileContent;

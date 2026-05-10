@@ -33,14 +33,16 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
+import { Switch } from '@/components/ui/switch'
 import { localeService } from '@/services/locale'
 import { logger } from '@/shared/lib/logger'
+import { getWorkerDebugFlag, setWorkerDebugFlag } from '@/shared/lib/workerDebug'
 import { databaseService, DB_VERSION } from '@/shared/services/DatabaseService'
 import { toast } from '@/shared/services/toast'
 import { workspaceRepository } from '@/shared/services/workspace.repository'
 import { downloadJson } from '@/shared/utils/download'
 
-declare const __APP_VERSION__: string
+const appVersion = __APP_VERSION__
 
 const { t, locale } = useI18n()
 const colorMode = useColorMode()
@@ -160,6 +162,13 @@ async function confirmDeleteWorkspace() {
 }
 
 // ─── Diagnostics ──────────────────────────────────────────────────────────────
+
+const workerDebug = ref(getWorkerDebugFlag())
+
+function toggleWorkerDebug(val: boolean) {
+    workerDebug.value = val
+    setWorkerDebugFlag(val)
+}
 
 const dbName = ref('')
 const copied = ref(false)
@@ -382,7 +391,7 @@ function getTimestamp() {
                             {{ $t('globalSettings.dev.appVersion') }}
                         </dt>
                         <dd class="mt-0.5 font-mono text-sm font-medium">
-                            {{ __APP_VERSION__ }}
+                            {{ appVersion }}
                         </dd>
                     </div>
                     <div class="rounded-md border bg-muted/30 px-3 py-2">
@@ -405,15 +414,30 @@ function getTimestamp() {
 
                 <Separator />
 
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <p class="text-[0.8rem] text-muted-foreground flex-1 pr-4">
+                <!-- Worker debug logging -->
+                <div class="flex items-center justify-between gap-4">
+                    <div class="space-y-0.5">
+                        <p class="text-sm font-medium">
+                            {{ $t('globalSettings.dev.workerDebug.label') }}
+                        </p>
+                        <p class="text-[0.8rem] text-muted-foreground">
+                            {{ $t('globalSettings.dev.workerDebug.description') }}
+                        </p>
+                    </div>
+                    <Switch :model-value="workerDebug" @update:model-value="toggleWorkerDebug" />
+                </div>
+
+                <Separator />
+
+                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <p class="text-[0.8rem] text-muted-foreground flex-1">
                         {{ $t('globalSettings.dev.diagnosticsDescription') }}
                     </p>
-                    <div class="flex gap-2 shrink-0">
+                    <div class="flex gap-2 self-start lg:self-auto lg:shrink-0">
                         <Button
                             variant="outline"
                             size="sm"
-                            class="flex-1 sm:flex-none gap-1.5"
+                            class="gap-1.5"
                             @click="copyDiagnostics"
                         >
                             <ClipboardCheck v-if="copied" class="size-3.5 shrink-0 text-green-500" />
@@ -425,7 +449,7 @@ function getTimestamp() {
                         <Button
                             variant="outline"
                             size="sm"
-                            class="flex-1 sm:flex-none gap-1.5"
+                            class="gap-1.5"
                             @click="downloadLogs"
                         >
                             <Download class="size-3.5 shrink-0" />

@@ -1,4 +1,4 @@
-import type { Plan } from '@Plans/models/plan.model'
+import type { Plan } from '@Plans/types/plans'
 import type { SessionType } from '@Sessions/models/session.model'
 import { plansRepository } from '@Plans/services/plans.repository'
 import { SessionStatusEnum } from '@Sessions/models/session.model'

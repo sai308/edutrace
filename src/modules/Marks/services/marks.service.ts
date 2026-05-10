@@ -8,6 +8,7 @@ import { tasksRepository } from '@Tasks/services/tasks.repository'
 import * as Comlink from 'comlink'
 import { v4 as uuidv4 } from 'uuid'
 import { logger } from '@/shared/lib/logger'
+import { getWorkerDebugFlag, onWorkerDebugChange } from '@/shared/lib/workerDebug'
 import { classifyWorkerError, withTimeout } from '@/shared/lib/workerError'
 import { settingsRepository } from '@/shared/services/settings.repository'
 import { normalizeGroupName } from '@/shared/utils/groupNormalization'
@@ -18,6 +19,7 @@ import { MarksReconciler } from './reconciliation/MarksReconciler'
 const PARSER_TIMEOUT_MS = 30_000
 
 interface ParserWorkerAPI {
+    setDebug: (flag: boolean) => Promise<void>
     parseMarksCSV: (text: string, filename: string, groupName: string) => Promise<MarksParsedData>
     parseMeetReport: (text: string, filename: string) => Promise<Meet>
 }
@@ -31,6 +33,8 @@ export class MarksService {
         this.marksReconciler = new MarksReconciler()
         this.worker = new (ParserWorker as any)()
         this.parser = Comlink.wrap(this.worker)
+        this.parser.setDebug(getWorkerDebugFlag())
+        onWorkerDebugChange(flag => this.parser.setDebug(flag))
     }
 
     async processFile(file: File, groupName: string): Promise<MarksProcessingStats> {
@@ -169,7 +173,7 @@ export class MarksService {
             return [...meetIdScores.entries()].sort((a, b) => b[1] - a[1]).map(([id]) => id)
         }
         catch (e) {
-            logger.error('suggestMeetIdsForFile failed:', e)
+            logger.error('suggestMeetIdsForFile failed:', classifyWorkerError(e), 'worker')
             return []
         }
     }

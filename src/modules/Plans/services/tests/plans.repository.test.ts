@@ -1,4 +1,4 @@
-import type { Plan } from '../../models/plan.model'
+import type { Plan } from '../../types/plans'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { plansRepository } from '../plans.repository'
 

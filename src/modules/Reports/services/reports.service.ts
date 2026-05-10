@@ -7,7 +7,7 @@ import { groupsRepository } from '@Groups/services/groups.repository'
 import { studentsRepository } from '@Students/services/students.repository'
 import * as Comlink from 'comlink'
 import { logger } from '@/shared/lib/logger'
-
+import { getWorkerDebugFlag, onWorkerDebugChange } from '@/shared/lib/workerDebug'
 import { classifyWorkerError, withTimeout } from '@/shared/lib/workerError'
 import { IdentityReconciler } from '@/shared/services/reconciliation/IdentityReconciler'
 import { settingsRepository } from '@/shared/services/settings.repository'
@@ -17,7 +17,7 @@ import ParserWorker from '@/workers/parser.worker?worker'
 const PARSER_TIMEOUT_MS = 30_000
 
 interface ParserWorkerAPI {
-    parseMarksCSV: (text: string, filename: string) => Promise<any>
+    setDebug: (flag: boolean) => Promise<void>
     parseMeetReport: (text: string, filename: string) => Promise<Meet>
 }
 
@@ -30,6 +30,8 @@ export class ReportsService {
         this.identityReconciler = new IdentityReconciler()
         this.worker = new (ParserWorker as any)()
         this.parser = Comlink.wrap(this.worker)
+        this.parser.setDebug(getWorkerDebugFlag())
+        onWorkerDebugChange(flag => this.parser.setDebug(flag))
     }
 
     async parseFile(file: File): Promise<Meet> {

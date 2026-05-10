@@ -39,6 +39,7 @@ const { mockCalculateSummary } = vi.hoisted(() => ({
 
 vi.mock('comlink', () => ({
     wrap: vi.fn().mockReturnValue({
+        setDebug: vi.fn().mockResolvedValue(undefined),
         calculateSummary: mockCalculateSummary,
     }),
     expose: vi.fn(),
@@ -86,7 +87,7 @@ describe('summaryService', () => {
         ;(meetsRepository.getMeetsByMeetId as any).mockResolvedValue(mockMeets)
         ;(groupsRepository.getGroupMap as any).mockResolvedValue(mockGroupsMap)
         ;(settingsRepository as any).getDurationLimit = vi.fn().mockResolvedValue(mockDurationLimit)
-        ;(finalAssessmentsRepository.getAllFinalAssessments as any).mockResolvedValue(mockAssessments)
+        ;(finalAssessmentsRepository.getFinalAssessmentsByType as any).mockResolvedValue(mockAssessments)
 
         // Reset and configure the mock for this specific test
         mockCalculateSummary.mockClear()

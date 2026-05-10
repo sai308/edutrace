@@ -19,6 +19,7 @@ import { tasksRepository } from '@Tasks/services/tasks.repository'
 import * as Comlink from 'comlink'
 import { unitsRepository } from '@/modules/Units/services/units.repository'
 import { logger } from '@/shared/lib/logger'
+import { getWorkerDebugFlag, onWorkerDebugChange } from '@/shared/lib/workerDebug'
 import { classifyWorkerError, withTimeout } from '@/shared/lib/workerError'
 import { settingsRepository } from '@/shared/services/settings.repository'
 import { createMarkFormatter } from '@/shared/utils/grades'
@@ -26,6 +27,7 @@ import SummaryWorker from '@/workers/summary.worker?worker'
 import { finalAssessmentsRepository } from './finalAssessments.repository'
 
 interface SummaryWorkerAPI {
+    setDebug: (flag: boolean) => Promise<void>
     calculateSummary: (
         members: Member[],
         marks: Mark[],
@@ -49,6 +51,8 @@ export class SummaryService {
     constructor() {
         this.workerWrapper = new (SummaryWorker as unknown as new () => Worker)()
         this.worker = Comlink.wrap(this.workerWrapper)
+        this.worker.setDebug(getWorkerDebugFlag())
+        onWorkerDebugChange(flag => this.worker.setDebug(flag))
     }
 
     async loadExamData(
@@ -78,7 +82,7 @@ export class SummaryService {
                 group.meetId ? meetsRepository.getMeetsByMeetId(group.meetId) : Promise.resolve([]),
                 groupsRepository.getGroupMap(),
                 settingsRepository.getDurationLimit(),
-                finalAssessmentsRepository.getAllFinalAssessments(),
+                finalAssessmentsRepository.getFinalAssessmentsByType(assessmentType),
             ])
         logger.log('[SummaryService] Fetched data counts:', {
             members: members.length,
@@ -91,24 +95,26 @@ export class SummaryService {
         // Auto-repair missing or incorrect group names on members based on their marks
         if (allMarks.length > 0) {
             const studentIdsWithMarks = [...new Set(allMarks.map(m => m.studentId))]
-            let fixedCount = 0
-
-            for (const sid of studentIdsWithMarks) {
-                const member = await studentsRepository.getById(sid.toString())
-                if (member && member.groupName !== group.name) {
+            const lookedUp = await Promise.all(
+                studentIdsWithMarks.map(sid => studentsRepository.getById(sid.toString())),
+            )
+            const toFix: Member[] = []
+            for (const member of lookedUp) {
+                if (!member)
+                    continue
+                if (member.groupName !== group.name) {
                     member.groupName = group.name
-                    await studentsRepository.put(member)
-                    if (!members.some(x => x.id === member.id)) {
+                    toFix.push(member)
+                    if (!members.some(x => x.id === member.id))
                         members.push(member)
-                    }
-                    fixedCount++
                 }
-                else if (member && member.groupName === group.name && !members.some(x => x.id === member.id)) {
-                    members.push(member) // Was missing from index somehow
+                else if (!members.some(x => x.id === member.id)) {
+                    members.push(member)
                 }
             }
-            if (fixedCount > 0) {
-                logger.log(`[SummaryService] Auto-repaired ${fixedCount} members with mismatched group names.`)
+            if (toFix.length > 0) {
+                await Promise.all(toFix.map(m => studentsRepository.put(m)))
+                logger.log(`[SummaryService] Auto-repaired ${toFix.length} members with mismatched group names.`)
             }
         }
 
@@ -119,11 +125,11 @@ export class SummaryService {
         try {
             workerResults = await withTimeout(
                 this.worker.calculateSummary(
-                    JSON.parse(JSON.stringify(activeMembers)),
-                    JSON.parse(JSON.stringify(allMarks)),
-                    JSON.parse(JSON.stringify(allMeets)),
-                    JSON.parse(JSON.stringify(allTasks)),
-                    JSON.parse(JSON.stringify(modules)),
+                    structuredClone(activeMembers),
+                    structuredClone(allMarks),
+                    structuredClone(allMeets),
+                    structuredClone(allTasks),
+                    JSON.parse(JSON.stringify(modules)), // Vue reactive Proxy — structuredClone fails on Proxy<Array> in Chromium
                     {
                         durationLimitSeconds,
                         gradeFormat,
@@ -140,7 +146,7 @@ export class SummaryService {
 
         const assessmentMap = new Map<string, FinalAssessment>()
         for (const assess of allAssessments) {
-            assessmentMap.set(`${assess.studentId}_${assess.assessmentType}`, assess)
+            assessmentMap.set(assess.studentId, assess)
         }
 
         const statsMap = new Map<string, SummaryStats>()
@@ -312,7 +318,7 @@ export class SummaryService {
                     }
                 })
 
-                const assessment = assessmentMap.get(`${member.id}_${assessmentType}`)
+                const assessment = assessmentMap.get(member.id)
                 // examGrade is stored as 100-point — convert to display scale
                 const examGradeRaw = assessment ? Number(assessment.value) : null
                 const examGrade = examGradeRaw !== null && !isNaN(examGradeRaw) ? displayFormatter(examGradeRaw) : null
