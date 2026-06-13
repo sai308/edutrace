@@ -1,4 +1,4 @@
-import { logger } from '@/shared/lib/logger'
+import { local } from '@/shared/services/StorageService'
 // Import locale data
 import enUS from '../locales/en-US.json'
 import ukUA from '../locales/uk-UA.json'
@@ -15,22 +15,11 @@ type Locale = keyof typeof locales
 
 export const localeService = {
     getLocale(): Locale {
-        try {
-            return (localStorage.getItem(LOCALE_KEY) as Locale) || DEFAULT_LOCALE
-        }
-        catch (e) {
-            logger.warn('Failed to get locale from localStorage:', e)
-            return DEFAULT_LOCALE
-        }
+        return (local.get<string>(LOCALE_KEY) as Locale) || DEFAULT_LOCALE
     },
 
     setLocale(locale: string) {
-        try {
-            localStorage.setItem(LOCALE_KEY, locale)
-        }
-        catch (e) {
-            logger.error('Failed to save locale to localStorage:', e)
-        }
+        local.set(LOCALE_KEY, locale)
     },
 
     /**

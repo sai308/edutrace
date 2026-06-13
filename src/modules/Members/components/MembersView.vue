@@ -4,6 +4,8 @@ import type { RowActionItem } from '@/shared/types/table'
 import MemberDialog from '@Members/components/dialogs/MemberDialog.vue'
 import DataTable from '@Members/components/MembersList/DataTable.vue'
 import { useMembers } from '@Members/composables/useMembers'
+import StudentProfileModal from '@Students/components/StudentProfileModal.vue'
+import { useStudents } from '@Students/composables/useStudents'
 import {
     BookOpen,
     Copy,
@@ -14,6 +16,7 @@ import {
     RotateCcw,
     Search,
     Trash2,
+    User,
     UserCheck,
     UserCog,
 } from 'lucide-vue-next'
@@ -41,6 +44,19 @@ import EmptyState from '@/shared/components/EmptyState.vue'
 
 const { t } = useI18n()
 const router = useRouter()
+
+const { students, groupsMap, meets, tasks, loadData: loadStudentData } = useStudents()
+const showProfileModal = ref(false)
+const profileMemberId = ref<string | null>(null)
+
+const profileStudent = computed(() => students.value.find(s => s.id === profileMemberId.value) ?? null)
+
+async function openStudentProfile(member: Member) {
+    profileMemberId.value = member.id
+    if (!students.value.length)
+        await loadStudentData()
+    showProfileModal.value = true
+}
 
 const {
     members,
@@ -122,7 +138,18 @@ function getMemberActions(member: Member): RowActionItem[] {
         ]
     }
 
-    return [
+    const actions: RowActionItem[] = []
+
+    if (member.role === 'student') {
+        actions.push({
+            label: t('students.actions.profile'),
+            icon: User,
+            onSelect: () => openStudentProfile(member),
+        })
+        actions.push({ type: 'separator' })
+    }
+
+    actions.push(
         {
             label: t('common.copyId'),
             icon: Copy,
@@ -141,7 +168,9 @@ function getMemberActions(member: Member): RowActionItem[] {
             destructive: true,
             onSelect: () => confirmDelete(member),
         },
-    ]
+    )
+
+    return actions
 }
 </script>
 
@@ -321,6 +350,18 @@ function getMemberActions(member: Member): RowActionItem[] {
                 </div>
             </EmptyState>
         </template>
+
+        <!-- Student Profile Modal -->
+        <StudentProfileModal
+            :open="showProfileModal"
+            :student="profileStudent"
+            :meets="meets"
+            :groups-map="groupsMap"
+            :tasks="tasks"
+            :all-students="students"
+            :all-groups="allGroups"
+            @update:open="showProfileModal = $event"
+        />
 
         <!-- Modals -->
         <MemberDialog

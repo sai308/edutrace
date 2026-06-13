@@ -11,6 +11,7 @@ import { studentsRepository } from '@Students/services/students.repository'
 import { tasksRepository } from '@Tasks/services/tasks.repository'
 import { wrap } from 'comlink'
 import { v4 as uuidv4 } from 'uuid'
+import { getWorkerDebugFlag, onWorkerDebugChange } from '@/shared/lib/workerDebug'
 import { classifyWorkerError, withTimeout } from '@/shared/lib/workerError'
 import { settingsRepository } from '@/shared/services/settings.repository'
 import GroupsWorker from '@/workers/groups.worker?worker'
@@ -30,6 +31,7 @@ export function suggestCourseFromName(name: string): number | undefined {
 }
 
 interface IGroupsWorker {
+    setDebug: (flag: boolean) => Promise<void>
     processGroupsData: (
         groups: Group[],
         meets: Meet[],
@@ -47,6 +49,8 @@ export class GroupsService {
     constructor() {
         this.rawWorker = new (GroupsWorker as any)()
         this.worker = wrap(this.rawWorker)
+        this.worker.setDebug(getWorkerDebugFlag())
+        onWorkerDebugChange(flag => this.worker.setDebug(flag))
     }
 
     async loadGroupsData(): Promise<GroupsData> {

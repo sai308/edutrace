@@ -36,6 +36,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { membersRepository } from '@/modules/Members/services/members.repository'
 import { generateTemplateBlob } from '@/modules/Sessions/services/templateGenerator'
 import DocxViewer from '@/modules/Settings/components/DocxViewer.vue'
 import { logger } from '@/shared/lib/logger'
@@ -109,7 +110,15 @@ async function loadTemplateStatus() {
 
 async function loadTeacherSuggestions() {
     try {
-        teacherSuggestions.value = (await settingsRepository.getTeachers()).slice().sort()
+        const [settingsTeachers, members] = await Promise.all([
+            settingsRepository.getTeachers(),
+            membersRepository.getAllMembers(),
+        ])
+        const memberTeachers = members
+            .filter(m => m.role === 'teacher')
+            .map(m => m.name)
+        const merged = [...new Set([...settingsTeachers, ...memberTeachers])]
+        teacherSuggestions.value = merged.sort()
     }
     catch (e) {
         logger.error('Failed to load teacher suggestions:', e)

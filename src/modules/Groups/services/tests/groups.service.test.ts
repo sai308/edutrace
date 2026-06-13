@@ -37,6 +37,7 @@ const { mockProcessGroupsData } = vi.hoisted(() => ({
 
 vi.mock('comlink', () => ({
     wrap: vi.fn(() => ({
+        setDebug: vi.fn().mockResolvedValue(undefined),
         processGroupsData: mockProcessGroupsData,
     })),
     expose: vi.fn(),

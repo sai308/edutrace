@@ -1,6 +1,13 @@
 import * as Comlink from 'comlink';
 import { formatMarkToFiveScale } from '../shared/utils/grades';
 
+let debug = import.meta.env.DEV
+const workerLog = {
+    error: (...args) => { if (debug) console.error(...args) },
+    warn: (...args) => { if (debug) console.warn(...args) },
+    log: (...args) => { if (debug) console.log(...args) },
+}
+
 function calculateMemberCounts(members, meets, teacherSet, meetToGroup) {
     // Calculate unique members per group
     const groupMemberSets = {}; // groupName -> Set(studentName)
@@ -186,5 +193,7 @@ function processGroupsData(groups, meets, members, teacherList, allTasks, allMar
     };
 }
 
-export const workerForTesting = { processGroupsData };
-Comlink.expose({ processGroupsData });
+function setDebug(flag) { debug = flag }
+
+export const workerForTesting = { processGroupsData, setDebug };
+Comlink.expose({ processGroupsData, setDebug });

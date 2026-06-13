@@ -8,14 +8,17 @@ import { WorkerError } from '@/shared/lib/workerError'
 import { toast } from '@/shared/services/toast'
 import { marksService } from '../services/marks.service'
 
+// Module-level singletons — all callers share one reactive instance
+const groups = ref<Group[]>([])
+const flatMarks = ref<FlatMark[]>([])
+const isProcessing = ref(false)
+const allMeetIds = ref<string[]>([])
+const allTeachers = ref<string[]>([])
+const isLoading = ref(false)
+const pendingToggleIds = new Set<string | number>()
+
 export function useMarks() {
     const { t } = useI18n()
-    const groups = ref<Group[]>([])
-    const flatMarks = ref<FlatMark[]>([])
-    const isProcessing = ref(false)
-    const allMeetIds = ref<string[]>([])
-    const allTeachers = ref<string[]>([])
-    const isLoading = ref(false)
 
     async function loadGroups() {
         groups.value = await marksService.loadGroups()
@@ -95,8 +98,6 @@ export function useMarks() {
             activeWorkerTasks.value = Math.max(0, activeWorkerTasks.value - 1)
         }
     }
-
-    const pendingToggleIds = new Set<string | number>()
 
     async function toggleSynced(mark: FlatMark, silent = false) {
         if (!mark?.id || pendingToggleIds.has(mark.id))

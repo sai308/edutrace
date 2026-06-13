@@ -32,6 +32,7 @@ const { mockParseMarksCSV } = vi.hoisted(() => ({
 // Mock Comlink to return the parser method
 vi.mock('comlink', () => ({
     wrap: vi.fn().mockReturnValue({
+        setDebug: vi.fn().mockResolvedValue(undefined),
         parseMarksCSV: mockParseMarksCSV,
     }),
     expose: vi.fn(),

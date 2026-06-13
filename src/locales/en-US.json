@@ -1811,7 +1811,11 @@
             "diagnosticsDescription": "Copy a diagnostics report including recent log entries, app version, and environment info to include in a bug report.",
             "copyDiagnostics": "Copy Diagnostics",
             "copied": "Copied!",
-            "downloadLogs": "Download Logs"
+            "downloadLogs": "Download Logs",
+            "workerDebug": {
+                "label": "Worker Debug Logging",
+                "description": "Enable console output from background workers (parser, summary, groups). Takes effect immediately for active workers."
+            }
         }
     }
 }

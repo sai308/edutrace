@@ -1,5 +1,5 @@
 import type { Group } from '@Groups/types/groups'
-import type { Plan } from '@Plans/models/plan.model'
+import type { Plan } from '@Plans/types/plans'
 import type { SessionType } from '@Sessions/models/session.model'
 import type { Member } from '@Students/types/students'
 import type { EctsStats } from '@/shared/utils/grades'

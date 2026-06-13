@@ -1,6 +1,13 @@
 import * as Comlink from 'comlink';
 import { createMarkFormatter } from '../shared/utils/grades';
 
+let debug = import.meta.env.DEV
+const workerLog = {
+    error: (...args) => { if (debug) console.error(...args) },
+    warn: (...args) => { if (debug) console.warn(...args) },
+    log: (...args) => { if (debug) console.log(...args) },
+}
+
 /**
  * --- Pure Helper Functions ---
  */
@@ -16,14 +23,20 @@ function getScore(mark) {
 
 /**
  * Infers the max points for a task.
- * Uses the task's maxPoints if available; otherwise infers from the score range:
+ * Uses the task's maxPoints if available, but adapts if the score exceeds it.
+ * Otherwise infers from the score range:
  *   - scores 1-5  → max is 5 (5-point scale)
  *   - scores 6+   → max is 100 (100-point scale)
  */
 function inferMaxPoints(task, score) {
-    if (task && task.maxPoints && task.maxPoints > 0) return task.maxPoints;
-    if (score >= 1 && score <= 5) return 5;
-    return 100;
+    const rawMaxPoints = (task && task.maxPoints && task.maxPoints > 0) ? task.maxPoints : 0;
+    if (rawMaxPoints === 0) {
+        return score <= 5 ? 5 : 100;
+    }
+    if (score > rawMaxPoints) {
+        return score <= 100 ? 100 : score;
+    }
+    return rawMaxPoints;
 }
 
 function calculateMeetDurations(meets, durationLimitSeconds) {
@@ -215,6 +228,7 @@ function calculateModuleStats(modules, studentMarks, taskMap, formatMark) {
  */
 
 const summaryWorker = {
+    setDebug(flag) { debug = flag },
     /**
      * Calculates stats for all members.
      * @param {Array} members 

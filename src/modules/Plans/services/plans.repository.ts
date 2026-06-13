@@ -1,4 +1,4 @@
-import type { Plan } from '@Plans/models/plan.model'
+import type { Plan } from '@Plans/types/plans'
 import { BaseRepository } from '@/shared/services/BaseRepository'
 
 class PlansRepository extends BaseRepository<'plans'> {

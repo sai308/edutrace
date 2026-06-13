@@ -1,5 +1,5 @@
 import type { SessionReport } from '@Sessions/models/session.model'
-import type { Plan } from '../../models/plan.model'
+import type { Plan } from '../../types/plans'
 import { SessionStatusEnum } from '@Sessions/models/session.model'
 import { sessionRepository } from '@Sessions/services/sessions.repository'
 import { beforeEach, describe, expect, it, vi } from 'vitest'

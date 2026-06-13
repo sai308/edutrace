@@ -392,5 +392,32 @@ describe('summary.worker.js', () => {
             expect(stats.modules.moduleGrades['Module A']).toBe(85)
             expect(stats.modules.moduleDetailsData['Module A'].type).toBe('complete')
         })
+
+        it('should correctly infer max points when score is greater than task.maxPoints (scale mismatch)', () => {
+            const mockMarks = [
+                { id: 'm1', studentId: 's1', taskId: 't1', score: 93 }, // score is 93 but task max points is 5
+            ]
+            const mockMeets: any[] = []
+            const mockTasks = [
+                { id: 't1', maxPoints: 5 },
+            ]
+            const mockModules = [
+                { id: 1, name: 'Module A', test: null, tasks: [{ id: 't1' }] },
+            ]
+            const mockOptions = { gradeFormat: '100-scale', requiredTasks: 0 }
+
+            const result = workerForTesting.calculateSummary(
+                mockMembers,
+                mockMarks,
+                mockMeets,
+                mockTasks,
+                mockModules,
+                mockOptions,
+            )
+
+            const stats = result[0].stats
+            // Should treat 93/5 as 93/100 -> 93% -> 93 in 100-scale
+            expect(stats.modules.moduleGrades['Module A']).toBe(93)
+        })
     })
 })
