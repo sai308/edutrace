@@ -635,6 +635,31 @@
                 "deleteConfirmTitle": "Видалити всі групи",
                 "deleteConfirmMessage": "Це назавжди видалить всі записи груп. Цю дію неможливо скасувати.",
                 "deleteConfirmBtn": "Видалити"
+            },
+            "classroom": {
+                "title": "Google Classroom",
+                "description": "Підключіться до Google Classroom для імпорту курсів та списків студентів.",
+                "clientIdLabel": "OAuth Client ID",
+                "clientIdPlaceholder": "Вставте ваш Google OAuth 2.0 Client ID",
+                "clientIdSave": "Зберегти",
+                "connect": "Підключити обліковий запис Google",
+                "disconnect": "Відключити",
+                "syncNow": "Синхронізувати",
+                "syncing": "Синхронізація...",
+                "lastSynced": "Остання синхронізація: {date}",
+                "neverSynced": "Ніколи не синхронізовано",
+                "connected": "Підключено",
+                "connectedAs": "Підключено як {email}",
+                "notConnected": "Не підключено",
+                "syncSuccess": "Синхронізацію завершено — {courses} курсів, {members} учасників",
+                "syncFail": "Помилка синхронізації",
+                "reloadRequired": "Потрібне оновлення бази даних — закрийте інші вкладки та перезавантажте сторінку (Ctrl+Shift+R)",
+                "importRoster": "Імпортувати список",
+                "importRosterSuccess": "Імпортовано {count} учасників до {group}",
+                "importRosterFail": "Не вдалося імпортувати список",
+                "noClientId": "Спочатку введіть Client ID",
+                "offlineWarning": "Синхронізація недоступна в офлайн-режимі",
+                "coursesEmpty": "Курсів не знайдено. Виконайте синхронізацію."
             }
         }
     },
@@ -1531,7 +1556,7 @@
             "roleAssistant": "Асистент",
             "selectRole": "Оберіть роль",
             "namePlaceholder": "Іван Іванов",
-            "emailPlaceholder": "ivan@example.com",
+            "emailPlaceholder": "{'ivan@example.com'}",
             "groupPlaceholder": "Введіть назву групи",
             "errors": {
                 "nameRequired": "Ім'я обов'язкове",

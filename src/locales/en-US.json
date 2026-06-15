@@ -635,6 +635,31 @@
                 "deleteConfirmTitle": "Delete All Groups",
                 "deleteConfirmMessage": "This will permanently delete all group records. This action cannot be undone.",
                 "deleteConfirmBtn": "Delete"
+            },
+            "classroom": {
+                "title": "Google Classroom",
+                "description": "Connect to Google Classroom to import courses and rosters.",
+                "clientIdLabel": "OAuth Client ID",
+                "clientIdPlaceholder": "Paste your Google OAuth 2.0 Client ID",
+                "clientIdSave": "Save",
+                "connect": "Connect Google Account",
+                "disconnect": "Disconnect",
+                "syncNow": "Sync Now",
+                "syncing": "Syncing...",
+                "lastSynced": "Last synced: {date}",
+                "neverSynced": "Never synced",
+                "connected": "Connected",
+                "connectedAs": "Connected as {email}",
+                "notConnected": "Not connected",
+                "syncSuccess": "Sync complete — {courses} courses, {members} members",
+                "syncFail": "Sync failed",
+                "reloadRequired": "Database update required — close other tabs and hard-reload (Ctrl+Shift+R)",
+                "importRoster": "Import Roster",
+                "importRosterSuccess": "Imported {count} members to {group}",
+                "importRosterFail": "Failed to import roster",
+                "noClientId": "Enter a Client ID first",
+                "offlineWarning": "Sync unavailable while offline",
+                "coursesEmpty": "No courses found. Sync to load courses."
             }
         }
     },
@@ -1531,7 +1556,7 @@
             "roleAssistant": "Assistant",
             "selectRole": "Select a role",
             "namePlaceholder": "John Doe",
-            "emailPlaceholder": "john@example.com",
+            "emailPlaceholder": "{'john@example.com'}",
             "groupPlaceholder": "Enter group name",
             "errors": {
                 "nameRequired": "Name is required",

@@ -7,9 +7,13 @@ EduTrace is offline-first with no backend. All observability is client-side: in-
 ## Architecture overview
 
 ```
-Every catch block
-      │
-      ▼
+Every catch block                window.onerror
+      │                          window.onunhandledrejection
+      │                          app.config.errorHandler (Vue)
+      │                                  │
+      └──────────────────────────────────┘
+                                         │
+                                         ▼
 logger.error(msg, err, category?)
       │
       ├─► ring buffer (128 entries, sessionStorage-backed)
@@ -214,6 +218,53 @@ interface DiagnosticsReport {
 
 ---
 
+## 7. Global error handler — `src/shared/lib/globalErrorHandler.ts`
+
+Installed once in `main.ts` via `installGlobalErrorHandler(app)` before mount. Catches all errors that escape explicit `catch` blocks:
+
+| Surface | Mechanism | Category |
+|---|---|---|
+| Vue component/lifecycle errors | `app.config.errorHandler` | `'ui'` |
+| Async/promise rejections | `window.onunhandledrejection` | `'ui'` |
+| Uncaught synchronous errors | `window.onerror` | `'ui'` |
+
+All three paths call `logger.error`, so the header error indicator fires automatically and the entry lands in the diagnostics ring buffer.
+
+Cross-origin script errors (`event.error === null && event.message === ''`) are silently ignored — they carry no actionable information.
+
+### Propagation behavior
+
+The three handlers behave differently with respect to error propagation — it is important to understand which ones are purely additive and which change Vue's default path.
+
+**`window.onerror` and `window.onunhandledrejection` — purely additive.**
+Both use `addEventListener` without calling `event.preventDefault()` (for `unhandledrejection`) or returning `true` (for `error`). The browser's default behavior is fully preserved:
+- The error still appears in the DevTools console.
+- The rejection is still marked as unhandled by the browser.
+- Any other listeners registered by third-party scripts still fire.
+
+**`app.config.errorHandler` — stops Vue's re-throw.**
+Vue's documentation states: *"If `errorHandler` is defined, errors will no longer propagate to `window.onerror`."* Vue previously re-threw component errors after logging them, which caused them to reach `window.onerror`. Setting this handler intercepts that path.
+
+In practice this is intentional and benign:
+
+| | DEV | Production |
+|---|---|---|
+| Console output | Still printed — `logger.ts` calls `console.error` in the `import.meta.env.DEV` branch | Suppressed (no raw stacks exposed to users) |
+| Ring buffer | ✅ | ✅ |
+| Double-capture | Avoided — Vue errors no longer reach `window.onerror` a second time | Avoided |
+
+**Future-proofing note.** If a third-party error reporter (e.g. Sentry) is added later and it hooks into `window.onerror`, it would miss Vue component errors because Vue stops propagation at `app.config.errorHandler`. In that case, forward from the handler explicitly:
+
+```ts
+app.config.errorHandler = (err, _instance, info) => {
+    logger.error(`Vue error [${info}]`, err instanceof Error ? err : new Error(String(err)), 'ui')
+    // forward to Sentry or another global reporter here
+}
+```
+
+---
+
+
 ## Adding observability to a new module
 
 Checklist for any new module that runs worker operations:
@@ -223,3 +274,4 @@ Checklist for any new module that runs worker operations:
 3. **Error handling** — `catch` block calls `logger.error(msg, e, 'worker')` and maps `WorkerError.code` to i18n toast.
 4. **Non-worker errors** — `logger.error(msg, e)` in every catch block. `reportError()` fires automatically; no extra wiring needed.
 5. **Category** — pass `LogCategory` as the third arg when the source isn't obvious from message alone.
+6. **Global net** — unhandled errors are automatically captured by the global handler; no per-module registration needed.
